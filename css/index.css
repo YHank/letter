@@ -1,0 +1,17 @@
+/* contenteditable이 비어있을 때만 보여주는 가상 요소 */
+.editable:empty::before {
+    content: "글자를 입력해주세요.";
+    color: #888;
+    position: ;
+        top: 10px;
+    left: 10px;
+    pointer-events: none; /* 클릭을 막기 위해 사용 */
+    height:400px;
+    min-height:500px;
+    overflow: auto;
+}
+
+/* 포커스가 있을 때 placeholder 제거 */
+.editable:focus::before {
+    content: '';
+}

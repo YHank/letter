@@ -1,0 +1,23 @@
+<!-- 퇴직금 계산기 -->
+<h1>퇴직금 계산기</h1>
+<label for="years">근무 기간(년): </label>
+<input type="number" id="years">
+<label for="avg-salary">1년간 평균 임금(원): </label>
+<input type="number" id="avg-salary">
+<button onclick="calculateSeverance()">계산하기</button>
+<p id="severance-result"></p>
+
+<script>
+function calculateSeverance() {
+    const years = document.getElementById('years').value;
+    const avgSalary = document.getElementById('avg-salary').value;
+
+    if (!years || !avgSalary) {
+        document.getElementById('severance-result').textContent = "모든 필드를 입력해주세요.";
+        return;
+    }
+
+    const severance = years * avgSalary;
+    document.getElementById('severance-result').textContent = `퇴직금: ${severance.toLocaleString()}원`;
+}
+</script>

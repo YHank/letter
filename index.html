@@ -1,0 +1,72 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>글자수 세기</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link rel="stylesheet" href="/css/index.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+        </script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-xxl navbar-light bg-light" aria-label="Seventh navbar example">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Letter Info</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExampleXxl" aria-controls="navbarsExampleXxl" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarsExampleXxl">
+                    <ul class="navbar-nav me-auto mb-2 mb-xl-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/">글자수 / 단어수</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-move="spellcheck">맞춤법</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-move="salary">연봉실수령</a>
+                        </li>
+                        
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">계산기 모음</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" >준비중</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <form role="search">
+                    </form>
+                </div>
+            </div>
+        </nav>
+        <main class="container">
+            <div class="row px-0 mx-0 justify-content-center mt-4"> 
+                <div class="col-12 col-lg-7 mb-4"> 
+                    <div> 공백 제외 글자 수: <span data-result="1" class="text-primary fw-bold">0</span></div>
+                    <div> 공백 포함 글자 수: <span data-result="2" class="fw-bold">0</span></div>
+                    <div> 단어 수 : <span data-result="3" class="text-success fw-bold">0</span></div>
+                    <div> 라인 수 : <span data-result="4" class="fw-bold">0</span></div>
+                </div>
+                <!-- <textarea id="letter_count" class="col-12 col-lg-7 p-4" cols="30" rows="20" placeholder="글자를 입력해주세요."></textarea> -->
+                <div id="letter_count" contenteditable="true" class="editable col-12 col-lg-7 border border-dark fs-6 mt-3 p-4" style="height:500px"></div>
+                <div class="mt-4 col-12 col-lg-7 d-flex gap-3"> 
+                    번역 > <div id="google_translate_element" class=""></div>
+                </div>
+            </div>
+
+        </main>
+        <footer>
+
+        </footer>
+        <script src="/js/index.js?1"></script> 
+        <script src="/js/langchkg.js?1"></script>
+        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        <script>
+
+        </script>
+    </body>
+</html>
