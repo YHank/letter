@@ -97,39 +97,73 @@
                 <div class="mt-4 col-12 col-lg-7 d-flex gap-3"> 
                     번역 > <div id="google_translate_element" class=""></div>
                 </div>
+
+            <div class="mt-5 col-12 col-lg-7 mb-4 text-secondary"> 
+                <h3 class="pt-5">글자수 세기 기능의 필요성</h3>
+
+                <p>글자수 세기 기능은 다양한 상황에서 매우 유용하게 사용될 수 있습니다. 다음은 그 필요성을 설명하는 몇 가지 예시입니다:</p>
+
+                <ol>
+                    <li><strong>소셜 미디어 게시물 작성</strong>:
+                        <ul>
+                            <li>트위터와 같은 소셜 미디어 플랫폼은 글자 수에 제한이 있습니다. 글자수 세기 기능을 사용하면 사용자가 제한된 글자 수 내에서 메시지를 작성할 수 있도록 도와줍니다.</li>
+                        </ul>
+                    </li>
+                    <li><strong>에세이 및 논문 작성</strong>:
+                        <ul>
+                            <li>학술 논문이나 에세이를 작성할 때, 특정 글자 수나 단어 수를 충족해야 하는 경우가 많습니다. 글자수 세기 기능을 통해 작성된 글의 길이를 쉽게 확인할 수 있습니다.</li>
+                        </ul>
+                    </li>
+                    <li><strong>SMS 및 문자 메시지</strong>:
+                        <ul>
+                            <li>문자 메시지 서비스는 한 메시지당 글자 수에 제한이 있습니다. 글자수 세기 기능을 사용하면 메시지가 여러 개로 나뉘지 않도록 할 수 있습니다.</li>
+                        </ul>
+                    </li>
+                    <li><strong>웹사이트 및 블로그 게시물</strong>:
+                        <ul>
+                            <li>SEO 최적화를 위해 웹사이트나 블로그 게시물의 글자 수를 관리하는 것이 중요합니다. 글자수 세기 기능을 통해 적절한 길이의 콘텐츠를 작성할 수 있습니다.</li>
+                        </ul>
+                    </li>
+                    <li><strong>프로젝트 관리 및 보고서 작성</strong>:
+                        <ul>
+                            <li>프로젝트 보고서나 관리 문서를 작성할 때, 특정 글자 수를 초과하지 않도록 관리하는 것이 필요할 수 있습니다. 글자수 세기 기능을 통해 이를 쉽게 관리할 수 있습니다.</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
             </div>
 
         </main>
         <footer class="">   
             <div class="row px-0 mx-0 justify-content-center mt-4"> 
-            <ins class="adsbygoogle text-center"
-                 style="display:block"
-                 data-ad-client="ca-pub-1009706165028289"
-                 data-ad-slot="6057653874"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
+                <ins class="adsbygoogle text-center"
+                    style="display:block"
+                    data-ad-client="ca-pub-1009706165028289"
+                    data-ad-slot="6057653874"
+                    data-ad-format="auto"
+                    data-full-width-responsive="true"></ins>
+                <script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
             </div>
         </footer>
         <script src="/js/index.js?1"></script> 
         <script src="/js/langchkg.js?1"></script>
         <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
         <script>
-            // get 으로 page 가 넘어오면.
-            console.log('script');
-            if(location.search){
-                let url = new URL(location.href);
-                let params = new URLSearchParams(url.search);
-                let page = params.get('page');
-                if(page){
-                    let target = document.querySelector(`[data-move="${page}"]`);
-                    if(target){
-                        $('main').load('/html/'+page+'.html');
-                    }
-                }
-            }
-        </script>
+// get 으로 page 가 넘어오면.
+console.log('script');
+if(location.search){
+    let url = new URL(location.href);
+    let params = new URLSearchParams(url.search);
+    let page = params.get('page');
+    if(page){
+        let target = document.querySelector(`[data-move="${page}"]`);
+        if(target){
+            $('main').load('/html/'+page+'.html');
+        }
+    }
+}
+</script>
     </body>
 </html>
