@@ -31,6 +31,12 @@ document.addEventListener('DOMContentLoaded', function(){
                         } else {
                             console.error('initializeSpellchecker function not found. Ensure js/langchkg.js is loaded.');
                         }
+                    } else if (page === 'salary') {
+                        if (typeof initializeSalaryPage === 'function') {
+                            initializeSalaryPage();
+                        } else {
+                            console.error('initializeSalaryPage function not found. Ensure js/salary_calculator.js is loaded and contains this function.');
+                        }
                     }
                     // You could add other page-specific initializations here
                     // else if (page === 'anotherpage') {
