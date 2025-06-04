@@ -13,8 +13,10 @@
     - 공백 포함 글자 수 계산 (Character count including spaces)
     - 단어 수 계산 (Word count)
     - 줄 수 계산 (Line count)
-- **맞춤법 검사 (Spell Checker):** (`html/spellcheck.html`)
-    - 입력된 텍스트의 맞춤법을 검사하고 교정 제안 (Checks spelling of input text and suggests corrections)
+- **맞춤법 검사 (Spell Checker):** (`html/spellcheck.html`, `js/langchkg.js`)
+    - 부산대학교 맞춤법 검사기 API를 직접 연동하여 맞춤법 검사 및 교정 제안 기능을 제공합니다. (Directly integrates with the Pusan National University (PNU) spell checker API to provide spell checking and correction suggestions.)
+    - 사용자가 입력한 텍스트에 대해 실시간에 가까운 검사를 수행하고, 자체 UI를 통해 결과를 표시합니다. (Performs near real-time checks on user-input text and displays results through a custom UI.)
+    - *주의: PNU 맞춤법 검사기 서비스는 개인 및 학생 사용자에 한해 무료로 제공됩니다.* (*Note: The PNU spell checker service is provided free of charge for individual and student users only.*)
 - **연봉 계산기 (Salary Calculator):** (`html/salary.html`)
     - 연봉을 기준으로 실수령액을 계산 (Calculates actual take-home pay based on annual salary)
 - **퇴직금 계산기 (Severance Pay Calculator):** (`html/severancepay.html`)
@@ -32,10 +34,11 @@
 
 - HTML5
 - CSS3 (`css/index.css`)
-- JavaScript (ES6+) (`js/index.js`, `js/langchkg.js`)
+- JavaScript (ES6+) (`js/index.js`, `js/langchkg.js` - PNU 맞춤법 검사기 연동 로직 포함)
 - Bootstrap 5
 - jQuery
 - Google Translate API
+- PNU (Pusan National University) Spell Checker API
 
 ## 개선할 점 (TODO)
 
@@ -59,9 +62,11 @@
     - 현재 Google 번역 API를 통한 텍스트 번역 외에, 웹사이트 자체의 UI (버튼, 메뉴 등) 및 기본 안내 문구에 대한 다국어 지원을 검토합니다. (In addition to text translation via the Google Translate API, consider multilingual support for the website's UI (buttons, menus, etc.) and basic informational text.)
 - **연봉 계산기 기능 고도화 (Enhance salary calculator):**
     - 현재 연봉 계산기에 세금, 4대 보험, 부양가족 수 등 다양한 변수를 추가하여 보다 정확한 실수령액을 계산할 수 있도록 기능을 개선합니다. (Improve the current salary calculator by adding various variables such as taxes, social insurance, and number of dependents to calculate a more accurate take-home pay.)
-- **맞춤법 검사기 기능 개선 (Improve spell checker functionality):**
-    - 현재 `js/langchkg.js`와 연동된 맞춤법 검사기의 정확도 및 사용성을 향상시킵니다. (Improve the accuracy and usability of the spell checker currently linked with `js/langchkg.js`.)
-    - 외부 API (예: 부산대학교 맞춤법 검사기) 활용 또는 자체 개선 방안을 모색합니다. (Explore options for using external APIs (e.g., Pusan National University Spell Checker) or developing in-house improvements.)
+- **맞춤법 검사기 기능 개선 및 안정화 (Enhance and Stabilize Spell Checker Functionality):**
+    - [완료] 부산대학교 맞춤법 검사기 API 연동 및 기본 UI 구현 (Completed: Integrated PNU spell checker API and implemented basic UI.)
+    - **TDD(테스트 주도 개발)를 통한 테스트 코드 작성 및 기능 안정화:** `js/langchkg.js`의 맞춤법 검사 로직(API 연동, 결과 파싱, UI 업데이트 등)에 대한 단위 테스트 및 통합 테스트 코드를 작성하여 안정성을 확보합니다. (Write unit and integration test codes for the spell checking logic in `js/langchkg.js` (API integration, result parsing, UI updates, etc.) through TDD to ensure stability.)
+    - **사용자 피드백 기반 추가 개선:** 사용자 테스트 및 피드백을 통해 발견되는 오류 수정 및 사용성 개선 사항을 반영합니다. (Reflect error corrections and usability improvements found through user testing and feedback.)
+    - **오류 처리 고도화:** 네트워크 오류, API 응답 오류 등 다양한 예외 상황에 대한 사용자 친화적인 오류 메시지 및 처리 로직을 개선합니다. (Improve user-friendly error messages and handling logic for various exceptional situations such as network errors and API response errors.)
 - **UI/UX 개선 (Improve UI/UX):**
     - 전체적인 웹사이트 디자인 및 사용자 인터페이스를 개선하여 사용성을 향상시킵니다. (Enhance usability by improving the overall website design and user interface.)
     - 모바일 반응형 디자인을 점검하고 최적화합니다. (Review and optimize the mobile responsive design.)
