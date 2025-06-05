@@ -2,16 +2,77 @@
 .editable:empty::before {
     content: "글자를 입력해주세요.";
     color: #888;
-    position: ;
-        top: 10px;
+    position: absolute;
+    top: 10px;
     left: 10px;
-    pointer-events: none; /* 클릭을 막기 위해 사용 */
-    height:400px;
-    min-height:500px;
-    overflow: auto;
+    pointer-events: none;
 }
 
 /* 포커스가 있을 때 placeholder 제거 */
 .editable:focus::before {
     content: '';
+}
+
+/* Google Translate 위젯 스타일 */
+#google_translate_element {
+    display: inline-block;
+}
+
+.goog-te-gadget {
+    display: inline-block !important;
+}
+
+/* Google Translate 선택 박스 스타일 */
+.goog-te-gadget-simple {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    font-family: inherit;
+}
+
+.goog-te-gadget-simple:hover {
+    background-color: #f8f9fa;
+}
+
+/* Google Translate 아이콘 표시 */
+.goog-te-gadget-icon {
+    background-image: url(https://www.gstatic.com/images/branding/googlelogo/1x/googlelogo_color_42x16dp.png) !important;
+    background-position: 0 0 !important;
+    margin-right: 5px !important;
+}
+
+/* Google Translate 링크 스타일 */
+.goog-te-gadget-simple .goog-te-menu-value {
+    color: #212529;
+}
+
+.goog-te-gadget-simple .goog-te-menu-value span {
+    color: #212529;
+}
+
+/* Google Translate 배너 제거 */
+.goog-te-banner-frame {
+    display: none !important;
+}
+
+body {
+    top: 0 !important;
+}
+
+/* Google Translate 툴팁 제거 */
+.goog-tooltip {
+    display: none !important;
+}
+
+.goog-tooltip:hover {
+    display: none !important;
+}
+
+.goog-text-highlight {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
