@@ -1,0 +1,129 @@
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <h2 class="mb-4">간단한 한글 맞춤법 검사기</h2>
+            
+            <div class="alert alert-warning">
+                <strong>안내:</strong> 이 검사기는 자주 틀리는 기본적인 맞춤법만 검사합니다.
+                <br>정확한 검사를 위해서는 다음이나 네이버 맞춤법 검사기를 이용하세요.
+            </div>
+            
+            <div class="mb-3">
+                <label for="simple_spellcheck_input" class="form-label">검사할 텍스트를 입력하세요:</label>
+                <textarea id="simple_spellcheck_input" class="form-control" rows="10" placeholder="맞춤법을 검사할 텍스트를 입력하세요...">안녕하세요. 맞춤법 검사를 테스트 합니다. 일부러 틀린 맞춤법을 넣어봤읍니다. 할수있는 일을 찾아보고 됬으면 좋겠습니다.</textarea>
+            </div>
+            
+            <div class="d-flex gap-2 mb-4">
+                <button id="simple_check_btn" class="btn btn-primary">맞춤법 검사</button>
+                <button id="simple_clear_btn" class="btn btn-outline-secondary">지우기</button>
+                <button id="simple_apply_btn" class="btn btn-success" style="display: none;">교정 내용 적용</button>
+            </div>
+            
+            <div id="simple_results" style="display: none;">
+                <!-- 검사 결과가 여기에 표시됩니다 -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center mt-5">
+        <div class="col-12 col-lg-8">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5 class="card-title">검사 가능한 항목</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>맞춤법</h6>
+                            <ul class="small">
+                                <li>됬다 → 됐다</li>
+                                <li>어떻해 → 어떻게</li>
+                                <li>했읍니다 → 했습니다</li>
+                                <li>왠지 → 웬지</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>띄어쓰기</h6>
+                            <ul class="small">
+                                <li>할수있다 → 할 수 있다</li>
+                                <li>될수없다 → 될 수 없다</li>
+                                <li>안되 → 안 돼</li>
+                                <li>조사 띄어쓰기</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/spellcheck_client.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const inputArea = document.getElementById('simple_spellcheck_input');
+    const checkBtn = document.getElementById('simple_check_btn');
+    const clearBtn = document.getElementById('simple_clear_btn');
+    const applyBtn = document.getElementById('simple_apply_btn');
+    const resultsDiv = document.getElementById('simple_results');
+    
+    let lastResults = null;
+    
+    // 맞춤법 검사
+    checkBtn.addEventListener('click', function() {
+        const text = inputArea.value.trim();
+        if (!text) {
+            alert('검사할 텍스트를 입력해주세요.');
+            return;
+        }
+        
+        // 검사 실행
+        lastResults = SpellCheckClient.check(text);
+        
+        // 결과 표시
+        resultsDiv.innerHTML = SpellCheckClient.formatResults(lastResults);
+        resultsDiv.style.display = 'block';
+        
+        // 교정 버튼 표시/숨김
+        if (lastResults.errorCount > 0 && lastResults.corrected !== lastResults.original) {
+            applyBtn.style.display = 'inline-block';
+        } else {
+            applyBtn.style.display = 'none';
+        }
+    });
+    
+    // 지우기
+    clearBtn.addEventListener('click', function() {
+        inputArea.value = '';
+        resultsDiv.style.display = 'none';
+        applyBtn.style.display = 'none';
+        lastResults = null;
+    });
+    
+    // 교정 적용
+    applyBtn.addEventListener('click', function() {
+        if (lastResults && lastResults.corrected) {
+            inputArea.value = lastResults.corrected;
+            
+            // 피드백 메시지
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success alert-dismissible fade show mt-2';
+            alert.innerHTML = `
+                교정된 텍스트가 적용되었습니다!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            inputArea.parentElement.appendChild(alert);
+            
+            // 3초 후 자동 제거
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+    });
+    
+    // 엔터키로 검사 실행
+    inputArea.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'Enter') {
+            checkBtn.click();
+        }
+    });
+});
+</script>

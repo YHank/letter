@@ -55,7 +55,10 @@ function initializeSpellchecker() {
     }
     
     async function checkSpellingPNU(textToCheck) {
+        // CORS 프록시를 통한 우회 시도
+        const CORS_PROXY = 'https://corsproxy.io/?';
         const PNU_URL = 'https://nara-speller.co.kr/speller/spell_check.do';
+        const PROXY_URL = CORS_PROXY + encodeURIComponent(PNU_URL);
         const PNU_MAX_WORDS = 200;
         
         resultsDiv.innerHTML = '<div class="spinner-border spinner-border-sm me-2" role="status"></div>검사 중...';
@@ -78,10 +81,27 @@ function initializeSpellchecker() {
                 formData.append('text1', part);
                 
                 try {
-                    const response = await fetch(PNU_URL, {
-                        method: 'POST',
-                        body: formData
-                    });
+                    // 먼저 직접 호출 시도
+                    let response;
+                    try {
+                        response = await fetch(PNU_URL, {
+                            method: 'POST',
+                            body: formData
+                        });
+                    } catch (directError) {
+                        // CORS 오류 시 프록시 사용
+                        console.log('직접 호출 실패, 프록시 시도...');
+                        const params = new URLSearchParams();
+                        params.append('text1', part);
+                        
+                        response = await fetch(PROXY_URL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: params.toString()
+                        });
+                    }
                     
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
