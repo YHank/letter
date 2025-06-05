@@ -54,6 +54,11 @@ async function checkSpellingPNU(textToCheck) {
             }
 
             const responseHTML = await response.text();
+            
+            // Check if we got a Cloudflare challenge page
+            if (responseHTML.includes('Just a moment...') || responseHTML.includes('cf-chl-opt')) {
+                throw new Error('CLOUDFLARE_CHALLENGE');
+            }
 
             // --- Parsing Logic (Adapted from 9beach/hanspell's parseJSON) ---
             const match = responseHTML.match(/\tdata = \[.*;/g);
@@ -102,7 +107,22 @@ async function checkSpellingPNU(textToCheck) {
 
     } catch (error) {
         console.error('Spell check error:', error);
-        resultsDisplay.innerHTML = '맞춤법 검사 중 오류가 발생했습니다: ' + error.message;
+        
+        if (error.message === 'CLOUDFLARE_CHALLENGE') {
+            resultsDisplay.innerHTML = `
+                <div class="alert alert-warning">
+                    <h5>맞춤법 검사 서비스 접근 제한</h5>
+                    <p>현재 맞춤법 검사 서비스가 보안 문제로 인해 차단되었습니다.</p>
+                    <p><strong>대안:</strong></p>
+                    <ul>
+                        <li><a href="https://nara-speller.co.kr/" target="_blank" class="btn btn-sm btn-primary">부산대 맞춤법 검사기 사이트에서 직접 확인하기</a></li>
+                        <li>잠시 후 다시 시도해 주세요</li>
+                    </ul>
+                </div>
+            `;
+        } else {
+            resultsDisplay.innerHTML = '맞춤법 검사 중 오류가 발생했습니다: ' + error.message;
+        }
     }
 }
 
