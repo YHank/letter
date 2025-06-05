@@ -109,13 +109,18 @@ body {
     display: none !important;
 }
 
+/* contenteditable 기본 스타일 */
+.editable {
+    position: relative;
+}
+
 /* contenteditable이 비어있을 때만 보여주는 가상 요소 */
 .editable:empty::before {
     content: "글자를 입력해주세요.";
     color: var(--secondary-text);
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 1rem;
+    left: 1.5rem;
     pointer-events: none;
 }
 
