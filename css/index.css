@@ -254,6 +254,20 @@ body {
     color: #000;
 }
 
+/* 버튼 그룹 스타일 개선 */
+.btn-group {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dark .btn-group {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* 번역 섹션 스타일 */
+.text-muted {
+    font-weight: 500;
+}
+
 /* Google Translate 툴팁 제거 */
 .goog-tooltip {
     display: none !important;

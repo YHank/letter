@@ -112,25 +112,28 @@
                         </div>
                     </div>
                 </div>
-                <!-- <textarea id="letter_count" class="col-12 col-lg-7 p-4" cols="30" rows="20" placeholder="글자를 입력해주세요."></textarea> -->
-                <div id="letter_count" contenteditable="true" class="editable col-12 col-lg-7 border border-dark fs-6 mt-3 p-4 overflow-auto" style="height:500px"></div>
-                <div class="mt-4 col-12 col-lg-7 d-flex gap-3">
-                    번역 > <div id="google_translate_element" class=""></div>
-                </div>
                 
-                <!-- 텍스트 변환 도구 -->
-                <div class="mt-4 col-12 col-lg-7">
-                    <h6 class="mb-3">텍스트 변환 도구</h6>
-                    <div class="btn-group flex-wrap" role="group">
-                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="uppercase">모두 대문자</button>
-                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="lowercase">모두 소문자</button>
-                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="capitalize">첫 글자 대문자</button>
-                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-special">특수문자 제거</button>
-                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-spaces">공백 제거</button>
-                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="trim-lines">줄 공백 정리</button>
-                        <button type="button" class="btn btn-outline-danger btn-sm" data-transform="clear">모두 지우기</button>
+                <!-- 텍스트 변환 도구 및 번역 -->
+                <div class="col-12 col-lg-7 mt-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div class="btn-group flex-wrap" role="group">
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-transform="uppercase">대문자</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-transform="lowercase">소문자</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-transform="capitalize">첫글자</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-special">특수문자제거</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-spaces">공백제거</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-transform="trim-lines">공백정리</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm" data-transform="clear">지우기</button>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted small">번역</span>
+                            <div id="google_translate_element"></div>
+                        </div>
                     </div>
                 </div>
+                
+                <!-- 텍스트 입력 영역 -->
+                <div id="letter_count" contenteditable="true" class="editable col-12 col-lg-7 border border-dark fs-6 p-4 overflow-auto" style="height:500px"></div>
 
             <div class="mt-5 col-12 col-lg-7 mb-4 text-secondary">
                 <h3 class="pt-5">글자수 세기 기능의 필요성</h3>
@@ -182,7 +185,7 @@
             </div>
         </footer>
         <script src="/js/darkmode.js"></script>
-        <script src="/js/index.js?2"></script> 
+        <script src="/js/index.js?3"></script> 
         <script src="/js/langchkg.js?2"></script>
         <script src="/js/salary_calculator.js?1"></script>
         <script src="/js/salary_calculator.test.js?1"></script>
