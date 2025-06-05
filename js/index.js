@@ -27,9 +27,13 @@ function calculateAverageWordLength(text) {
 }
 
 function calculateReadingTime(text) {
+    if (!text || text.trim() === '') return '0';
+    
     // 한국어 평균 읽기 속도: 분당 300-500자 (평균 400자)
     // 영어 평균 읽기 속도: 분당 200-250단어
     const charCount = text.replace(/\s/g, '').length;
+    if (charCount === 0) return '0';
+    
     const minutes = charCount / 400;
     
     if (minutes < 1) {
@@ -44,6 +48,8 @@ function calculateReadingTime(text) {
 }
 
 function countParagraphs(text) {
+    if (!text || text.trim() === '') return 0;
+    
     // 두 개 이상의 연속된 줄바꿈을 단락 구분으로 간주
     const paragraphs = text.split(/\n\s*\n/).filter(para => para.trim().length > 0);
     return paragraphs.length || 1;
@@ -80,6 +86,23 @@ function restoreDraft() {
 function updateStatistics() {
     const letterCountElement = document.querySelector('#letter_count');
     const letter = letterCountElement.innerText;
+    
+    // 텍스트가 비어있는지 확인
+    if (!letter || letter.trim() === '') {
+        // 모든 통계를 0으로 초기화
+        document.querySelector('[data-result="1"]').textContent = '0';
+        document.querySelector('[data-result="2"]').textContent = '0';
+        document.querySelector('[data-result="3"]').textContent = '0';
+        document.querySelector('[data-result="4"]').textContent = '0';
+        document.querySelector('[data-result="sentences"]').textContent = '0';
+        document.querySelector('[data-result="avg-word-length"]').textContent = '0';
+        document.querySelector('[data-result="reading-time"]').textContent = '0';
+        document.querySelector('[data-result="paragraphs"]').textContent = '0';
+        
+        // 빈 텍스트도 저장
+        autoSave(letter);
+        return;
+    }
     
     // 기본 통계
     let letter_count = letter.replace(/ /g, '').replace(/\n/g, '');
@@ -179,6 +202,11 @@ document.addEventListener('DOMContentLoaded', function(){
                         case 'spellcheck_simple':
                             if (typeof initializeSimpleSpellchecker === 'function') {
                                 setTimeout(initializeSimpleSpellchecker, 100);
+                            }
+                            break;
+                        case 'typing_practice':
+                            if (typeof initializeTypingPractice === 'function') {
+                                setTimeout(initializeTypingPractice, 100);
                             }
                             break;
                         case 'salary':

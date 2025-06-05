@@ -282,3 +282,44 @@ body {
     border: none !important;
     box-shadow: none !important;
 }
+
+/* 타자 연습 스타일 */
+#typing-text {
+    font-family: 'Noto Sans KR', sans-serif;
+    line-height: 2;
+    letter-spacing: 0.05em;
+    user-select: none;
+}
+
+#typed-text {
+    opacity: 0.6;
+}
+
+#current-char {
+    padding: 2px 4px;
+    border-radius: 3px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.3; }
+}
+
+#remaining-text {
+    color: var(--secondary-text);
+}
+
+.dark #typing-text {
+    background-color: var(--input-bg) !important;
+}
+
+#typing-input.is-invalid {
+    animation: shake 0.2s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
