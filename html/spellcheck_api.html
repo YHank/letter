@@ -1,0 +1,49 @@
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <h2 class="mb-4">한글 맞춤법 검사기</h2>
+            
+            <div class="mb-3">
+                <label for="spellcheck_input" class="form-label">검사할 텍스트를 입력하세요:</label>
+                <textarea id="spellcheck_input" class="form-control" rows="10" placeholder="맞춤법을 검사할 텍스트를 입력하세요..."></textarea>
+                <small class="form-text text-muted">최대 200단어까지 한 번에 검사할 수 있습니다.</small>
+            </div>
+            
+            <div class="d-flex gap-2 mb-4">
+                <button id="check_spelling_btn" class="btn btn-primary">맞춤법 검사</button>
+                <button id="clear_text_btn" class="btn btn-outline-secondary">지우기</button>
+                <button id="apply_corrections_btn" class="btn btn-success" style="display: none;">교정 내용 적용</button>
+            </div>
+            
+            <div id="spellcheck_results" class="alert alert-info" style="display: none;">
+                <!-- 검사 결과가 여기에 표시됩니다 -->
+            </div>
+            
+            <div id="corrected_text_section" style="display: none;" class="mb-4">
+                <h5>교정된 텍스트:</h5>
+                <div id="corrected_text" class="p-3 bg-light border rounded"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center mt-5">
+        <div class="col-12 col-lg-8">
+            <div class="alert alert-warning">
+                <h5>사용 안내</h5>
+                <ul class="mb-0">
+                    <li>이 맞춤법 검사기는 부산대학교 인공지능연구실과 (주)나라인포테크의 맞춤법 검사 API를 사용합니다.</li>
+                    <li>한 번에 최대 200단어까지 검사할 수 있습니다. 긴 텍스트는 자동으로 분할되어 검사됩니다.</li>
+                    <li>검사 결과는 100% 정확하지 않을 수 있으므로 참고용으로 사용하시기 바랍니다.</li>
+                    <li>개인 및 학생 사용자에 한해 무료로 제공됩니다.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 페이지가 로드될 때 맞춤법 검사기 초기화
+if (typeof initializeSpellchecker === 'function') {
+    initializeSpellchecker();
+}
+</script>

@@ -124,8 +124,14 @@
                         <li class="nav-item ">
                             <a class="nav-link active" aria-current="page" href="/">글자수 / 단어수</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-move="spellcheck" href="void(0)">맞춤법</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">맞춤법</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" data-move="spellcheck" href="void(0)">다음 맞춤법 검사기</a></li>
+                                <li><a class="dropdown-item" data-move="spellcheck_naver" href="void(0)">네이버 맞춤법 검사기</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" data-move="spellcheck_api" href="void(0)">부산대 API (실험적)</a></li>
+                            </ul>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-move="salary" href="void(0)">연봉실수령</a>
@@ -269,7 +275,7 @@
         </footer>
         <script src="/js/darkmode.js"></script>
         <script src="/js/index.js?3"></script> 
-        <script src="/js/langchkg.js?2"></script>
+        <script src="/js/langchkg.js?3"></script>
         <script src="/js/salary_calculator.js?1"></script>
         <script src="/js/salary_calculator.test.js?1"></script>
         <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
