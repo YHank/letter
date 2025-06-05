@@ -43,7 +43,11 @@
 
 <script>
 // 페이지가 로드될 때 맞춤법 검사기 초기화
-if (typeof initializeSpellchecker === 'function') {
-    initializeSpellchecker();
-}
+setTimeout(function() {
+    if (typeof initializeSpellchecker === 'function') {
+        initializeSpellchecker();
+    } else {
+        console.error('initializeSpellchecker 함수를 찾을 수 없습니다.');
+    }
+}, 100);
 </script>

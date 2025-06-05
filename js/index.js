@@ -174,18 +174,21 @@ document.addEventListener('DOMContentLoaded', function(){
             e.preventDefault();
             $('main').load('/html/'+page+'.html', function(response, status, xhr) {
                 if (status === "success") {
-                    if (page === 'spellcheck') {
-                        if (typeof initializeSpellchecker === 'function') {
-                            initializeSpellchecker();
+                    // 페이지 로드 후 스크립트 실행
+                    const scripts = $('main').find('script');
+                    scripts.each(function() {
+                        if (this.src) {
+                            // 외부 스크립트는 동적으로 로드
+                            $.getScript(this.src);
                         } else {
-                            console.error('initializeSpellchecker function not found. Ensure js/langchkg.js is loaded.');
+                            // 인라인 스크립트는 eval로 실행
+                            eval(this.innerHTML);
                         }
-                    } else if (page === 'salary') {
-                        if (typeof initializeSalaryPage === 'function') {
-                            initializeSalaryPage();
-                        } else {
-                            console.error('initializeSalaryPage function not found. Ensure js/salary_calculator.js is loaded and contains this function.');
-                        }
+                    });
+                    
+                    // 페이지별 초기화
+                    if (page === 'salary' && typeof initializeSalaryPage === 'function') {
+                        initializeSalaryPage();
                     }
                 } else if (status === "error") {
                     console.error("Error loading page: " + xhr.status + " " + xhr.statusText);

@@ -46,7 +46,8 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+// 동적 로딩을 위해 즉시 실행
+(function() {
     const inputArea = document.getElementById('spellcheck_input_naver');
     const charCountSpan = document.getElementById('char_count');
     const checkBtn = document.getElementById('check_spelling_naver_btn');
@@ -109,5 +110,5 @@ document.addEventListener('DOMContentLoaded', function() {
             this.textContent = originalText;
         }, 2000);
     });
-});
+})();
 </script>

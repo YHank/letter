@@ -58,7 +58,8 @@
 
 <script src="/js/spellcheck_client.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+// 동적 로딩을 위해 즉시 실행
+(function() {
     const inputArea = document.getElementById('simple_spellcheck_input');
     const checkBtn = document.getElementById('simple_check_btn');
     const clearBtn = document.getElementById('simple_clear_btn');
@@ -125,5 +126,5 @@ document.addEventListener('DOMContentLoaded', function() {
             checkBtn.click();
         }
     });
-});
+})();
 </script>
