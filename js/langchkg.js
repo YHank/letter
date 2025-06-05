@@ -22,7 +22,7 @@ function splitTextByWordCount(text, maxWords) {
 }
 
 async function checkSpellingPNU(textToCheck) {
-    const PNU_URL = 'http://speller.cs.pusan.ac.kr/results';
+    const PNU_URL = 'https://nara-speller.co.kr/speller/spell_check.do';
     const PNU_MAX_WORDS = 200; // Slightly less than library's 250 for safety
     const resultsDisplay = document.getElementById('spellcheck_results');
 
