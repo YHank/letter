@@ -176,19 +176,9 @@ document.addEventListener('DOMContentLoaded', function(){
                 if (status === "success") {
                     // 페이지별 초기화 함수 호출
                     switch(page) {
-                        case 'spellcheck_api':
-                            if (typeof initializeSpellchecker === 'function') {
-                                setTimeout(initializeSpellchecker, 100);
-                            }
-                            break;
                         case 'spellcheck_simple':
                             if (typeof initializeSimpleSpellchecker === 'function') {
                                 setTimeout(initializeSimpleSpellchecker, 100);
-                            }
-                            break;
-                        case 'spellcheck_naver':
-                            if (typeof initializeNaverSpellchecker === 'function') {
-                                setTimeout(initializeNaverSpellchecker, 100);
                             }
                             break;
                         case 'salary':
