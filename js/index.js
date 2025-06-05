@@ -23,7 +23,30 @@ document.addEventListener('DOMContentLoaded', function(){
         link.addEventListener('click', function(e){
             const page = this.dataset.move;
             e.preventDefault();
-            $('main').load('/html/'+page+'.html');
+            $('main').load('/html/'+page+'.html', function(response, status, xhr) {
+                if (status === "success") {
+                    if (page === 'spellcheck') {
+                        if (typeof initializeSpellchecker === 'function') {
+                            initializeSpellchecker();
+                        } else {
+                            console.error('initializeSpellchecker function not found. Ensure js/langchkg.js is loaded.');
+                        }
+                    } else if (page === 'salary') {
+                        if (typeof initializeSalaryPage === 'function') {
+                            initializeSalaryPage();
+                        } else {
+                            console.error('initializeSalaryPage function not found. Ensure js/salary_calculator.js is loaded and contains this function.');
+                        }
+                    }
+                    // You could add other page-specific initializations here
+                    // else if (page === 'anotherpage') {
+                    //     initializeAnotherPage();
+                    // }
+                } else if (status === "error") {
+                    console.error("Error loading page: " + xhr.status + " " + xhr.statusText);
+                    $('main').html("<p>Error loading page. Please try again.</p>");
+                }
+            });
         });
     });
 });
