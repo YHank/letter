@@ -174,21 +174,28 @@ document.addEventListener('DOMContentLoaded', function(){
             e.preventDefault();
             $('main').load('/html/'+page+'.html', function(response, status, xhr) {
                 if (status === "success") {
-                    // 페이지 로드 후 스크립트 실행
-                    const scripts = $('main').find('script');
-                    scripts.each(function() {
-                        if (this.src) {
-                            // 외부 스크립트는 동적으로 로드
-                            $.getScript(this.src);
-                        } else {
-                            // 인라인 스크립트는 eval로 실행
-                            eval(this.innerHTML);
-                        }
-                    });
-                    
-                    // 페이지별 초기화
-                    if (page === 'salary' && typeof initializeSalaryPage === 'function') {
-                        initializeSalaryPage();
+                    // 페이지별 초기화 함수 호출
+                    switch(page) {
+                        case 'spellcheck_api':
+                            if (typeof initializeSpellchecker === 'function') {
+                                setTimeout(initializeSpellchecker, 100);
+                            }
+                            break;
+                        case 'spellcheck_simple':
+                            if (typeof initializeSimpleSpellchecker === 'function') {
+                                setTimeout(initializeSimpleSpellchecker, 100);
+                            }
+                            break;
+                        case 'spellcheck_naver':
+                            if (typeof initializeNaverSpellchecker === 'function') {
+                                setTimeout(initializeNaverSpellchecker, 100);
+                            }
+                            break;
+                        case 'salary':
+                            if (typeof initializeSalaryPage === 'function') {
+                                setTimeout(initializeSalaryPage, 100);
+                            }
+                            break;
                     }
                 } else if (status === "error") {
                     console.error("Error loading page: " + xhr.status + " " + xhr.statusText);
