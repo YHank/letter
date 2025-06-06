@@ -205,7 +205,9 @@ document.addEventListener('DOMContentLoaded', function(){
                             }
                             break;
                         case 'typing_practice':
-                            if (typeof initializeTypingPractice === 'function') {
+                            if (typeof initializeTypingPracticeNew === 'function') {
+                                setTimeout(initializeTypingPracticeNew, 100);
+                            } else if (typeof initializeTypingPractice === 'function') {
                                 setTimeout(initializeTypingPractice, 100);
                             }
                             break;
