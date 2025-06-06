@@ -586,7 +586,13 @@ function initializeTypingPracticeNew() {
         const remaining = typingPracticeState.endTime - now;
         
         // 남은 시간이 0 이하면 연습 종료
-        if (remaining <= 0) {
+        if (remaining <= 0 && typingPracticeState.isTyping) {
+            // 타이머가 종료되었을 때 입력 비활성화
+            const currentMode = typingPracticeState.currentMode;
+            if (currentMode) {
+                const input = document.getElementById(`${currentMode}-typing-input`);
+                if (input) input.disabled = true;
+            }
             completePractice();
             return;
         }
@@ -622,8 +628,10 @@ function initializeTypingPracticeNew() {
         
         // 최종 통계
         const elapsedMinutes = (Date.now() - typingPracticeState.startTime) / 60000;
-        const finalWpm = Math.round(typingPracticeState.currentText.length / elapsedMinutes);
-        const finalAccuracy = Math.round(((typingPracticeState.currentText.length - typingPracticeState.errorCount) / typingPracticeState.currentText.length) * 100);
+        const charactersTyped = typingPracticeState.currentIndex;
+        const finalWpm = elapsedMinutes > 0 ? Math.round(charactersTyped / elapsedMinutes) : 0;
+        const totalCharacters = charactersTyped + typingPracticeState.errorCount;
+        const finalAccuracy = totalCharacters > 0 ? Math.round((charactersTyped / totalCharacters) * 100) : 100;
         
         // 이전 최고 기록 확인
         const previousBest = practiceRecords.getBestWPM(typingPracticeState.currentMode);
@@ -650,6 +658,12 @@ function initializeTypingPracticeNew() {
             message = '잘하고 있습니다! 조금만 더 연습하면 더 빨라질 거예요!';
         } else {
             message = '꾸준히 연습하면 실력이 향상될 거예요! 화이팅!';
+        }
+        
+        // 5분 완주 메시지 추가
+        const totalElapsedMinutes = (Date.now() - typingPracticeState.startTime) / 60000;
+        if (totalElapsedMinutes >= 4.9) { // 약 5분
+            message += '\n\n🎯 5분 동안 집중해서 연습하셨네요! 수고하셨습니다!';
         }
         
         // 신기록 달성 시 추가 메시지
