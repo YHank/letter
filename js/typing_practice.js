@@ -630,42 +630,22 @@ function initializeTypingPracticeNew() {
     
     // 타이머 업데이트
     function updateTimer() {
-        if (!typingPracticeState.startTime) return;
+        if (!typingPracticeState || !typingPracticeState.endTime) return;
         
         const now = Date.now();
-        const elapsed = now - typingPracticeState.startTime;
         const remaining = typingPracticeState.endTime - now;
         
-        // 남은 시간이 0 이하면 연습 종료
-        if (remaining <= 0 && typingPracticeState.isTyping) {
-            // 타이머가 종료되었을 때 입력 비활성화
-            const currentMode = typingPracticeState.currentMode;
-            if (currentMode) {
-                const input = document.getElementById(`${currentMode}-typing-input`);
-                if (input) input.disabled = true;
-            }
+        if (remaining <= 0) {
             completePractice();
             return;
         }
         
-        // 경과 시간 표시
-        const elapsedMinutes = Math.floor(elapsed / 60000);
-        const elapsedSeconds = Math.floor((elapsed % 60000) / 1000);
-        const timeEl = document.getElementById('time');
-        if (timeEl) timeEl.textContent = `${elapsedMinutes}:${elapsedSeconds.toString().padStart(2, '0')}`;
-        
-        // 남은 시간 표시
         const remainingMinutes = Math.floor(remaining / 60000);
         const remainingSeconds = Math.floor((remaining % 60000) / 1000);
         
-        // 시간 진행률 계산 및 프로그레스 바 업데이트
-        const totalDuration = typingConfig.defaultDuration;
-        const progressPercentage = ((totalDuration - remaining) / totalDuration) * 100;
-        const timeProgressBar = document.getElementById('time-progress-bar');
-        if (timeProgressBar) {
-            timeProgressBar.style.width = (100 - progressPercentage) + '%';
-        }
         const remainingEl = document.getElementById('remaining-time');
+        const progressBar = document.getElementById('time-progress-bar');
+        
         if (remainingEl) {
             remainingEl.textContent = `남은 시간: ${remainingMinutes}:${remainingSeconds.toString().padStart(2, '0')}`;
             // 1분 미만일 때 빨간색으로 표시
@@ -674,6 +654,11 @@ function initializeTypingPracticeNew() {
             } else {
                 remainingEl.classList.remove('text-danger');
             }
+        }
+        
+        if (progressBar) {
+            const progress = (remaining / typingConfig.defaultDuration) * 100;
+            progressBar.style.width = `${progress}%`;
         }
     }
     
