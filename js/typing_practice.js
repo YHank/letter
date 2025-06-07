@@ -944,8 +944,7 @@ function initializeTypingPractice() {
 // 연습 데이터 관리 (코드 중복 제거를 위해 외부로 분리)
 const practiceTexts = {
     korean: {
-        free:
-        sentences: [
+        free: [
             '오늘 하루도 열심히 타자 연습을 하며 실력을 향상시켜 보세요.',
             '꾸준한 연습이 타자 실력 향상의 지름길입니다.',
             '정확한 자세와 손가락 위치가 빠른 타자의 기본입니다.',
