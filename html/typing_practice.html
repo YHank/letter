@@ -71,7 +71,7 @@
                                 <div id="free-typing-text" class="fs-4 mb-4 p-3 bg-light rounded">
                                     <span id="free-typed-text" class="text-success"></span><span id="free-current-char" class="bg-primary text-white"></span><span id="free-remaining-text"></span>
                                 </div>
-                                <input type="text" id="free-typing-input" class="form-control form-control-lg" placeholder="위 텍스트를 입력하세요..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                                <input type="text" id="free-typing-input" class="form-control form-control-lg" placeholder="위 텍스트를 입력하세요..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
                                 <div class="mt-3">
                                     <button id="reset-free-practice" class="btn btn-secondary">다시하기</button>
                                 </div>
@@ -107,7 +107,7 @@
                                 <span id="beginner-typed-text" class="text-success"></span><span id="beginner-current-char" class="bg-primary text-white"></span><span id="beginner-remaining-text"></span>
                             </div>
                             
-                            <input type="text" id="beginner-typing-input" class="form-control form-control-lg" placeholder="키보드를 보며 입력하세요..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                            <input type="text" id="beginner-typing-input" class="form-control form-control-lg" placeholder="키보드를 보며 입력하세요..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
                             
                             <div class="mt-3">
                                 <button id="start-beginner-practice" class="btn btn-success">시작</button>
@@ -137,7 +137,7 @@
                                 <span id="special-typed-text" class="text-success"></span><span id="special-current-char" class="bg-primary text-white"></span><span id="special-remaining-text"></span>
                             </div>
                             
-                            <input type="text" id="special-typing-input" class="form-control form-control-lg" placeholder="위 텍스트를 입력하세요..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                            <input type="text" id="special-typing-input" class="form-control form-control-lg" placeholder="위 텍스트를 입력하세요..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
                             
                             <div class="mt-3">
                                 <button id="start-special-practice" class="btn btn-warning">시작</button>
@@ -184,7 +184,7 @@
                             </div>
                             
                             <div class="mb-3">
-                                <input type="text" id="standard-typing-input" class="form-control form-control-lg" placeholder="위 텍스트를 입력하세요..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                                <input type="text" id="standard-typing-input" class="form-control form-control-lg" placeholder="위 텍스트를 입력하세요..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
                             </div>
                             
                             <div class="d-flex justify-content-between">
@@ -198,39 +198,47 @@
                 
                 <!-- 공통 통계 영역 -->
                 <div class="row mt-4" id="stats-area" style="display: none;">
-                    <div class="col-md-3">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <h5 class="card-title">타수</h5>
-                                <h2 id="wpm" class="text-primary">0</h2>
-                                <small>타/분</small>
+                    <div class="col-6 col-md-3 mb-3">
+                        <div class="card text-center h-100 border-primary">
+                            <div class="card-body p-3">
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    <i class="fas fa-tachometer-alt"></i> 타수
+                                </h6>
+                                <h2 id="wpm" class="text-primary mb-0">0</h2>
+                                <small id="wpm-unit" class="text-muted">타/분</small>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <h5 class="card-title">정확도</h5>
-                                <h2 id="accuracy" class="text-success">100%</h2>
-                                <small>정확도</small>
+                    <div class="col-6 col-md-3 mb-3">
+                        <div class="card text-center h-100 border-success">
+                            <div class="card-body p-3">
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    <i class="fas fa-bullseye"></i> 정확도
+                                </h6>
+                                <h2 id="accuracy" class="text-success mb-0">100%</h2>
+                                <small class="text-muted">정확도</small>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <h5 class="card-title">시간</h5>
-                                <h2 id="time" class="text-info">0:00</h2>
-                                <small>경과 시간</small>
+                    <div class="col-6 col-md-3 mb-3">
+                        <div class="card text-center h-100 border-info">
+                            <div class="card-body p-3">
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    <i class="fas fa-clock"></i> 시간
+                                </h6>
+                                <h2 id="time" class="text-info mb-0">0:00</h2>
+                                <small class="text-muted">경과 시간</small>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <h5 class="card-title">진행률</h5>
-                                <h2 id="progress" class="text-warning">0%</h2>
-                                <small>완료</small>
+                    <div class="col-6 col-md-3 mb-3">
+                        <div class="card text-center h-100 border-warning">
+                            <div class="card-body p-3">
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    <i class="fas fa-tasks"></i> 진행률
+                                </h6>
+                                <h2 id="progress" class="text-warning mb-0">0%</h2>
+                                <small class="text-muted">완료</small>
                             </div>
                         </div>
                     </div>
@@ -239,9 +247,14 @@
                 <!-- 남은 시간 표시 영역 -->
                 <div class="row mt-3">
                     <div class="col-12">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <h4 id="remaining-time" class="mb-0">남은 시간: 5:00</h4>
+                        <div class="card text-center border-danger">
+                            <div class="card-body py-3">
+                                <h5 id="remaining-time" class="mb-0 text-danger">
+                                    <i class="fas fa-hourglass-half"></i> 남은 시간: 5:00
+                                </h5>
+                                <div class="progress mt-2" style="height: 5px;">
+                                    <div id="time-progress-bar" class="progress-bar bg-danger" role="progressbar" style="width: 100%"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -315,6 +328,53 @@
 
 .practice-mode-card:hover {
     transform: translateY(-5px);
+}
+
+/* 모바일 반응형 개선 */
+@media (max-width: 768px) {
+    .practice-mode-card {
+        margin-bottom: 1rem;
+    }
+    
+    .practice-mode-card .card-body {
+        padding: 1rem;
+    }
+    
+    .practice-mode-card h5 {
+        font-size: 1.1rem;
+    }
+    
+    .practice-mode-card p {
+        font-size: 0.9rem;
+    }
+    
+    #letter_count, 
+    #free-typing-text, 
+    #beginner-typing-text, 
+    #special-typing-text, 
+    #standard-typing-text {
+        font-size: 1rem !important;
+        padding: 1rem !important;
+    }
+    
+    .keyboard-container {
+        overflow-x: auto;
+        padding: 10px;
+    }
+    
+    .key {
+        width: 35px;
+        height: 35px;
+        font-size: 0.8rem;
+    }
+    
+    .key.space {
+        width: 150px;
+    }
+    
+    .key.enter, .key.shift, .key.backspace, .key.tab {
+        width: 60px;
+    }
 }
 
 .keyboard-container {

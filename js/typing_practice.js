@@ -596,14 +596,33 @@ function initializeTypingPracticeNew() {
         try {
             const elapsedMinutes = (Date.now() - typingPracticeState.startTime) / 60000;
             const charactersTyped = typingPracticeState.currentIndex;
-            const wpm = elapsedMinutes > 0 ? Math.round(charactersTyped / elapsedMinutes) : 0;
+            
+            // 언어별 타수 계산 로직 개선
+            let wpm = 0;
+            if (elapsedMinutes > 0) {
+                if (typingPracticeState.currentLang === 'korean') {
+                    // 한글 타수 계산: 완성된 글자 수 * 2.5 (표준 한글 타수 계산법)
+                    wpm = Math.round((charactersTyped * 2.5) / elapsedMinutes);
+                } else {
+                    // 영어 타수 계산: CPM / 5 (표준 영어 타수 계산법)
+                    wpm = Math.round(charactersTyped / elapsedMinutes);
+                }
+            }
+            
             const totalAttempts = charactersTyped + typingPracticeState.errorCount;
             const accuracy = totalAttempts > 0 ? Math.round((charactersTyped / totalAttempts) * 100) : 100;
             
             const wpmEl = document.getElementById('wpm');
             const accuracyEl = document.getElementById('accuracy');
+            const wpmUnitEl = document.getElementById('wpm-unit');
+            
             if (wpmEl) wpmEl.textContent = wpm;
             if (accuracyEl) accuracyEl.textContent = accuracy + '%';
+            
+            // 언어별 단위 표시
+            if (wpmUnitEl) {
+                wpmUnitEl.textContent = typingPracticeState.currentLang === 'korean' ? '타/분' : 'WPM';
+            }
         } catch (error) {
             console.error('통계 업데이트 중 오류:', error);
         }
@@ -638,6 +657,14 @@ function initializeTypingPracticeNew() {
         // 남은 시간 표시
         const remainingMinutes = Math.floor(remaining / 60000);
         const remainingSeconds = Math.floor((remaining % 60000) / 1000);
+        
+        // 시간 진행률 계산 및 프로그레스 바 업데이트
+        const totalDuration = typingConfig.defaultDuration;
+        const progressPercentage = ((totalDuration - remaining) / totalDuration) * 100;
+        const timeProgressBar = document.getElementById('time-progress-bar');
+        if (timeProgressBar) {
+            timeProgressBar.style.width = (100 - progressPercentage) + '%';
+        }
         const remainingEl = document.getElementById('remaining-time');
         if (remainingEl) {
             remainingEl.textContent = `남은 시간: ${remainingMinutes}:${remainingSeconds.toString().padStart(2, '0')}`;
@@ -680,16 +707,37 @@ function initializeTypingPracticeNew() {
         if (finalAccuracyEl) finalAccuracyEl.textContent = finalAccuracy + '%';
         
         let message = '';
-        if (finalWpm >= 300) {
-            message = '놀라운 속도입니다! 전문가 수준이시네요!';
-        } else if (finalWpm >= 200) {
-            message = '매우 훌륭합니다! 상위 수준의 타자 실력입니다!';
-        } else if (finalWpm >= 150) {
-            message = '좋습니다! 평균 이상의 실력입니다!';
-        } else if (finalWpm >= 100) {
-            message = '잘하고 있습니다! 조금만 더 연습하면 더 빨라질 거예요!';
+        // 언어별 타수 기준 조정
+        if (typingPracticeState.currentLang === 'korean') {
+            // 한글 타수 기준 (일반적으로 더 높음)
+            if (finalWpm >= 500) {
+                message = '놀라운 속도입니다! 최상위 전문가 수준이시네요!';
+            } else if (finalWpm >= 400) {
+                message = '매우 훌륭합니다! 전문가 수준의 타자 실력입니다!';
+            } else if (finalWpm >= 300) {
+                message = '우수합니다! 상위 수준의 실력을 보유하고 계십니다!';
+            } else if (finalWpm >= 200) {
+                message = '좋습니다! 평균 이상의 실력입니다!';
+            } else if (finalWpm >= 150) {
+                message = '잘하고 있습니다! 조금만 더 연습하면 더 빨라질 거예요!';
+            } else {
+                message = '꾸준히 연습하면 실력이 향상될 거예요! 화이팅!';
+            }
         } else {
-            message = '꾸준히 연습하면 실력이 향상될 거예요! 화이팅!';
+            // 영어 타수 기준
+            if (finalWpm >= 100) {
+                message = 'Amazing speed! You are at expert level!';
+            } else if (finalWpm >= 80) {
+                message = 'Excellent! Professional typing skills!';
+            } else if (finalWpm >= 60) {
+                message = 'Great job! Above average performance!';
+            } else if (finalWpm >= 40) {
+                message = 'Good work! Keep practicing to improve!';
+            } else if (finalWpm >= 20) {
+                message = 'Nice start! Your skills will improve with practice!';
+            } else {
+                message = 'Keep practicing! You will get better!';
+            }
         }
         
         // 5분 완주 메시지 추가
