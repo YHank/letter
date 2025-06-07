@@ -56,12 +56,22 @@ function cleanupTypingPractice() {
         }
         
         // 이벤트 리스너 정리
-        typingPracticeState.eventListeners.forEach((info) => {
-            if (info.element && info.handler) {
-                info.element.removeEventListener(info.event, info.handler);
+        if (typingPracticeState.eventListeners) {
+            typingPracticeState.eventListeners.forEach((info) => {
+                if (info.element && info.handler) {
+                    info.element.removeEventListener(info.event, info.handler);
+                }
+            });
+            typingPracticeState.eventListeners.clear();
+        }
+        
+        // 모든 버튼의 이벤트 리스너를 강제로 제거 (클론으로)
+        document.querySelectorAll('.select-mode-btn').forEach(btn => {
+            const newBtn = btn.cloneNode(true);
+            if (btn.parentNode) {
+                btn.parentNode.replaceChild(newBtn, btn);
             }
         });
-        typingPracticeState.eventListeners.clear();
         
         // 상태 초기화
         typingPracticeState = null;
@@ -72,10 +82,10 @@ function cleanupTypingPractice() {
 function initializeTypingPracticeNew() {
     console.log('새로운 타자 연습 시스템 초기화 중...');
     
-    // 이미 초기화되었으면 리턴
+    // 이미 초기화되었으면 기존 상태 정리 후 재초기화
     if (typingPracticeState && typingPracticeState.initialized) {
-        console.log('타자 연습 시스템이 이미 초기화되었습니다.');
-        return;
+        console.log('타자 연습 시스템 재초기화 중...');
+        cleanupTypingPractice();
     }
     
     // 기존 상태 정리
@@ -117,9 +127,12 @@ function initializeTypingPracticeNew() {
         if (!element) return;
         
         // 기존 리스너가 있으면 제거
-        const existingHandler = typingPracticeState.eventListeners.get(key);
-        if (existingHandler) {
-            removeEventListener(element, event, existingHandler.handler);
+        if (typingPracticeState.eventListeners.has(key)) {
+            const existingHandler = typingPracticeState.eventListeners.get(key);
+            if (existingHandler && existingHandler.element && existingHandler.handler) {
+                existingHandler.element.removeEventListener(existingHandler.event, existingHandler.handler);
+            }
+            typingPracticeState.eventListeners.delete(key);
         }
         
         // 새 리스너 추가
@@ -127,16 +140,33 @@ function initializeTypingPracticeNew() {
         typingPracticeState.eventListeners.set(key, { element, event, handler });
     }
     
-    // 모드 선택
-    document.querySelectorAll('.select-mode-btn').forEach((btn, index) => {
-        const handler = function(e) {
-            e.preventDefault();
-            const modeCard = this.closest('.practice-mode-card');
-            const mode = modeCard.dataset.practiceMode;
-            selectMode(mode);
+    // 모드 선택 - 이벤트 위임 방식으로 변경 (강화된 버전)
+    const versionSelectorElement = document.getElementById('version-selector');
+    if (versionSelectorElement) {
+        // 모든 기존 클릭 이벤트 리스너 강제 제거
+        const clonedElement = versionSelectorElement.cloneNode(true);
+        versionSelectorElement.parentNode.replaceChild(clonedElement, versionSelectorElement);
+        
+        const delegationHandler = function(e) {
+            const btn = e.target.closest('.select-mode-btn');
+            if (btn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const modeCard = btn.closest('.practice-mode-card');
+                const mode = modeCard.dataset.practiceMode;
+                console.log('모드 선택:', mode); // 디버그용
+                selectMode(mode);
+            }
         };
-        addEventListenerOnce(btn, 'click', handler, `mode-select-${index}`);
-    });
+        
+        // 새로 교체된 요소에 이벤트 리스너 추가
+        clonedElement.addEventListener('click', delegationHandler);
+        typingPracticeState.eventListeners.set('mode-select-delegation', { 
+            element: clonedElement, 
+            event: 'click', 
+            handler: delegationHandler 
+        });
+    }
     
     // 메뉴로 돌아가기
     if (backToMenuBtn) {
@@ -233,16 +263,23 @@ function initializeTypingPracticeNew() {
         const typingInput = document.getElementById('free-typing-input');
         const statsArea = document.getElementById('stats-area');
         
-        // 요소 존재 확인
-        if (!startBtn || !resetBtn || !typingArea || !typingInput) {
+        // 텍스트 표시 영역 초기화
+        clearAllDisplayTexts();
+        
+        // 필수 요소만 확인 (start 버튼은 없을 수 있음)
+        if (!resetBtn || !typingArea || !typingInput) {
             console.error('자유 타자 연습 요소를 찾을 수 없습니다.');
             return;
         }
         
+        // 자유 타자 연습에서는 바로 입력 가능하도록 초기화
+        typingInput.disabled = false;
+        typingInput.focus();
+        
         const startHandler = function() {
             // 언어에 따라 랜덤으로 문장 선택
             const lang = typingPracticeState.currentLang;
-            const freeTexts = practiceTexts[lang].free;
+            const freeTexts = window.practiceTexts[lang].free;
             const text = freeTexts[Math.floor(Math.random() * freeTexts.length)];
             
             typingPracticeState.currentText = text;
@@ -267,16 +304,26 @@ function initializeTypingPracticeNew() {
             if (typingPracticeState.timerInterval) {
                 clearInterval(typingPracticeState.timerInterval);
             }
-            typingPracticeState.timerInterval = setInterval(updateTimer, 100);
+            typingPracticeState.timerInterval = setInterval(function() {
+                updateTimer();
+                updateStats();
+            }, 100);
         };
         
         addEventListenerOnce(startBtn, 'click', startHandler, 'free-start');
         
         const resetHandler = function() {
             resetPractice('free');
-            startBtn.style.display = 'inline-block';
+            if (startBtn) startBtn.style.display = 'inline-block';
             typingArea.style.display = 'none';
             if (statsArea) statsArea.style.display = 'none';
+            
+            // 자유 타자 연습에서는 리셋 후에도 입력 가능해야 함
+            if (typingInput) {
+                typingInput.value = '';
+                typingInput.disabled = false;
+                typingInput.focus();
+            }
         };
         
         addEventListenerOnce(resetBtn, 'click', resetHandler, 'free-reset');
@@ -295,6 +342,9 @@ function initializeTypingPracticeNew() {
         const resetBtn = document.getElementById('reset-beginner-practice');
         const typingInput = document.getElementById('beginner-typing-input');
         
+        // 텍스트 표시 영역 초기화
+        clearAllDisplayTexts();
+        
         // 타입 선택
         document.querySelectorAll('[data-beginner-type]').forEach((btn, index) => {
             const handler = function() {
@@ -302,6 +352,8 @@ function initializeTypingPracticeNew() {
                     document.querySelectorAll('[data-beginner-type]').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     currentBeginnerType = this.dataset.beginnerType;
+                    // 타입 변경 시 키보드 재생성
+                    createKeyboardVisualization();
                 }
             };
             addEventListenerOnce(btn, 'click', handler, `beginner-type-${index}`);
@@ -312,7 +364,7 @@ function initializeTypingPracticeNew() {
         
         const beginnerStartHandler = function() {
             const lang = typingPracticeState.currentLang;
-            const texts = practiceTexts[lang].beginner[currentBeginnerType];
+            const texts = window.practiceTexts[lang].beginner[currentBeginnerType];
             typingPracticeState.currentText = texts[Math.floor(Math.random() * texts.length)];
             typingPracticeState.currentIndex = 0;
             typingPracticeState.errorCount = 0;
@@ -328,7 +380,8 @@ function initializeTypingPracticeNew() {
             typingInput.disabled = false;
             typingInput.focus();
             
-            // 현재 타이핑해야 할 키 강조
+            // 키보드 업데이트 및 현재 타이핑해야 할 키 강조
+            updateKeyboardForCurrentText();
             highlightKey(typingPracticeState.currentText[0]);
             
             // 개인 기록 표시
@@ -338,7 +391,10 @@ function initializeTypingPracticeNew() {
             if (typingPracticeState.timerInterval) {
                 clearInterval(typingPracticeState.timerInterval);
             }
-            typingPracticeState.timerInterval = setInterval(updateTimer, 100);
+            typingPracticeState.timerInterval = setInterval(function() {
+                updateTimer();
+                updateStats();
+            }, 100);
         };
         
         addEventListenerOnce(startBtn, 'click', beginnerStartHandler, 'beginner-start');
@@ -348,20 +404,73 @@ function initializeTypingPracticeNew() {
             startBtn.style.display = 'inline-block';
             statsArea.style.display = 'none';
             clearKeyHighlight();
+            typingInput.value = '';
+            typingInput.disabled = true;
         };
         
         addEventListenerOnce(resetBtn, 'click', beginnerResetHandler, 'beginner-reset');
         
-        const beginnerInputHandler = function() {
-            handleTyping('beginner', this.value);
-            if (typingPracticeState.currentIndex < typingPracticeState.currentText.length) {
-                highlightKey(typingPracticeState.currentText[typingPracticeState.currentIndex]);
-            } else {
-                clearKeyHighlight();
+        // 입력 처리 (한 글자씩)
+        const beginnerInputHandler = function(e) {
+            if (!typingPracticeState.isTyping) return;
+            
+            const inputValue = this.value;
+            const currentChar = typingPracticeState.currentText[typingPracticeState.currentIndex];
+            
+            // 입력된 마지막 문자만 확인
+            if (inputValue.length > 0) {
+                const lastChar = inputValue.slice(-1);
+                
+                if (lastChar === currentChar) {
+                    // 올바른 입력
+                    typingPracticeState.currentIndex++;
+                    updateDisplay('beginner');
+                    updateStats();
+                    
+                    // 입력창 비우기
+                    this.value = '';
+                    
+                    if (typingPracticeState.currentIndex < typingPracticeState.currentText.length) {
+                        highlightKey(typingPracticeState.currentText[typingPracticeState.currentIndex]);
+                    } else {
+                        // 문장 완료 - 다음 문장으로
+                        clearKeyHighlight();
+                        const beginnerType = document.querySelector('[data-beginner-type].active')?.dataset.beginnerType || 'home';
+                        const lang = typingPracticeState.currentLang;
+                        const beginnerTexts = window.practiceTexts[lang].beginner[beginnerType];
+                        const nextText = beginnerTexts[Math.floor(Math.random() * beginnerTexts.length)];
+                        
+                        typingPracticeState.currentText = nextText;
+                        typingPracticeState.currentIndex = 0;
+                        updateDisplay('beginner');
+                        updateKeyboardForCurrentText(); // 키보드 업데이트
+                        highlightKey(typingPracticeState.currentText[0]);
+                    }
+                } else {
+                    // 잘못된 입력
+                    typingPracticeState.errorCount++;
+                    this.classList.add('is-invalid');
+                    this.value = '';
+                    setTimeout(() => {
+                        this.classList.remove('is-invalid');
+                    }, 200);
+                }
             }
         };
         
         addEventListenerOnce(typingInput, 'input', beginnerInputHandler, 'beginner-input');
+        
+        // 키 다운 이벤트로 특수키 처리
+        const beginnerKeydownHandler = function(e) {
+            if (!typingPracticeState.isTyping) return;
+            
+            // 백스페이스, 엔터, 탭 등 특수키 방지
+            if (['Backspace', 'Enter', 'Tab', 'Delete'].includes(e.key)) {
+                e.preventDefault();
+            }
+        };
+        
+        addEventListenerOnce(typingInput, 'keydown', beginnerKeydownHandler, 'beginner-keydown');
     }
     
     // 특수 타자 연습
@@ -371,6 +480,9 @@ function initializeTypingPracticeNew() {
         const resetBtn = document.getElementById('reset-special-practice');
         const typingInput = document.getElementById('special-typing-input');
         
+        // 텍스트 표시 영역 초기화
+        clearAllDisplayTexts();
+        
         // 타입 선택
         document.querySelectorAll('[data-special-type]').forEach((btn, index) => {
             const handler = function() {
@@ -378,14 +490,19 @@ function initializeTypingPracticeNew() {
                     document.querySelectorAll('[data-special-type]').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     currentSpecialType = this.dataset.specialType;
+                    // 타입 변경 시 키보드 재생성
+                    createSpecialKeyboardVisualization(currentSpecialType);
                 }
             };
             addEventListenerOnce(btn, 'click', handler, `special-type-${index}`);
         });
         
+        // 특수 키보드 시각화 생성
+        createSpecialKeyboardVisualization(currentSpecialType);
+        
         const specialStartHandler = function() {
             const lang = typingPracticeState.currentLang;
-            const texts = practiceTexts[lang].special[currentSpecialType];
+            const texts = window.practiceTexts[lang].special[currentSpecialType];
             typingPracticeState.currentText = texts[Math.floor(Math.random() * texts.length)];
             typingPracticeState.currentIndex = 0;
             typingPracticeState.errorCount = 0;
@@ -401,6 +518,9 @@ function initializeTypingPracticeNew() {
             typingInput.disabled = false;
             typingInput.focus();
             
+            // 현재 타이핑해야 할 키 강조
+            highlightSpecialKey(typingPracticeState.currentText[0]);
+            
             // 개인 기록 표시
             showPersonalRecords('special');
             
@@ -408,7 +528,10 @@ function initializeTypingPracticeNew() {
             if (typingPracticeState.timerInterval) {
                 clearInterval(typingPracticeState.timerInterval);
             }
-            typingPracticeState.timerInterval = setInterval(updateTimer, 100);
+            typingPracticeState.timerInterval = setInterval(function() {
+                updateTimer();
+                updateStats();
+            }, 100);
         };
         
         addEventListenerOnce(startBtn, 'click', specialStartHandler, 'special-start');
@@ -417,12 +540,18 @@ function initializeTypingPracticeNew() {
             resetPractice('special');
             startBtn.style.display = 'inline-block';
             statsArea.style.display = 'none';
+            clearSpecialKeyHighlight();
         };
         
         addEventListenerOnce(resetBtn, 'click', specialResetHandler, 'special-reset');
         
         const specialInputHandler = function() {
             handleTyping('special', this.value);
+            if (typingPracticeState.currentIndex < typingPracticeState.currentText.length) {
+                highlightSpecialKey(typingPracticeState.currentText[typingPracticeState.currentIndex]);
+            } else {
+                clearSpecialKeyHighlight();
+            }
         };
         
         addEventListenerOnce(typingInput, 'input', specialInputHandler, 'special-input');
@@ -432,6 +561,9 @@ function initializeTypingPracticeNew() {
     function loadStandardPractice() {
         let currentStandardMode = 'words';
         let currentStandardLevel = 'easy';
+        
+        // 텍스트 표시 영역 초기화
+        clearAllDisplayTexts();
         
         // 모드 선택
         document.querySelectorAll('[data-standard-mode]').forEach((btn, index) => {
@@ -494,7 +626,10 @@ function initializeTypingPracticeNew() {
             if (typingPracticeState.timerInterval) {
                 clearInterval(typingPracticeState.timerInterval);
             }
-            typingPracticeState.timerInterval = setInterval(updateTimer, 100);
+            typingPracticeState.timerInterval = setInterval(function() {
+                updateTimer();
+                updateStats();
+            }, 100);
         };
         
         addEventListenerOnce(startBtn, 'click', standardStartHandler, 'standard-start');
@@ -550,15 +685,62 @@ function initializeTypingPracticeNew() {
             updateDisplay(mode);
             updateStats();
             
-            // 완료 체크
+            // 완료 체크 - 문장이 완료되면 통계 일시 정지하고 다음 문장 준비
             if (typingPracticeState.currentIndex >= typingPracticeState.currentText.length) {
-                completePractice();
-                if (mode === 'standard') {
-                    const input = document.getElementById('standard-typing-input');
-                    const nextBtn = document.getElementById('standard-next-btn');
-                    if (input) input.disabled = true;
-                    if (nextBtn) nextBtn.style.display = 'inline-block';
-                }
+                // 문장 완료 시 타이핑 상태를 일시 정지로 설정
+                typingPracticeState.isTyping = false;
+                
+                // 현재 통계를 보존하고 사용자가 확인할 수 있도록 3초 대기
+                setTimeout(() => {
+                    // 다음 문장 준비
+                    const lang = typingPracticeState.currentLang;
+                    let nextText;
+                    
+                    switch(mode) {
+                        case 'free':
+                            const freeTexts = window.practiceTexts[lang].free;
+                            nextText = freeTexts[Math.floor(Math.random() * freeTexts.length)];
+                            break;
+                        case 'beginner':
+                            const beginnerType = document.querySelector('[data-beginner-type].active')?.dataset.beginnerType || 'home';
+                            const beginnerTexts = practiceTexts[lang].beginner[beginnerType];
+                            nextText = beginnerTexts[Math.floor(Math.random() * beginnerTexts.length)];
+                            break;
+                        case 'special':
+                            const specialType = document.querySelector('[data-special-type].active')?.dataset.specialType || 'numbers';
+                            const specialTexts = practiceTexts[lang].special[specialType];
+                            nextText = specialTexts[Math.floor(Math.random() * specialTexts.length)];
+                            break;
+                        case 'standard':
+                            const standardMode = document.querySelector('[data-standard-mode].active')?.dataset.standardMode || 'words';
+                            const standardLevel = document.querySelector('[data-standard-level].active')?.dataset.standardLevel || 'easy';
+                            const standardTexts = practiceTexts[lang].standard[standardMode][standardLevel];
+                            if (Array.isArray(standardTexts)) {
+                                nextText = standardTexts[Math.floor(Math.random() * standardTexts.length)];
+                            } else {
+                                nextText = standardTexts;
+                            }
+                            break;
+                    }
+                    
+                    if (nextText) {
+                        // 다음 문장으로 전환하고 타이핑 재개
+                        typingPracticeState.currentText = nextText;
+                        typingPracticeState.currentIndex = 0;
+                        typingPracticeState.isTyping = true;
+                        
+                        // 새 문장 시작 시간 갱신 (이전 통계는 누적됨)
+                        typingPracticeState.startTime = Date.now();
+                        typingPracticeState.errorCount = 0; // 에러 카운트는 리셋
+                        
+                        const input = document.getElementById(`${mode}-typing-input`);
+                        if (input) {
+                            input.value = '';
+                            input.focus();
+                        }
+                        updateDisplay(mode);
+                    }
+                }, 3000); // 3초 대기
             }
         } else if (typed.length <= expected.length) {
             // 잘못 입력한 경우에만 에러로 처리
@@ -594,8 +776,19 @@ function initializeTypingPracticeNew() {
         if (!typingPracticeState || !typingPracticeState.startTime) return;
         
         try {
-            const elapsedMinutes = (Date.now() - typingPracticeState.startTime) / 60000;
+            const elapsedTime = Date.now() - typingPracticeState.startTime;
+            const elapsedMinutes = elapsedTime / 60000;
             const charactersTyped = typingPracticeState.currentIndex;
+            
+            // 경과 시간 업데이트
+            const elapsedSeconds = Math.floor(elapsedTime / 1000);
+            const minutes = Math.floor(elapsedSeconds / 60);
+            const seconds = elapsedSeconds % 60;
+            
+            const timeEl = document.getElementById('time');
+            if (timeEl) {
+                timeEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
             
             // 언어별 타수 계산 로직 개선
             let wpm = 0;
@@ -847,33 +1040,90 @@ function initializeTypingPracticeNew() {
         });
         typingPracticeState.currentMode = null;
         resetStats();
+        clearAllDisplayTexts();
         
         // 개인 기록 숨기기
         const recordsArea = document.getElementById('personal-records');
         if (recordsArea) recordsArea.style.display = 'none';
     }
     
-    // 키보드 시각화 생성
+    // 모든 텍스트 표시 영역 초기화
+    function clearAllDisplayTexts() {
+        const modes = ['free', 'beginner', 'special', 'standard'];
+        modes.forEach(mode => {
+            const typedText = document.getElementById(`${mode}-typed-text`);
+            const currentChar = document.getElementById(`${mode}-current-char`);
+            const remainingText = document.getElementById(`${mode}-remaining-text`);
+            
+            if (typedText) typedText.textContent = '';
+            if (currentChar) currentChar.textContent = '';
+            if (remainingText) remainingText.textContent = '';
+        });
+    }
+    
+    // contenteditable 입력창 초기화
+    function clearContentEditableInput(element) {
+        if (element) {
+            element.textContent = '';
+            element.innerHTML = '';
+        }
+    }
+    
+    // contenteditable에서 커서를 끝으로 이동
+    function setCaretToEnd(element) {
+        const range = document.createRange();
+        const selection = window.getSelection();
+        range.selectNodeContents(element);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+    
+        // 키보드 시각화 생성
     function createKeyboardVisualization() {
         const container = document.querySelector('.keyboard-container');
         if (!container) return;
         
         const lang = typingPracticeState.currentLang;
+        const beginnerType = document.querySelector('[data-beginner-type].active')?.dataset.beginnerType || 'home';
         
         const keyboards = {
-            korean: [
-                ['ㅂ', 'ㅈ', 'ㄷ', 'ㄱ', 'ㅅ', 'ㅛ', 'ㅕ', 'ㅑ', 'ㅐ', 'ㅔ'],
-                ['ㅁ', 'ㄴ', 'ㅇ', 'ㄹ', 'ㅎ', 'ㅗ', 'ㅓ', 'ㅏ', 'ㅣ'],
-                ['ㅋ', 'ㅌ', 'ㅊ', 'ㅍ', 'ㅠ', 'ㅜ', 'ㅡ']
-            ],
-            english: [
-                ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
-                ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-                ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
-            ]
+            korean: {
+                home: [
+                    ['ㅂ', 'ㅈ', 'ㄷ', 'ㄱ', 'ㅅ', 'ㅛ', 'ㅕ', 'ㅑ', 'ㅐ', 'ㅔ'],
+                    ['ㅁ', 'ㄴ', 'ㅇ', 'ㄹ', 'ㅎ', 'ㅗ', 'ㅓ', 'ㅏ', 'ㅣ'],
+                    ['ㅋ', 'ㅌ', 'ㅊ', 'ㅍ', 'ㅠ', 'ㅜ', 'ㅡ']
+                ],
+                consonant: [
+                    ['ㅂ', 'ㅈ', 'ㄷ', 'ㄱ', 'ㅅ'],
+                    ['ㅁ', 'ㄴ', 'ㅇ', 'ㄹ', 'ㅎ'],
+                    ['ㅋ', 'ㅌ', 'ㅊ', 'ㅍ'],
+                    ['ㄲ', 'ㄸ', 'ㅃ', 'ㅆ', 'ㅉ']
+                ],
+                vowel: [
+                    ['ㅛ', 'ㅕ', 'ㅑ', 'ㅐ', 'ㅔ'],
+                    ['ㅗ', 'ㅓ', 'ㅏ', 'ㅣ'],
+                    ['ㅠ', 'ㅜ', 'ㅡ']
+                ]
+            },
+            english: {
+                home: [
+                    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+                    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+                    ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
+                ],
+                consonant: [
+                    ['Q', 'W', 'R', 'T', 'Y', 'P'],
+                    ['S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+                    ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
+                ],
+                vowel: [
+                    ['A', 'E', 'I', 'O', 'U']
+                ]
+            }
         };
         
-        const keyboard = keyboards[lang];
+        const keyboard = keyboards[lang][beginnerType] || keyboards[lang]['home'];
         
         container.innerHTML = '';
         
@@ -886,21 +1136,118 @@ function initializeTypingPracticeNew() {
                 keyDiv.className = 'key';
                 keyDiv.textContent = key;
                 keyDiv.dataset.key = key;
+                keyDiv.dataset.originalKey = key; // 원본 키 저장
                 rowDiv.appendChild(keyDiv);
             });
             
             container.appendChild(rowDiv);
         });
         
-        // 스페이스바 추가
-        const spaceRow = document.createElement('div');
-        spaceRow.className = 'keyboard-row';
-        const spaceKey = document.createElement('div');
-        spaceKey.className = 'key space';
-        spaceKey.textContent = 'SPACE';
-        spaceKey.dataset.key = ' ';
-        spaceRow.appendChild(spaceKey);
-        container.appendChild(spaceRow);
+        // 스페이스바 추가 (home 타입일 때만)
+        if (beginnerType === 'home') {
+            const spaceRow = document.createElement('div');
+            spaceRow.className = 'keyboard-row';
+            const spaceKey = document.createElement('div');
+            spaceKey.className = 'key space';
+            spaceKey.textContent = 'SPACE';
+            spaceKey.dataset.key = ' ';
+            spaceRow.appendChild(spaceKey);
+            container.appendChild(spaceRow);
+        }
+        
+        // 현재 연습 텍스트에 따라 키보드 업데이트
+        updateKeyboardForCurrentText();
+    }
+    
+    // 현재 연습 텍스트에 따라 키보드 업데이트
+    function updateKeyboardForCurrentText() {
+        if (!typingPracticeState || !typingPracticeState.currentText) return;
+        
+        const currentText = typingPracticeState.currentText;
+        
+        // 키보드의 모든 키를 원래 상태로 복원
+        document.querySelectorAll('.key[data-original-key]').forEach(keyDiv => {
+            const originalKey = keyDiv.dataset.originalKey;
+            keyDiv.textContent = originalKey;
+            keyDiv.dataset.key = originalKey;
+        });
+        
+        // ㅒ, ㅖ가 포함된 경우 키보드 업데이트
+        const charMapping = {
+            'ㅒ': 'ㅐ',  // ㅒ가 나오면 ㅐ 위치에 ㅒ 표시
+            'ㅖ': 'ㅔ'   // ㅖ가 나오면 ㅔ 위치에 ㅖ 표시
+        };
+        
+        for (let char of currentText) {
+            if (charMapping[char]) {
+                const targetPosition = charMapping[char];
+                const targetKey = document.querySelector(`.key[data-original-key="${targetPosition}"]`);
+                if (targetKey) {
+                    targetKey.textContent = char;
+                    targetKey.dataset.key = char;
+                }
+            }
+        }
+    }
+    
+    // 특수 키보드 시각화 생성
+    function createSpecialKeyboardVisualization(type = 'numbers') {
+        const container = document.querySelector('.special-keyboard-container');
+        if (!container) return;
+        
+        const specialKeyboards = {
+            numbers: [
+                ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+                ['-', '=', '[', ']', '\\', ';', "'", ',', '.', '/']
+            ],
+            symbols: [
+                ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')'],
+                ['_', '+', '{', '}', '|', ':', '"', '<', '>', '?'],
+                ['~', '`']
+            ],
+            mixed: [
+                ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+                ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')'],
+                ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+                ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+                ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
+            ],
+            chunjiin: [
+                ['ㅣ', '.', 'ㅡ'],
+                ['조합 연습']
+            ]
+        };
+        
+        const keyboard = specialKeyboards[type] || specialKeyboards.numbers;
+        
+        container.innerHTML = '';
+        
+        keyboard.forEach((row, rowIndex) => {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'keyboard-row';
+            
+            row.forEach(key => {
+                const keyDiv = document.createElement('div');
+                keyDiv.className = 'key special-key';
+                keyDiv.textContent = key;
+                keyDiv.dataset.key = key;
+                rowDiv.appendChild(keyDiv);
+            });
+            
+            container.appendChild(rowDiv);
+        });
+        
+        // 스페이스바 추가 (mixed 타입일 때만)
+        if (type === 'mixed') {
+            const spaceRow = document.createElement('div');
+            spaceRow.className = 'keyboard-row';
+            const spaceKey = document.createElement('div');
+            spaceKey.className = 'key special-key space';
+            spaceKey.textContent = 'SPACE';
+            spaceKey.dataset.key = ' ';
+            spaceRow.appendChild(spaceKey);
+            container.appendChild(spaceRow);
+        }
     }
     
     // 키 하이라이트
@@ -912,9 +1259,25 @@ function initializeTypingPracticeNew() {
         }
     }
     
+    // 특수 키 하이라이트
+    function highlightSpecialKey(char) {
+        clearSpecialKeyHighlight();
+        const key = document.querySelector(`.special-key[data-key="${char}"]`);
+        if (key) {
+            key.classList.add('active');
+        }
+    }
+    
     // 키 하이라이트 제거
     function clearKeyHighlight() {
         document.querySelectorAll('.key.active').forEach(key => {
+            key.classList.remove('active');
+        });
+    }
+    
+    // 특수 키 하이라이트 제거
+    function clearSpecialKeyHighlight() {
+        document.querySelectorAll('.special-key.active').forEach(key => {
             key.classList.remove('active');
         });
     }
@@ -926,426 +1289,4 @@ function initializeTypingPractice() {
     initializeTypingPracticeNew();
 }
 
-// 연습 데이터 관리 (코드 중복 제거를 위해 외부로 분리)
-const practiceTexts = {
-    korean: {
-        free: [
-            '안녕하세요',
-            '반갑습니다',
-            '오늘도 좋은 하루 되세요',
-            '즐거운 하루 보내세요',
-            '행복한 하루 되세요'
-        ],
-        beginner: {
-            home: [
-                'ㅁㄴㅇㄹ', 'ㅎㅗㅓㅏ', 'ㅂㅈㄷㄱ', 'ㅅㅛㅕㅑ', 'ㅋㅌㅊㅍ',
-                'ㅠㅜㅡㅣ', 'ㅐㅔㅒㅖ', 'ㅘㅙㅚㅝ', 'ㅞㅟㅢ', 'ㅁㄴㅇㅎ',
-                'ㅂㅈㄷㅅ', 'ㅋㅌㅊㅍ', 'ㅏㅓㅗㅜ', 'ㅑㅕㅛㅠ', 'ㅡㅣㅐㅔ'
-            ],
-            consonant: [
-                'ㄱㄴㄷㄹ', 'ㅁㅂㅅㅇ', 'ㅈㅊㅋㅌ', 'ㅍㅎㄲㄸ', 'ㅃㅆㅉ',
-                'ㄱㄱㄴㄴ', 'ㄷㄷㄹㄹ', 'ㅁㅁㅂㅂ', 'ㅅㅅㅇㅇ', 'ㅈㅈㅊㅊ',
-                'ㅋㅋㅌㅌ', 'ㅍㅍㅎㅎ', 'ㄲㄲㄸㄸ', 'ㅃㅃㅆㅆ', 'ㅉㅉㄱㄴ',
-                'ㄷㄹㅁㅂ', 'ㅅㅇㅈㅊ', 'ㅋㅌㅍㅎ', 'ㄱㄷㅂㅈ', 'ㅅㅁㄴㅇ'
-            ],
-            vowel: [
-                'ㅏㅑㅓㅕ', 'ㅗㅛㅜㅠ', 'ㅡㅣㅐㅔ', 'ㅒㅖㅘㅙ', 'ㅚㅝㅞㅟ',
-                'ㅏㅏㅓㅓ', 'ㅗㅗㅜㅜ', 'ㅡㅡㅣㅣ', 'ㅐㅐㅔㅔ', 'ㅑㅑㅕㅕ',
-                'ㅛㅛㅠㅠ', 'ㅒㅒㅖㅖ', 'ㅘㅘㅙㅙ', 'ㅚㅚㅝㅝ', 'ㅞㅞㅟㅟ',
-                'ㅢㅢㅏㅑ', 'ㅓㅕㅗㅛ', 'ㅜㅠㅡㅣ', 'ㅐㅔㅒㅖ', 'ㅘㅙㅚㅝ'
-            ],
-            words: [
-                '가나다', '마바사', '아자차', '카타파', '하가나', '다라마',
-                '바나나', '사과', '포도', '수박', '딸기', '참외',
-                '토마토', '감자', '고구마', '당근', '양파', '마늘',
-                '배추', '무', '오이', '호박', '가지', '파프리카',
-                '브로콜리', '양배추', '시금치', '상추', '깻잎', '부추'
-            ]
-        },
-        special: {
-            numbers: [
-                '1234567890', '2024년 1월 1일', '전화번호: 010-1234-5678', '주민번호: 000000-0000000', '우편번호: 12345',
-                '2025년 1월 6일', '2023년 12월 31일', '1999년 9월 9일', '2000년 1월 1일', '2030년 3월 3일',
-                '123-456-789', '987-654-321', '111-222-333', '444-555-666', '777-888-999',
-                '100,000원', '250,000원', '1,000,000원', '50,000원', '750,000원',
-                '3.14159', '2.71828', '1.41421', '1.61803', '0.57721',
-                '02-1234-5678', '031-987-6543', '032-111-2222', '033-444-5555', '051-777-8888'
-            ],
-            symbols: [
-                '!@#$%^&*()', '[]{}()<>', '+-*/=', '.,;:\'"', '?!~`|\\',
-                '!!!@@@###', '$$$%%%^^^', '&&&***(((', ')))___+++', '===---...',
-                '<html></html>', '[array]', '{object}', '(function)', '/*comment*/',
-                'a->b', 'x=>y', 'p<q', 'm>n', 'i<=j', 'k>=l',
-                'A&&B', 'C||D', '!E', '~F', 'G!=H', 'I==J',
-                '...', '---', '___', '***', '+++', '///', '\\\\\\', '|||'
-            ],
-            mixed: [
-                'abc123!@#', '2024-01-01', 'email@test.com', 'http://www.example.com', 'password123!',
-                'user@domain.co.kr', 'admin@company.net', 'info@service.org', 'support@help.io', 'contact@business.com',
-                'https://www.google.com', 'http://localhost:3000', 'ftp://files.server.net', 'ssh://user@192.168.1.1', 'git@github.com:user/repo.git',
-                'P@ssw0rd!', 'Str0ng#Pass', 'S3cur3*Key', 'C0mpl3x&Pwd', 'H@rd2Gu3ss',
-                'file_name_01.txt', 'document-v2.pdf', 'image.2024.jpg', 'data_backup_20250106.zip', 'report_final_v3.docx',
-                'var x = 10;', 'const PI = 3.14;', 'function add(a, b) { return a + b; }', 'if (x > 0) { console.log(x); }', 'for (let i = 0; i < 10; i++)'
-            ],
-            chunjiin: [
-                'ㅣ.ㅡ', 'ㅣ..', '...', 'ㅡ.ㅣ', 'ㅣ.ㅣ',
-                '..ㅡ', 'ㅡ..', 'ㅣㅡ.', '.ㅣㅡ', 'ㅡㅣ.',
-                'ㅣㅣ.', '..ㅣ', 'ㅡㅡ.', '...ㅣ', 'ㅣ...',
-                '.ㅡ.', 'ㅣ.ㅡㅣ', 'ㅡ.ㅣ.', '..ㅡㅣ', 'ㅣㅡ..'
-            ]
-        },
-        standard: {
-            words: {
-                easy: [
-                    '안녕하세요', '감사합니다', '사랑합니다', '행복하세요', '좋은하루', '반갑습니다', '축하합니다', '고맙습니다', '미안합니다', '괜찮습니다',
-                    '안녕히계세요', '안녕히가세요', '잘가요', '또만나요', '다음에봐요', '내일봐요', '주말잘보내세요', '수고하세요', '화이팅', '힘내세요',
-                    '좋아요', '싫어요', '맞아요', '틀려요', '알겠어요', '몰라요', '그래요', '아니에요', '네', '아니요',
-                    '어서오세요', '환영합니다', '들어오세요', '앉으세요', '기다려주세요', '잠시만요', '실례합니다', '죄송합니다', '괜찮아요', '천만에요',
-                    '맛있어요', '배고파요', '목말라요', '졸려요', '피곤해요', '아파요', '기뻐요', '슬퍼요', '화나요', '무서워요',
-                    '더워요', '추워요', '시원해요', '따뜻해요', '좋은날씨네요', '비가와요', '눈이와요', '바람불어요', '햇빛이좋아요', '구름이많아요',
-                    '월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일', '주말', '평일', '휴일',
-                    '아침', '점심', '저녁', '밤', '새벽', '오전', '오후', '낮', '밤늦게', '일찍',
-                    '학교', '회사', '집', '가게', '시장', '병원', '은행', '우체국', '도서관', '공원',
-                    '엄마', '아빠', '형', '누나', '동생', '할머니', '할아버지', '친구', '선생님', '학생'
-                ],
-                medium: [
-                    'computer', 'internet', 'smartphone', 'programming', 'algorithm', 'database', 'network', 'cloud', 'software', 'hardware',
-                    'operating system', 'application', 'browser', 'search engine', 'social media', 'e-commerce', 'online shopping', 'digital content', 'cybersecurity', 'encryption',
-                    'artificial intelligence', 'machine learning', 'deep learning', 'natural language', 'computer vision', 'robotics', 'automation', 'virtual reality', 'augmented reality', 'metaverse',
-                    'blockchain', 'cryptocurrency', 'bitcoin', 'ethereum', 'smart contract', 'decentralization', 'distributed ledger', 'digital asset', 'fintech', 'innovation',
-                    'internet of things', 'smart home', 'wearable device', 'sensor network', 'big data', 'data analysis', 'data science', 'statistics', 'prediction model', 'visualization',
-                    'cloud computing', 'serverless', 'microservices', 'container', 'docker', 'kubernetes', 'infrastructure', 'virtualization', 'scalability', 'reliability',
-                    'information security', 'firewall', 'authentication', 'authorization', 'access control', 'vulnerability', 'penetration testing', 'incident response', 'compliance', 'privacy',
-                    'mobile app', 'responsive web', 'frontend', 'backend', 'full stack', 'API', 'REST', 'GraphQL', 'web service', 'deployment',
-                    'javascript', 'python', 'java', 'typescript', 'swift', 'kotlin', 'rust', 'golang', 'ruby', 'PHP',
-                    'react', 'angular', 'vue', 'svelte', 'next', 'express', 'django', 'spring', 'flask', 'rails'
-                ],
-                hard: [
-                    'information technology infrastructure', 'artificial intelligence ethics', 'machine learning algorithms', 'blockchain technology applications', 'internet of things ecosystem',
-                    'quantum computing principles', 'neural network architectures', 'genetic algorithm optimization', 'reinforcement learning strategies', 'transfer learning techniques',
-                    'edge computing paradigm', 'fog computing infrastructure', 'serverless architecture patterns', 'microservices communication', 'event-driven architecture',
-                    'zero trust security model', 'multi-factor authentication systems', 'biometric authentication methods', 'homomorphic encryption', 'quantum cryptography',
-                    'natural language understanding', 'speech recognition technology', 'computer vision processing', 'emotion recognition systems', 'recommendation algorithms',
-                    'fifth generation networks', 'software defined networking', 'network function virtualization', 'network slicing technology', 'ultra-low latency communication',
-                    'smart city infrastructure', 'autonomous vehicle systems', 'drone delivery services', 'digital healthcare platforms', 'telemedicine applications',
-                    'sustainable information technology', 'green computing initiatives', 'carbon neutral datacenters', 'renewable energy integration', 'circular economy models',
-                    'cross-platform development frameworks', 'progressive web applications', 'webassembly performance optimization', 'jamstack architecture benefits', 'headless content management',
-                    'kubernetes orchestration platforms', 'service mesh architectures', 'gitops workflow automation', 'infrastructure as code practices', 'cloud native applications'
-                ]
-            },
-            sentences: {
-                easy: [
-                    'The weather is really nice today.',
-                    'I want to eat something delicious.',
-                    'I will meet my friends this weekend.',
-                    'I started reading a new book.',
-                    'I am exercising regularly these days.',
-                    'I woke up early this morning.',
-                    'I would like a cup of coffee.',
-                    'Have a great day today.',
-                    'I want to rest at home today.',
-                    'I spent time with my family.',
-                    'I prepared a gift for my friend.',
-                    'I ate a delicious cake.',
-                    'I want to go watch a movie.',
-                    'I took a walk while listening to music.',
-                    'I started a new hobby.',
-                    'Cooking is really fun.',
-                    'The flowers bloomed beautifully.',
-                    'I want to see the ocean.',
-                    'I want to go hiking in the mountains.',
-                    'I made a wish while looking at the stars.',
-                    'I have a habit of writing in my diary.',
-                    'I like taking photographs.',
-                    'I am drawing a picture.',
-                    'I want to learn to play the piano.',
-                    'I started studying a foreign language.',
-                    'I am planning a trip.',
-                    'I made a new friend.',
-                    'I had a good dream.',
-                    'It was a happy day.',
-                    'Tomorrow will be a better day.'
-                ],
-                medium: [
-                    'Learning programming is a very beneficial endeavor for personal growth.',
-                    'The development of the internet has connected the world as one global village.',
-                    'Maintaining healthy lifestyle habits is crucial for long-term well-being.',
-                    'Learning new technologies is always an exciting and rewarding experience.',
-                    'Consistent effort and dedication are the keys to achieving success.',
-                    'Information literacy is essential in the digital age we live in.',
-                    'Online education is becoming increasingly popular and accessible worldwide.',
-                    'Smartphones have become an indispensable part of modern life.',
-                    'Social media enables us to communicate with people all around the world.',
-                    'Cloud services allow us to access our files from anywhere at any time.',
-                    'Artificial intelligence is making our daily lives more convenient and efficient.',
-                    'Individual efforts for environmental protection are necessary for our planet.',
-                    'Recycling and proper waste separation are small practices that help save the Earth.',
-                    'Using public transportation contributes to environmental protection efforts.',
-                    'Energy conservation is a task that everyone should practice daily.',
-                    'Reading is an excellent way to expand knowledge and develop critical thinking.',
-                    'Regular exercise benefits both physical and mental health significantly.',
-                    'A balanced diet is fundamental to maintaining a healthy lifestyle.',
-                    'Getting enough sleep is important for maintaining vitality in daily life.',
-                    'Stress management is an essential skill for modern people to master.',
-                    'Positive thinking improves the overall quality of life substantially.',
-                    'Setting goals and making plans is the first step toward success.',
-                    'Having the courage to challenge yourself without fearing failure is important.',
-                    'Various experiences help broaden your perspective on life.',
-                    'Having consideration and respect for others is necessary in society.',
-                    'Communication skills are fundamental competencies for social life.',
-                    'Creative thinking becomes the key to effective problem-solving.',
-                    'Continuous learning is the way to adapt to changing times.',
-                    'Cooperation and teamwork create greater achievements together.',
-                    'Time management is an essential skill for living an efficient life.'
-                ],
-                hard: [
-                    'The rapid advancement of artificial intelligence technology is fundamentally transforming our daily lives in unprecedented ways.',
-                    'Sustainable development requires a delicate balance between economic growth and environmental protection.',
-                    'The digital revolution has created both opportunities and challenges that require new skills and adaptabilities.',
-                    'Global economic uncertainty continues to influence international trade and investment decisions worldwide.',
-                    'Innovative ideas have the potential to change the world when combined with determination and resources.',
-                    'The fourth industrial revolution is fundamentally transforming traditional industry structures and creating entirely new business models.',
-                    'Blockchain technology is gaining attention as an innovative solution providing reliability and transparency across various industries.',
-                    'International cooperation to address climate change has become more important than ever, requiring active participation from all nations.',
-                    'Big data analytics enables businesses to predict consumer behavior patterns and provide customized services effectively.',
-                    'The development of Internet of Things technology is accelerating smart city implementation and significantly improving urban infrastructure efficiency.',
-                    'The commercialization of quantum computing opens new possibilities for solving complex problems beyond current computational limits.',
-                    'Advances in biotechnology are bringing revolutionary changes to disease treatment and prevention, ushering in an era of personalized medicine.',
-                    'The commercialization of autonomous vehicles is expected to paradigm shift transportation systems, greatly improving safety and efficiency.',
-                    'The advancement and widespread adoption of renewable energy technologies contribute to reducing fossil fuel dependence and building sustainable energy systems.',
-                    'Augmented and virtual reality technologies are providing innovative experiences across various fields including education, healthcare, and entertainment.',
-                    'The expanding application of nanotechnology is achieving breakthrough performance improvements in medical, electronic, and materials fields.',
-                    'The importance of cybersecurity is increasing daily, with active technology development for protecting personal information and digital assets.',
-                    'Space exploration technology advancement is expanding humanitys activity beyond Earth, opening possibilities for new resource development.',
-                    'Robot technology and automation system development are revolutionizing manufacturing productivity while bringing significant changes to labor markets.',
-                    'The commercialization of 5G networks enables ultra-high-speed, ultra-low-latency communication, forming the foundation for various innovative services.',
-                    'Digital twin technology connects the physical and digital worlds, enabling efficient simulation and optimization processes.',
-                    'Edge computing development allows data processing closer to users, significantly improving response times.',
-                    'Synthetic biology advances provide innovative methods for producing new materials and fuels, contributing to sustainable industrial development.',
-                    'The introduction of digital currencies and central bank digital currencies is expected to greatly improve financial system efficiency and inclusivity.',
-                    'Metaverse platform development enables economic activities and social interactions in virtual worlds, creating new business opportunities.',
-                    'Precision medicine advancement enables personalized treatments based on individual genetic characteristics, greatly improving treatment effectiveness.',
-                    'Smart grid technology increases power system efficiency and facilitates renewable energy integration for sustainable energy systems.',
-                    'Next-generation transportation systems like hyperloop are expected to dramatically reduce inter-city travel times, heralding a transportation revolution.',
-                    'Brain-computer interface technology development presents new possibilities for paralyzed patient rehabilitation and human cognitive enhancement.',
-                    'The introduction of circular economy models enables sustainable economic growth through efficient resource use and waste reduction.'
-                ]
-            },
-            paragraph: {
-                easy: 'Spring has arrived. The warm sunshine is shining down. Flowers are beginning to bloom. People are wearing lighter clothes. Many people are walking in the park.',
-                medium: 'Learning to code is not easy. However, your skills will improve with consistent practice. It is important to study a little every day. Try creating various projects. Real experience is the best teacher.',
-                hard: 'Modern society is changing rapidly. Technological advancement has completely transformed our way of life. The development of artificial intelligence and robotics threatens many jobs with extinction. However, new opportunities are emerging at the same time. We must adapt to and prepare for these changes.'
-            }
-        }
-    },
-    english: {
-        free: [
-            'Hello',
-            'Welcome',
-            'Have a nice day',
-            'Enjoy your day',
-            'Have a great day'
-        ],
-        beginner: {
-            home: [
-                'asdf', 'jkl;', 'asdf jkl;', 'fdsa ;lkj', 'asjk',
-                'fdsl', 'jfdk', 'slak', 'djfk', 'alsk',
-                'fjdk', 'sldk', 'ajdk', 'flsk', 'djsk'
-            ],
-            consonant: [
-                'qwert', 'yuiop', 'asdfg', 'hjkl;', 'zxcvb',
-                'nm,./[', 'qaz', 'wsx', 'edc', 'rfv',
-                'tgb', 'yhn', 'ujm', 'ik,', 'ol.',
-                'p;/', 'aqw', 'sde', 'fr', 'gt'
-            ],
-            vowel: [
-                'aeiou', 'aaa', 'eee', 'iii', 'ooo',
-                'uuu', 'ae', 'ei', 'io', 'ou',
-                'ua', 'ea', 'ie', 'oi', 'ue',
-                'ai', 'eo', 'iu', 'oa', 'eu'
-            ],
-            words: [
-                'cat', 'dog', 'run', 'jump', 'happy', 'smile',
-                'tree', 'bird', 'sun', 'moon', 'star', 'cloud',
-                'book', 'read', 'write', 'learn', 'teach', 'study',
-                'home', 'work', 'play', 'rest', 'sleep', 'wake',
-                'food', 'eat', 'drink', 'water', 'bread', 'fruit'
-            ]
-        },
-        special: {
-            numbers: [
-                '1234567890', '2024-01-01', 'Phone: 555-1234', 'ID: ABC-123-XYZ', 'ZIP: 12345',
-                '2025/01/06', '12/31/2023', '09/09/1999', '01/01/2000', '03/03/2030',
-                '123-456-789', '987-654-321', '111-222-333', '444-555-666', '777-888-999',
-                '$100,000', '$250,000', '$1,000,000', '$50,000', '$750,000',
-                '3.14159', '2.71828', '1.41421', '1.61803', '0.57721',
-                '(555) 123-4567', '(555) 987-6543', '(555) 111-2222', '(555) 444-5555', '(555) 777-8888'
-            ],
-            symbols: [
-                '!@#$%^&*()', '[]{}()<>', '+-*/=', '.,;:\'"', '?!~`|\\',
-                '!!!@@@###', '$$$%%%^^^', '&&&***(((', ')))___+++', '===---...',
-                '<html></html>', '[array]', '{object}', '(function)', '/*comment*/',
-                'a->b', 'x=>y', 'p<q', 'm>n', 'i<=j', 'k>=l',
-                'A&&B', 'C||D', '!E', '~F', 'G!=H', 'I==J',
-                '...', '---', '___', '***', '+++', '///', '\\\\\\', '|||'
-            ],
-            mixed: [
-                'abc123!@#', '2024-01-01', 'email@test.com', 'http://www.example.com', 'password123!',
-                'user@domain.com', 'admin@company.net', 'info@service.org', 'support@help.io', 'contact@business.com',
-                'https://www.google.com', 'http://localhost:3000', 'ftp://files.server.net', 'ssh://user@192.168.1.1', 'git@github.com:user/repo.git',
-                'P@ssw0rd!', 'Str0ng#Pass', 'S3cur3*Key', 'C0mpl3x&Pwd', 'H@rd2Gu3ss',
-                'file_name_01.txt', 'document-v2.pdf', 'image.2024.jpg', 'data_backup_20250106.zip', 'report_final_v3.docx',
-                'var x = 10;', 'const PI = 3.14;', 'function add(a, b) { return a + b; }', 'if (x > 0) { console.log(x); }', 'for (let i = 0; i < 10; i++)'
-            ],
-            chunjiin: [
-                'abc', 'def', 'ghi', 'jkl', 'mno',
-                'pqrs', 'tuv', 'wxyz', '123', '456',
-                '789', '0', 'quick', 'brown', 'fox',
-                'jumps', 'over', 'lazy', 'dog', 'type'
-            ]
-        },
-        standard: {
-            words: {
-                easy: [
-                    'hello', 'thank', 'love', 'happy', 'good', 'nice', 'great', 'beautiful', 'sorry', 'okay',
-                    'goodbye', 'welcome', 'please', 'thanks', 'morning', 'evening', 'night', 'today', 'tomorrow', 'yesterday',
-                    'like', 'hate', 'right', 'wrong', 'know', 'think', 'yes', 'no', 'maybe', 'sure',
-                    'come', 'go', 'sit', 'stand', 'wait', 'excuse', 'pardon', 'fine', 'well', 'better',
-                    'hungry', 'thirsty', 'tired', 'sick', 'happy', 'sad', 'angry', 'scared', 'excited', 'bored',
-                    'hot', 'cold', 'warm', 'cool', 'sunny', 'rainy', 'snowy', 'windy', 'cloudy', 'clear',
-                    'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'weekend', 'weekday', 'holiday',
-                    'morning', 'afternoon', 'evening', 'night', 'dawn', 'noon', 'midnight', 'early', 'late', 'time',
-                    'school', 'office', 'home', 'store', 'market', 'hospital', 'bank', 'library', 'park', 'station',
-                    'mother', 'father', 'brother', 'sister', 'family', 'friend', 'teacher', 'student', 'doctor', 'person'
-                ],
-                medium: [
-                    'computer', 'internet', 'smartphone', 'programming', 'algorithm', 'database', 'network', 'cloud', 'software', 'hardware',
-                    'operating system', 'application', 'browser', 'search engine', 'social media', 'e-commerce', 'online shopping', 'digital content', 'cybersecurity', 'encryption',
-                    'artificial intelligence', 'machine learning', 'deep learning', 'natural language', 'computer vision', 'robotics', 'automation', 'virtual reality', 'augmented reality', 'metaverse',
-                    'blockchain', 'cryptocurrency', 'bitcoin', 'ethereum', 'smart contract', 'decentralization', 'distributed ledger', 'digital asset', 'fintech', 'innovation',
-                    'internet of things', 'smart home', 'wearable device', 'sensor network', 'big data', 'data analysis', 'data science', 'statistics', 'prediction model', 'visualization',
-                    'cloud computing', 'serverless', 'microservices', 'container', 'docker', 'kubernetes', 'infrastructure', 'virtualization', 'scalability', 'reliability',
-                    'information security', 'firewall', 'authentication', 'authorization', 'access control', 'vulnerability', 'penetration testing', 'incident response', 'compliance', 'privacy',
-                    'mobile app', 'responsive web', 'frontend', 'backend', 'full stack', 'API', 'REST', 'GraphQL', 'web service', 'deployment',
-                    'javascript', 'python', 'java', 'typescript', 'swift', 'kotlin', 'rust', 'golang', 'ruby', 'PHP',
-                    'react', 'angular', 'vue', 'svelte', 'next', 'express', 'django', 'spring', 'flask', 'rails'
-                ],
-                hard: [
-                    'information technology infrastructure', 'artificial intelligence ethics', 'machine learning algorithms', 'blockchain technology applications', 'internet of things ecosystem',
-                    'quantum computing principles', 'neural network architectures', 'genetic algorithm optimization', 'reinforcement learning strategies', 'transfer learning techniques',
-                    'edge computing paradigm', 'fog computing infrastructure', 'serverless architecture patterns', 'microservices communication', 'event-driven architecture',
-                    'zero trust security model', 'multi-factor authentication systems', 'biometric authentication methods', 'homomorphic encryption', 'quantum cryptography',
-                    'natural language understanding', 'speech recognition technology', 'computer vision processing', 'emotion recognition systems', 'recommendation algorithms',
-                    'fifth generation networks', 'software defined networking', 'network function virtualization', 'network slicing technology', 'ultra-low latency communication',
-                    'smart city infrastructure', 'autonomous vehicle systems', 'drone delivery services', 'digital healthcare platforms', 'telemedicine applications',
-                    'sustainable information technology', 'green computing initiatives', 'carbon neutral datacenters', 'renewable energy integration', 'circular economy models',
-                    'cross-platform development frameworks', 'progressive web applications', 'webassembly performance optimization', 'jamstack architecture benefits', 'headless content management',
-                    'kubernetes orchestration platforms', 'service mesh architectures', 'gitops workflow automation', 'infrastructure as code practices', 'cloud native applications'
-                ]
-            },
-            sentences: {
-                easy: [
-                    'The weather is really nice today.',
-                    'I want to eat something delicious.',
-                    'I will meet my friends this weekend.',
-                    'I started reading a new book.',
-                    'I am exercising regularly these days.',
-                    'I woke up early this morning.',
-                    'I would like a cup of coffee.',
-                    'Have a great day today.',
-                    'I want to rest at home today.',
-                    'I spent time with my family.',
-                    'I prepared a gift for my friend.',
-                    'I ate a delicious cake.',
-                    'I want to go watch a movie.',
-                    'I took a walk while listening to music.',
-                    'I started a new hobby.',
-                    'Cooking is really fun.',
-                    'The flowers bloomed beautifully.',
-                    'I want to see the ocean.',
-                    'I want to go hiking in the mountains.',
-                    'I made a wish while looking at the stars.',
-                    'I have a habit of writing in my diary.',
-                    'I like taking photographs.',
-                    'I am drawing a picture.',
-                    'I want to learn to play the piano.',
-                    'I started studying a foreign language.',
-                    'I am planning a trip.',
-                    'I made a new friend.',
-                    'I had a good dream.',
-                    'It was a happy day.',
-                    'Tomorrow will be a better day.'
-                ],
-                medium: [
-                    'Learning programming is a very beneficial endeavor for personal growth.',
-                    'The development of the internet has connected the world as one global village.',
-                    'Maintaining healthy lifestyle habits is crucial for long-term well-being.',
-                    'Learning new technologies is always an exciting and rewarding experience.',
-                    'Consistent effort and dedication are the keys to achieving success.',
-                    'Information literacy is essential in the digital age we live in.',
-                    'Online education is becoming increasingly popular and accessible worldwide.',
-                    'Smartphones have become an indispensable part of modern life.',
-                    'Social media enables us to communicate with people all around the world.',
-                    'Cloud services allow us to access our files from anywhere at any time.',
-                    'Artificial intelligence is making our daily lives more convenient and efficient.',
-                    'Individual efforts for environmental protection are necessary for our planet.',
-                    'Recycling and proper waste separation are small practices that help save the Earth.',
-                    'Using public transportation contributes to environmental protection efforts.',
-                    'Energy conservation is a task that everyone should practice daily.',
-                    'Reading is an excellent way to expand knowledge and develop critical thinking.',
-                    'Regular exercise benefits both physical and mental health significantly.',
-                    'A balanced diet is fundamental to maintaining a healthy lifestyle.',
-                    'Getting enough sleep is important for maintaining vitality in daily life.',
-                    'Stress management is an essential skill for modern people to master.',
-                    'Positive thinking improves the overall quality of life substantially.',
-                    'Setting goals and making plans is the first step toward success.',
-                    'Having the courage to challenge yourself without fearing failure is important.',
-                    'Various experiences help broaden your perspective on life.',
-                    'Having consideration and respect for others is necessary in society.',
-                    'Communication skills are fundamental competencies for social life.',
-                    'Creative thinking becomes the key to effective problem-solving.',
-                    'Continuous learning is the way to adapt to changing times.',
-                    'Cooperation and teamwork create greater achievements together.',
-                    'Time management is an essential skill for living an efficient life.'
-                ],
-                hard: [
-                    'The rapid advancement of artificial intelligence technology is fundamentally transforming our daily lives in unprecedented ways.',
-                    'Sustainable development requires a delicate balance between economic growth and environmental protection.',
-                    'The digital revolution has created both opportunities and challenges that require new skills and adaptabilities.',
-                    'Global economic uncertainty continues to influence international trade and investment decisions worldwide.',
-                    'Innovative ideas have the potential to change the world when combined with determination and resources.',
-                    'The fourth industrial revolution is fundamentally transforming traditional industry structures and creating entirely new business models.',
-                    'Blockchain technology is gaining attention as an innovative solution providing reliability and transparency across various industries.',
-                    'International cooperation to address climate change has become more important than ever, requiring active participation from all nations.',
-                    'Big data analytics enables businesses to predict consumer behavior patterns and provide customized services effectively.',
-                    'The development of Internet of Things technology is accelerating smart city implementation and significantly improving urban infrastructure efficiency.',
-                    'The commercialization of quantum computing opens new possibilities for solving complex problems beyond current computational limits.',
-                    'Advances in biotechnology are bringing revolutionary changes to disease treatment and prevention, ushering in an era of personalized medicine.',
-                    'The commercialization of autonomous vehicles is expected to paradigm shift transportation systems, greatly improving safety and efficiency.',
-                    'The advancement and widespread adoption of renewable energy technologies contribute to reducing fossil fuel dependence and building sustainable energy systems.',
-                    'Augmented and virtual reality technologies are providing innovative experiences across various fields including education, healthcare, and entertainment.',
-                    'The expanding application of nanotechnology is achieving breakthrough performance improvements in medical, electronic, and materials fields.',
-                    'The importance of cybersecurity is increasing daily, with active technology development for protecting personal information and digital assets.',
-                    'Space exploration technology advancement is expanding humanitys activity beyond Earth, opening possibilities for new resource development.',
-                    'Robot technology and automation system development are revolutionizing manufacturing productivity while bringing significant changes to labor markets.',
-                    'The commercialization of 5G networks enables ultra-high-speed, ultra-low-latency communication, forming the foundation for various innovative services.',
-                    'Digital twin technology connects the physical and digital worlds, enabling efficient simulation and optimization processes.',
-                    'Edge computing development allows data processing closer to users, significantly improving response times.',
-                    'Synthetic biology advances provide innovative methods for producing new materials and fuels, contributing to sustainable industrial development.',
-                    'The introduction of digital currencies and central bank digital currencies is expected to greatly improve financial system efficiency and inclusivity.',
-                    'Metaverse platform development enables economic activities and social interactions in virtual worlds, creating new business opportunities.',
-                    'Precision medicine advancement enables personalized treatments based on individual genetic characteristics, greatly improving treatment effectiveness.',
-                    'Smart grid technology increases power system efficiency and facilitates renewable energy integration for sustainable energy systems.',
-                    'Next-generation transportation systems like hyperloop are expected to dramatically reduce inter-city travel times, heralding a transportation revolution.',
-                    'Brain-computer interface technology development presents new possibilities for paralyzed patient rehabilitation and human cognitive enhancement.',
-                    'The introduction of circular economy models enables sustainable economic growth through efficient resource use and waste reduction.'
-                ]
-            },
-            paragraph: {
-                easy: 'Spring has arrived. The warm sunshine is shining down. Flowers are beginning to bloom. People are wearing lighter clothes. Many people are walking in the park.',
-                medium: 'Learning to code is not easy. However, your skills will improve with consistent practice. It is important to study a little every day. Try creating various projects. Real experience is the best teacher.',
-                hard: 'Modern society is changing rapidly. Technological advancement has completely transformed our way of life. The development of artificial intelligence and robotics threatens many jobs with extinction. However, new opportunities are emerging at the same time. We must adapt to and prepare for these changes.'
-            }
-        }
-    }
-};
+// 연습 데이터는 practice_data.js에서 관리됩니다.

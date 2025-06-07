@@ -5,7 +5,7 @@
             
             <!-- 타자 연습 버전 선택 -->
             <div class="row mb-4" id="version-selector">
-                <div class="col-md-6 col-lg-3 mb-3">
+                <div class="col-6 col-md-6 col-lg-3 mb-3">
                     <div class="card h-100 practice-mode-card" data-practice-mode="free">
                         <div class="card-body text-center">
                             <i class="fas fa-keyboard fa-3x mb-3 text-primary"></i>
@@ -15,7 +15,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3 mb-3">
+                <div class="col-6 col-md-6 col-lg-3 mb-3">
                     <div class="card h-100 practice-mode-card" data-practice-mode="beginner">
                         <div class="card-body text-center">
                             <i class="fas fa-graduation-cap fa-3x mb-3 text-success"></i>
@@ -25,7 +25,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3 mb-3">
+                <div class="col-6 col-md-6 col-lg-3 mb-3">
                     <div class="card h-100 practice-mode-card" data-practice-mode="special">
                         <div class="card-body text-center">
                             <i class="fas fa-hashtag fa-3x mb-3 text-warning"></i>
@@ -35,7 +35,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3 mb-3">
+                <div class="col-6 col-md-6 col-lg-3 mb-3">
                     <div class="card h-100 practice-mode-card" data-practice-mode="standard">
                         <div class="card-body text-center">
                             <i class="fas fa-chart-line fa-3x mb-3 text-info"></i>
@@ -99,7 +99,6 @@
                                     <button type="button" class="btn btn-outline-primary active" data-beginner-type="home">홈 포지션</button>
                                     <button type="button" class="btn btn-outline-primary" data-beginner-type="consonant">자음 연습</button>
                                     <button type="button" class="btn btn-outline-primary" data-beginner-type="vowel">모음 연습</button>
-                                    <button type="button" class="btn btn-outline-primary" data-beginner-type="words">단어 연습</button>
                                 </div>
                             </div>
                             
@@ -122,6 +121,13 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title mb-3">특수 타자 연습</h4>
+                            
+                            <!-- 키보드 시각화 -->
+                            <div id="special-keyboard-visual" class="mb-4">
+                                <div class="special-keyboard-container">
+                                    <!-- 키보드 레이아웃이 여기에 들어갑니다 -->
+                                </div>
+                            </div>
                             
                             <div class="mb-3">
                                 <label class="form-label">특수 타자 타입 선택:</label>
@@ -330,6 +336,97 @@
     transform: translateY(-5px);
 }
 
+/* 타이핑 입력창 스타일 */
+.typing-input[contenteditable="true"] {
+    min-height: 60px;
+    outline: none;
+    border: 2px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    background-color: #fff;
+    font-size: 1.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.typing-input[contenteditable="true"]:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.typing-input[contenteditable="true"]:empty:before {
+    content: attr(data-placeholder);
+    color: #6c757d;
+    font-style: italic;
+}
+
+.typing-input.is-invalid {
+    border-color: #dc3545;
+    animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* 키보드 시각화 스타일 */
+.keyboard-container, .special-keyboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid #dee2e6;
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.key {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    height: 50px;
+    margin: 2px;
+    background: #fff;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #495057;
+    transition: all 0.2s ease;
+    cursor: default;
+    user-select: none;
+}
+
+.key.space {
+    min-width: 200px;
+}
+
+.key.active {
+    background: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+}
+
+.key:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.key.active:hover {
+    background: #0d6efd;
+    border-color: #0d6efd;
+}
+
 /* 모바일 반응형 개선 */
 @media (max-width: 768px) {
     .practice-mode-card {
@@ -375,52 +472,5 @@
     .key.enter, .key.shift, .key.backspace, .key.tab {
         width: 60px;
     }
-}
-
-.keyboard-container {
-    background: #f8f9fa;
-    border: 2px solid #dee2e6;
-    border-radius: 10px;
-    padding: 20px;
-    margin: 0 auto;
-    max-width: 800px;
-}
-
-.keyboard-row {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 5px;
-}
-
-.key {
-    width: 50px;
-    height: 50px;
-    margin: 2px;
-    border: 1px solid #ced4da;
-    border-radius: 5px;
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    transition: all 0.1s;
-}
-
-.key.active {
-    background: #007bff;
-    color: white;
-    transform: scale(1.1);
-}
-
-.key.space {
-    width: 300px;
-}
-
-.key.enter {
-    width: 100px;
-}
-
-.key.shift, .key.backspace, .key.tab {
-    width: 80px;
 }
 </style>
