@@ -216,6 +216,11 @@ document.addEventListener('DOMContentLoaded', function(){
                                 setTimeout(initializeSalaryPage, 100);
                             }
                             break;
+                        case 'insurance_calculator':
+                            if (typeof initializeInsurancePage === 'function') {
+                                setTimeout(initializeInsurancePage, 100);
+                            }
+                            break;
                     }
                 } else if (status === "error") {
                     console.error("Error loading page: " + xhr.status + " " + xhr.statusText);

@@ -1,0 +1,218 @@
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="main-content">
+                <h1 class="h3 mb-4">
+                    <i class="fas fa-calculator"></i> 4대보험료 계산기
+                </h1>
+                
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle"></i>
+                    2025년 기준 4대보험료를 계산합니다. 근로자와 사업주가 부담하는 보험료를 각각 확인할 수 있습니다.
+                </div>
+
+                <!-- 입력 영역 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">급여 정보 입력</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="monthlySalary" class="form-label">월 급여액 (세전)</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="monthlySalary" 
+                                           placeholder="3,000,000" inputmode="numeric"
+                                           pattern="[0-9,]*" autocomplete="off">
+                                    <span class="input-group-text">원</span>
+                                </div>
+                                <small class="text-muted">상여금, 수당 등을 모두 포함한 월 총급여액을 입력하세요.</small>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="dependents" class="form-label">부양가족 수 (본인 포함)</label>
+                                <select class="form-select" id="dependents">
+                                    <option value="1" selected>1명</option>
+                                    <option value="2">2명</option>
+                                    <option value="3">3명</option>
+                                    <option value="4">4명</option>
+                                    <option value="5">5명</option>
+                                    <option value="6">6명</option>
+                                    <option value="7">7명</option>
+                                    <option value="8">8명</option>
+                                    <option value="9">9명</option>
+                                    <option value="10">10명</option>
+                                    <option value="11">11명 이상</option>
+                                </select>
+                                <small class="text-muted">소득세 계산에 사용됩니다.</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="businessType" class="form-label">사업장 규모</label>
+                                <select class="form-select" id="businessType">
+                                    <option value="regular" selected>일반 사업장</option>
+                                    <option value="small">우선지원 대상기업 (150명 미만)</option>
+                                </select>
+                                <small class="text-muted">고용보험 요율 적용에 필요합니다.</small>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="industrialCode" class="form-label">산재보험 업종</label>
+                                <select class="form-select" id="industrialCode">
+                                    <option value="0.7" selected>사무직 (0.7%)</option>
+                                    <option value="1.0">도소매업 (1.0%)</option>
+                                    <option value="1.1">전문서비스업 (1.1%)</option>
+                                    <option value="1.4">제조업 (1.4%)</option>
+                                    <option value="2.4">건설업 (2.4%)</option>
+                                    <option value="1.53">기타 (평균 1.53%)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <button type="button" class="btn btn-primary btn-lg" id="calculateBtn">
+                                <i class="fas fa-calculator"></i> 보험료 계산하기
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-lg ms-2" id="resetBtn">
+                                <i class="fas fa-redo"></i> 초기화
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 결과 영역 -->
+                <div id="resultSection" class="d-none">
+                    <!-- 요약 정보 -->
+                    <div class="card mb-4 border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">계산 결과 요약</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-muted">근로자 부담금</h6>
+                                    <h3 class="text-primary" id="employeeTotal">0원</h3>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-muted">사업주 부담금</h6>
+                                    <h3 class="text-danger" id="employerTotal">0원</h3>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <h6 class="text-muted">실수령액</h6>
+                                    <h3 class="text-success" id="netSalary">0원</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 상세 내역 -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">4대보험료 상세 내역</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>구분</th>
+                                            <th>요율</th>
+                                            <th>근로자 부담</th>
+                                            <th>사업주 부담</th>
+                                            <th>합계</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><i class="fas fa-heartbeat text-danger"></i> 건강보험</td>
+                                            <td id="healthRate">7.09%</td>
+                                            <td id="healthEmployee">0원</td>
+                                            <td id="healthEmployer">0원</td>
+                                            <td id="healthTotal">0원</td>
+                                        </tr>
+                                        <tr>
+                                            <td><i class="fas fa-user-nurse text-info"></i> 장기요양보험</td>
+                                            <td id="careRate">12.95%</td>
+                                            <td id="careEmployee">0원</td>
+                                            <td id="careEmployer">0원</td>
+                                            <td id="careTotal">0원</td>
+                                        </tr>
+                                        <tr>
+                                            <td><i class="fas fa-piggy-bank text-warning"></i> 국민연금</td>
+                                            <td id="pensionRate">9%</td>
+                                            <td id="pensionEmployee">0원</td>
+                                            <td id="pensionEmployer">0원</td>
+                                            <td id="pensionTotal">0원</td>
+                                        </tr>
+                                        <tr>
+                                            <td><i class="fas fa-briefcase text-primary"></i> 고용보험</td>
+                                            <td id="employmentRate">1.8%</td>
+                                            <td id="employmentEmployee">0원</td>
+                                            <td id="employmentEmployer">0원</td>
+                                            <td id="employmentTotal">0원</td>
+                                        </tr>
+                                        <tr>
+                                            <td><i class="fas fa-hard-hat text-secondary"></i> 산재보험</td>
+                                            <td id="industrialRate">-</td>
+                                            <td>-</td>
+                                            <td id="industrialEmployer">0원</td>
+                                            <td id="industrialTotal">0원</td>
+                                        </tr>
+                                        <tr class="table-primary fw-bold">
+                                            <td>소계</td>
+                                            <td>-</td>
+                                            <td id="subtotalEmployee">0원</td>
+                                            <td id="subtotalEmployer">0원</td>
+                                            <td id="subtotalTotal">0원</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 소득세 정보 -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">소득세 및 지방소득세</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>소득세:</strong> <span id="incomeTax">0원</span></p>
+                                    <p><strong>지방소득세:</strong> <span id="localTax">0원</span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="text-muted">
+                                        <i class="fas fa-info-circle"></i> 
+                                        소득세는 급여액과 부양가족 수에 따라 산정됩니다.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 참고사항 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">참고사항</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="mb-0">
+                            <li>2025년 1월 기준 요율이 적용됩니다.</li>
+                            <li>건강보험료율은 7.09%로 2년 연속 동결되었습니다.</li>
+                            <li>국민연금 기준소득월액 상한: 617만원, 하한: 39만원</li>
+                            <li>건강보험 보수월액 상한: 없음, 하한: 없음</li>
+                            <li>실제 급여명세서와 차이가 있을 수 있으니 참고용으로만 사용하세요.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/insurance_calculator.js"></script>
