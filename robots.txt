@@ -21,6 +21,9 @@ Allow: /
 User-agent: Yandexbot
 Allow: /
 
+User-agent: Yeti
+Allow: /
+
 # Block bad bots
 User-agent: AhrefsBot
 Disallow: /
