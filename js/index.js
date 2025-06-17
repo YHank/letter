@@ -217,8 +217,13 @@ document.addEventListener('DOMContentLoaded', function(){
                             }
                             break;
                         case 'insurance_calculator':
-                            if (typeof initializeInsurancePage === 'function') {
-                                setTimeout(initializeInsurancePage, 100);
+                            if (typeof initializeInsuranceCalculator === 'function') {
+                                setTimeout(initializeInsuranceCalculator, 100);
+                            }
+                            break;
+                        case 'scientific_calculator':
+                            if (typeof initializeScientificCalculator === 'function') {
+                                setTimeout(initializeScientificCalculator, 100);
                             }
                             break;
                     }
