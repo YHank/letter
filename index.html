@@ -190,7 +190,9 @@
             <h1 class="visually-hidden">온라인 글자수 세기 도구</h1>
             <div class="row px-0 mx-0 justify-content-center mt-4">
                 <div class="col-12 col-lg-7 mb-4">
-                    <div class="row g-3">
+                    <section aria-label="텍스트 통계">
+                        <h2 class="visually-hidden">텍스트 통계 정보</h2>
+                        <div class="row g-3">
                         <div class="col-6 col-md-3">
                             <div class="stats-card h-100" role="region" aria-label="공백 제외 글자수">
                                 <div class="stats-icon primary" aria-hidden="true">
@@ -279,16 +281,17 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        </div>
+                    </section>
                 </div>
                 
                 <!-- 텍스트 변환 도구 및 번역 -->
                 <div class="col-12 col-lg-7 mt-3 mb-3">
-                    <div class="card">
+                    <section class="card" aria-label="텍스트 변환 도구">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                                 <div>
-                                    <h6 class="mb-2">텍스트 변환 도구</h6>
+                                    <h3 class="h6 mb-2">텍스트 변환 도구</h3>
                                     <div class="btn-group flex-wrap" role="group">
                                         <button type="button" class="btn btn-outline-primary btn-sm" data-transform="uppercase" data-bs-toggle="tooltip" title="모든 글자를 대문자로">
                                             <i class="fas fa-font me-1"></i>대문자
@@ -322,6 +325,9 @@
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center gap-2">
+                                    <button type="button" class="btn btn-outline-success btn-sm" id="export-stats" data-bs-toggle="tooltip" title="통계를 CSV 파일로 내보내기">
+                                        <i class="fas fa-download me-1"></i>통계 내보내기
+                                    </button>
                                     <span class="text-muted small">
                                         <i class="fas fa-language me-1"></i>번역
                                     </span>
@@ -344,6 +350,9 @@
                 </div>
                 <small id="input-help" class="form-text text-muted col-12 col-lg-7 mt-2">
                     <i class="fas fa-info-circle me-1"></i>텍스트를 입력하거나 붙여넣기하세요. 자동으로 저장됩니다.
+                    <a href="#" class="ms-2" id="show-help" data-bs-toggle="modal" data-bs-target="#helpModal">
+                        <i class="fas fa-question-circle"></i> 도움말
+                    </a>
                 </small>
 
             <div class="mt-5 col-12 col-lg-7 mb-4 text-secondary">
@@ -406,6 +415,147 @@
 </script>
             </div>
         </footer>
+        
+        <!-- 도움말 모달 -->
+        <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="helpModalLabel">
+                            <i class="fas fa-question-circle me-2"></i>글자수 세기 사용법
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="accordion" id="helpAccordion">
+                            <!-- 기본 사용법 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#basicUsage">
+                                        <i class="fas fa-book me-2"></i>기본 사용법
+                                    </button>
+                                </h2>
+                                <div id="basicUsage" class="accordion-collapse collapse show" data-bs-parent="#helpAccordion">
+                                    <div class="accordion-body">
+                                        <ul>
+                                            <li>텍스트 입력 영역에 글을 입력하거나 붙여넣기하세요</li>
+                                            <li>실시간으로 글자수, 단어수, 문장수가 자동 계산됩니다</li>
+                                            <li>모든 내용은 자동으로 저장되어 새로고침해도 유지됩니다</li>
+                                            <li>텍스트 영역은 아래쪽을 드래그하여 크기를 조절할 수 있습니다</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 단축키 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#shortcuts">
+                                        <i class="fas fa-keyboard me-2"></i>단축키
+                                    </button>
+                                </h2>
+                                <div id="shortcuts" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                    <div class="accordion-body">
+                                        <table class="table table-sm">
+                                            <tr>
+                                                <td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td>
+                                                <td>실행 취소</td>
+                                            </tr>
+                                            <tr>
+                                                <td><kbd>Ctrl</kbd> + <kbd>Y</kbd></td>
+                                                <td>다시 실행</td>
+                                            </tr>
+                                            <tr>
+                                                <td><kbd>Ctrl</kbd> + <kbd>S</kbd></td>
+                                                <td>저장 (자동 저장되지만 명시적 저장)</td>
+                                            </tr>
+                                            <tr>
+                                                <td><kbd>Ctrl</kbd> + <kbd>A</kbd></td>
+                                                <td>전체 선택</td>
+                                            </tr>
+                                        </table>
+                                        <small class="text-muted">Mac 사용자는 Ctrl 대신 Cmd 키를 사용하세요</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 텍스트 변환 도구 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#textTools">
+                                        <i class="fas fa-tools me-2"></i>텍스트 변환 도구
+                                    </button>
+                                </h2>
+                                <div id="textTools" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                    <div class="accordion-body">
+                                        <ul>
+                                            <li><strong>대문자:</strong> 모든 영문을 대문자로 변환</li>
+                                            <li><strong>소문자:</strong> 모든 영문을 소문자로 변환</li>
+                                            <li><strong>첫글자:</strong> 각 단어의 첫 글자를 대문자로</li>
+                                            <li><strong>특수문자제거:</strong> 한글, 영어, 숫자만 남기고 제거</li>
+                                            <li><strong>공백제거:</strong> 모든 공백 제거</li>
+                                            <li><strong>공백정리:</strong> 각 줄의 앞뒤 공백 정리</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 통계 설명 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#statistics">
+                                        <i class="fas fa-chart-bar me-2"></i>통계 설명
+                                    </button>
+                                </h2>
+                                <div id="statistics" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                    <div class="accordion-body">
+                                        <dl>
+                                            <dt>공백 제외 글자수</dt>
+                                            <dd>띄어쓰기와 줄바꿈을 제외한 순수 글자 개수</dd>
+                                            
+                                            <dt>공백 포함 글자수</dt>
+                                            <dd>띄어쓰기를 포함한 전체 글자 개수</dd>
+                                            
+                                            <dt>단어수</dt>
+                                            <dd>공백으로 구분된 단어의 개수</dd>
+                                            
+                                            <dt>읽기 시간</dt>
+                                            <dd>평균 읽기 속도(분당 400자)로 계산한 예상 시간</dd>
+                                            
+                                            <dt>문장수</dt>
+                                            <dd>마침표, 느낌표, 물음표로 끝나는 문장의 개수</dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 팁과 활용법 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#tips">
+                                        <i class="fas fa-lightbulb me-2"></i>팁과 활용법
+                                    </button>
+                                </h2>
+                                <div id="tips" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                    <div class="accordion-body">
+                                        <ul>
+                                            <li>통계 내보내기 버튼으로 현재 통계를 CSV 파일로 저장할 수 있습니다</li>
+                                            <li>구글 번역 기능으로 작성한 텍스트를 다른 언어로 번역할 수 있습니다</li>
+                                            <li>다크모드를 사용하면 야간에도 편안하게 작업할 수 있습니다</li>
+                                            <li>맞춤법 검사, 타자 연습 등 다양한 부가 기능을 활용해보세요</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <script src="/js/darkmode.js"></script>
         <script src="/js/index.js?13"></script>
         <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" defer></script>

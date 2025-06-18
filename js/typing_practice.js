@@ -4,7 +4,27 @@ let typingPracticeState = null;
 // 타자 연습 설정
 const typingConfig = {
     defaultDuration: 5 * 60 * 1000, // 5분 (밀리초)
-    showTimer: true
+    showTimer: true,
+    
+    // 레벨 시스템
+    levels: [
+        { name: '초보자', minWPM: 0, color: 'secondary' },
+        { name: '입문자', minWPM: 100, color: 'info' },
+        { name: '중급자', minWPM: 200, color: 'primary' },
+        { name: '숙련자', minWPM: 300, color: 'success' },
+        { name: '전문가', minWPM: 400, color: 'warning' },
+        { name: '마스터', minWPM: 500, color: 'danger' }
+    ],
+    
+    // 업적 시스템
+    achievements: [
+        { id: 'first_practice', name: '첫 연습', desc: '첫 타자 연습 완료', icon: 'fa-baby-carriage' },
+        { id: 'perfect_accuracy', name: '완벽주의자', desc: '100% 정확도 달성', icon: 'fa-bullseye' },
+        { id: 'speed_demon', name: '스피드 데몬', desc: '400타/분 이상 달성', icon: 'fa-rocket' },
+        { id: 'consistent_player', name: '꾸준한 연습', desc: '10회 연습 완료', icon: 'fa-calendar-check' },
+        { id: 'marathon_runner', name: '마라토너', desc: '50회 연습 완료', icon: 'fa-running' },
+        { id: 'improvement', name: '성장하는 실력', desc: '최고 기록 10% 향상', icon: 'fa-chart-line' }
+    ]
 };
 
 // 연습 기록 저장/불러오기
@@ -43,8 +63,83 @@ const practiceRecords = {
         if (modeRecords.length === 0) return 0;
         const sum = modeRecords.reduce((acc, r) => acc + r.wpm, 0);
         return Math.round(sum / modeRecords.length);
+    },
+    
+    getTotalCount: function() {
+        return this.load().length;
     }
 };
+
+// 업적 시스템
+const achievementSystem = {
+    getUnlocked: function() {
+        const saved = localStorage.getItem('typingAchievements');
+        return saved ? JSON.parse(saved) : [];
+    },
+    
+    unlock: function(achievementId) {
+        const unlocked = this.getUnlocked();
+        if (!unlocked.includes(achievementId)) {
+            unlocked.push(achievementId);
+            localStorage.setItem('typingAchievements', JSON.stringify(unlocked));
+            
+            // 업적 획득 알림
+            const achievement = typingConfig.achievements.find(a => a.id === achievementId);
+            if (achievement && typeof showAchievementNotification === 'function') {
+                showAchievementNotification(achievement);
+            }
+            return true;
+        }
+        return false;
+    },
+    
+    checkAchievements: function(wpm, accuracy, mode) {
+        const records = practiceRecords.load();
+        const totalCount = records.length;
+        
+        // 첫 연습
+        if (totalCount === 1) {
+            this.unlock('first_practice');
+        }
+        
+        // 완벽한 정확도
+        if (accuracy === 100) {
+            this.unlock('perfect_accuracy');
+        }
+        
+        // 스피드 데몬
+        if (wpm >= 400) {
+            this.unlock('speed_demon');
+        }
+        
+        // 꾸준한 연습
+        if (totalCount >= 10) {
+            this.unlock('consistent_player');
+        }
+        
+        // 마라토너
+        if (totalCount >= 50) {
+            this.unlock('marathon_runner');
+        }
+        
+        // 성장하는 실력 (이전 최고 기록보다 10% 향상)
+        const bestWPM = practiceRecords.getBestWPM(mode);
+        if (records.length > 1 && wpm > bestWPM * 1.1) {
+            this.unlock('improvement');
+        }
+    }
+};
+
+// 레벨 계산
+function getUserLevel(wpm) {
+    const levels = typingConfig.levels;
+    for (let i = levels.length - 1; i >= 0; i--) {
+        if (wpm >= levels[i].minWPM) {
+            return levels[i];
+        }
+    }
+    return levels[0];
+}
 
 // 페이지 언로드 시 정리
 function cleanupTypingPractice() {

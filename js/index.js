@@ -422,6 +422,34 @@ document.addEventListener('DOMContentLoaded', function(){
                 updateUndoRedoButtons();
             }
         }
+        
+        // Ctrl+S (Windows/Linux) 또는 Cmd+S (Mac) - 저장 (자동 저장이지만 명시적 저장 피드백)
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            autoSave(letterCountElement.innerText);
+            Toast.show('저장되었습니다', 'success', 2000);
+        }
+        
+        // Ctrl+A (Windows/Linux) 또는 Cmd+A (Mac) - 전체 선택
+        if ((e.ctrlKey || e.metaKey) && e.key === 'a' && document.activeElement === letterCountElement) {
+            e.preventDefault();
+            const range = document.createRange();
+            range.selectNodeContents(letterCountElement);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+        
+        // Tab 키 - 접근성을 위한 포커스 이동
+        if (e.key === 'Tab' && !e.shiftKey && document.activeElement === letterCountElement) {
+            // 다음 포커스 가능한 요소로 이동
+            const focusableElements = document.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            const currentIndex = Array.from(focusableElements).indexOf(document.activeElement);
+            if (currentIndex < focusableElements.length - 1) {
+                e.preventDefault();
+                focusableElements[currentIndex + 1].focus();
+            }
+        }
     });
     
     // 실행 취소/다시 실행 버튼 상태 업데이트
@@ -469,6 +497,14 @@ document.addEventListener('DOMContentLoaded', function(){
     
     // 초기 버튼 상태 업데이트
     updateUndoRedoButtons();
+    
+    // 통계 내보내기 버튼 이벤트 리스너
+    const exportBtn = document.getElementById('export-stats');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', function() {
+            exportStatistics();
+        });
+    }
     
     // 붙여넣기 이벤트 처리 (보안 강화)
     letterCountElement.addEventListener('paste', function(e) {
@@ -608,4 +644,55 @@ function loadPageScript(page) {
     
     const scripts = scriptMap[page] || [];
     return Promise.all(scripts.map(src => loadScript(src)));
+}
+
+// 통계 내보내기 함수
+function exportStatistics() {
+    try {
+        const letterCountElement = document.querySelector('#letter_count');
+        const text = letterCountElement.innerText;
+        
+        // 현재 통계 수집
+        const stats = {
+            '작성일시': new Date().toLocaleString('ko-KR'),
+            '공백제외_글자수': document.querySelector('[data-result="1"]').textContent,
+            '공백포함_글자수': document.querySelector('[data-result="2"]').textContent,
+            '단어수': document.querySelector('[data-result="3"]').textContent,
+            '라인수': document.querySelector('[data-result="4"]').textContent,
+            '문장수': document.querySelector('[data-result="sentences"]').textContent,
+            '평균단어길이': document.querySelector('[data-result="avg-word-length"]').textContent,
+            '읽기시간': document.querySelector('[data-result="reading-time"]').textContent,
+            '단락수': document.querySelector('[data-result="paragraphs"]').textContent,
+            '텍스트길이': text.length,
+            '텍스트_미리보기': text.substring(0, 100) + (text.length > 100 ? '...' : '')
+        };
+        
+        // CSV 형식으로 변환
+        const headers = Object.keys(stats);
+        const values = Object.values(stats);
+        
+        let csv = '\uFEFF'; // UTF-8 BOM 추가 (한글 깨짐 방지)
+        csv += headers.join(',') + '\n';
+        csv += values.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',');
+        
+        // Blob 생성 및 다운로드
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        
+        link.setAttribute('href', url);
+        link.setAttribute('download', `글자수통계_${new Date().toISOString().slice(0, 10)}.csv`);
+        link.style.visibility = 'hidden';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // 토스트 알림
+        Toast.show('통계를 CSV 파일로 내보냈습니다', 'success');
+        
+    } catch (error) {
+        console.error('통계 내보내기 중 오류:', error);
+        Toast.show('통계 내보내기 중 오류가 발생했습니다', 'danger');
+    }
 }
