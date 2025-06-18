@@ -2,20 +2,32 @@
     <div class="row">
         <div class="col-lg-8 mx-auto">
             <div class="main-content">
-                <h1 class="h3 mb-4">
-                    <i class="fas fa-calculator"></i> 공학용 계산기
-                </h1>
+                <div class="text-center mb-5">
+                    <h1 class="h2 mb-3">
+                        <span class="d-inline-block p-3 rounded-circle bg-info bg-opacity-10 mb-3">
+                            <i class="fas fa-calculator text-info"></i>
+                        </span>
+                        <br>
+                        공학용 계산기
+                    </h1>
+                    <p class="text-muted">실제 공학용 계산기와 동일한 기능을 제공합니다</p>
+                </div>
                 
-                <div class="alert alert-info mb-4">
-                    <i class="fas fa-info-circle"></i>
-                    실제 공학용 계산기와 동일한 기능을 제공합니다. 키보드 입력도 지원됩니다.
+                <div class="alert alert-info mb-4 border-0 shadow-sm">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-keyboard me-2 fs-5"></i>
+                        <div>
+                            <strong>키보드 입력 지원</strong><br>
+                            <small>숫자와 연산자는 키보드로 직접 입력할 수 있습니다.</small>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- 계산기 본체 -->
                 <div class="calculator-container">
-                    <div class="calculator">
+                    <div class="calculator-modern">
                         <!-- 디스플레이 -->
-                        <div class="display-section">
+                        <div class="display-modern">
                             <div class="display-mode">
                                 <span class="angle-mode" id="angleMode">DEG</span>
                                 <span class="memory-indicator" id="memoryIndicator" style="display: none;">M</span>
@@ -28,88 +40,88 @@
                         <div class="button-section">
                             <!-- 1행: 모드 및 메모리 -->
                             <div class="button-row">
-                                <button class="btn-calc btn-mode" data-action="shift">SHIFT</button>
-                                <button class="btn-calc btn-mode" data-action="mode">MODE</button>
-                                <button class="btn-calc btn-memory" data-action="memory-clear">MC</button>
-                                <button class="btn-calc btn-memory" data-action="memory-recall">MR</button>
-                                <button class="btn-calc btn-memory" data-action="memory-minus">M-</button>
-                                <button class="btn-calc btn-memory" data-action="memory-plus">M+</button>
+                                <button class="btn-calc-modern mode" data-action="shift">SHIFT</button>
+                                <button class="btn-calc-modern mode" data-action="mode">MODE</button>
+                                <button class="btn-calc-modern memory" data-action="memory-clear">MC</button>
+                                <button class="btn-calc-modern memory" data-action="memory-recall">MR</button>
+                                <button class="btn-calc-modern memory" data-action="memory-minus">M-</button>
+                                <button class="btn-calc-modern memory" data-action="memory-plus">M+</button>
                             </div>
 
                             <!-- 2행: 공학 함수 1 -->
                             <div class="button-row">
-                                <button class="btn-calc btn-function" data-action="reciprocal">1/x</button>
-                                <button class="btn-calc btn-function" data-action="square">x²</button>
-                                <button class="btn-calc btn-function" data-action="sqrt">√x</button>
-                                <button class="btn-calc btn-function" data-action="power">x^y</button>
-                                <button class="btn-calc btn-function" data-action="factorial">n!</button>
-                                <button class="btn-calc btn-function" data-action="percent">%</button>
+                                <button class="btn-calc-modern function" data-action="reciprocal">1/x</button>
+                                <button class="btn-calc-modern function" data-action="square">x²</button>
+                                <button class="btn-calc-modern function" data-action="sqrt">√x</button>
+                                <button class="btn-calc-modern function" data-action="power">x^y</button>
+                                <button class="btn-calc-modern function" data-action="factorial">n!</button>
+                                <button class="btn-calc-modern function" data-action="percent">%</button>
                             </div>
 
                             <!-- 3행: 삼각함수 -->
                             <div class="button-row">
-                                <button class="btn-calc btn-function" data-action="sin">sin</button>
-                                <button class="btn-calc btn-function" data-action="cos">cos</button>
-                                <button class="btn-calc btn-function" data-action="tan">tan</button>
-                                <button class="btn-calc btn-function" data-action="asin">sin⁻¹</button>
-                                <button class="btn-calc btn-function" data-action="acos">cos⁻¹</button>
-                                <button class="btn-calc btn-function" data-action="atan">tan⁻¹</button>
+                                <button class="btn-calc-modern function" data-action="sin">sin</button>
+                                <button class="btn-calc-modern function" data-action="cos">cos</button>
+                                <button class="btn-calc-modern function" data-action="tan">tan</button>
+                                <button class="btn-calc-modern function" data-action="asin">sin⁻¹</button>
+                                <button class="btn-calc-modern function" data-action="acos">cos⁻¹</button>
+                                <button class="btn-calc-modern function" data-action="atan">tan⁻¹</button>
                             </div>
 
                             <!-- 4행: 로그 및 지수 -->
                             <div class="button-row">
-                                <button class="btn-calc btn-function" data-action="log">log</button>
-                                <button class="btn-calc btn-function" data-action="ln">ln</button>
-                                <button class="btn-calc btn-function" data-action="exp">e^x</button>
-                                <button class="btn-calc btn-function" data-action="10pow">10^x</button>
-                                <button class="btn-calc btn-function" data-action="pi">π</button>
-                                <button class="btn-calc btn-function" data-action="e">e</button>
+                                <button class="btn-calc-modern function" data-action="log">log</button>
+                                <button class="btn-calc-modern function" data-action="ln">ln</button>
+                                <button class="btn-calc-modern function" data-action="exp">e^x</button>
+                                <button class="btn-calc-modern function" data-action="10pow">10^x</button>
+                                <button class="btn-calc-modern function" data-action="pi">π</button>
+                                <button class="btn-calc-modern function" data-action="e">e</button>
                             </div>
 
                             <!-- 5행: 괄호 및 Clear -->
                             <div class="button-row">
-                                <button class="btn-calc btn-operation" data-action="open-paren">(</button>
-                                <button class="btn-calc btn-operation" data-action="close-paren">)</button>
-                                <button class="btn-calc btn-clear" data-action="clear-entry">CE</button>
-                                <button class="btn-calc btn-clear" data-action="clear">C</button>
-                                <button class="btn-calc btn-clear" data-action="backspace">←</button>
-                                <button class="btn-calc btn-operation" data-action="divide">÷</button>
+                                <button class="btn-calc-modern operation" data-action="open-paren">(</button>
+                                <button class="btn-calc-modern operation" data-action="close-paren">)</button>
+                                <button class="btn-calc-modern clear" data-action="clear-entry">CE</button>
+                                <button class="btn-calc-modern clear" data-action="clear">C</button>
+                                <button class="btn-calc-modern clear" data-action="backspace">←</button>
+                                <button class="btn-calc-modern operation" data-action="divide">÷</button>
                             </div>
 
                             <!-- 6-8행: 숫자 및 기본 연산 -->
                             <div class="button-row">
-                                <button class="btn-calc btn-number" data-action="number" data-value="7">7</button>
-                                <button class="btn-calc btn-number" data-action="number" data-value="8">8</button>
-                                <button class="btn-calc btn-number" data-action="number" data-value="9">9</button>
-                                <button class="btn-calc btn-operation" data-action="multiply">×</button>
-                                <button class="btn-calc btn-function" data-action="ans">ANS</button>
-                                <button class="btn-calc btn-function" data-action="sign">±</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="7">7</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="8">8</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="9">9</button>
+                                <button class="btn-calc-modern operation" data-action="multiply">×</button>
+                                <button class="btn-calc-modern function" data-action="ans">ANS</button>
+                                <button class="btn-calc-modern function" data-action="sign">±</button>
                             </div>
 
                             <div class="button-row">
-                                <button class="btn-calc btn-number" data-action="number" data-value="4">4</button>
-                                <button class="btn-calc btn-number" data-action="number" data-value="5">5</button>
-                                <button class="btn-calc btn-number" data-action="number" data-value="6">6</button>
-                                <button class="btn-calc btn-operation" data-action="subtract">−</button>
-                                <button class="btn-calc btn-function" data-action="cube">x³</button>
-                                <button class="btn-calc btn-function" data-action="cbrt">∛x</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="4">4</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="5">5</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="6">6</button>
+                                <button class="btn-calc-modern operation" data-action="subtract">−</button>
+                                <button class="btn-calc-modern function" data-action="cube">x³</button>
+                                <button class="btn-calc-modern function" data-action="cbrt">∛x</button>
                             </div>
 
                             <div class="button-row">
-                                <button class="btn-calc btn-number" data-action="number" data-value="1">1</button>
-                                <button class="btn-calc btn-number" data-action="number" data-value="2">2</button>
-                                <button class="btn-calc btn-number" data-action="number" data-value="3">3</button>
-                                <button class="btn-calc btn-operation" data-action="add">+</button>
-                                <button class="btn-calc btn-function" data-action="abs">|x|</button>
-                                <button class="btn-calc btn-function" data-action="round">RND</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="1">1</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="2">2</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="3">3</button>
+                                <button class="btn-calc-modern operation" data-action="add">+</button>
+                                <button class="btn-calc-modern function" data-action="abs">|x|</button>
+                                <button class="btn-calc-modern function" data-action="round">RND</button>
                             </div>
 
                             <!-- 9행: 0, 소수점, 등호 -->
                             <div class="button-row">
-                                <button class="btn-calc btn-number btn-zero" data-action="number" data-value="0">0</button>
-                                <button class="btn-calc btn-number" data-action="decimal">.</button>
-                                <button class="btn-calc btn-function" data-action="exp-notation">EXP</button>
-                                <button class="btn-calc btn-equals" data-action="equals">=</button>
+                                <button class="btn-calc-modern number btn-zero" data-action="number" data-value="0">0</button>
+                                <button class="btn-calc-modern number" data-action="decimal">.</button>
+                                <button class="btn-calc-modern function" data-action="exp-notation">EXP</button>
+                                <button class="btn-calc-modern equals" data-action="equals">=</button>
                             </div>
                         </div>
                     </div>
@@ -164,194 +176,85 @@
     margin: 20px 0;
 }
 
-.calculator {
-    background: #2c3e50;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    max-width: 480px;
-    width: 100%;
-}
-
-/* 디스플레이 */
-.display-section {
-    background: #34495e;
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 20px;
-    min-height: 100px;
-    position: relative;
-}
-
-.display-mode {
-    position: absolute;
-    top: 5px;
-    left: 10px;
-    font-size: 12px;
-    color: #95a5a6;
-}
-
-.angle-mode {
-    padding: 2px 6px;
-    background: #2c3e50;
-    border-radius: 3px;
-}
-
-.memory-indicator {
-    margin-left: 10px;
-    color: #f39c12;
-}
-
-.display-expression {
-    color: #95a5a6;
-    font-size: 14px;
-    text-align: right;
-    min-height: 20px;
-    margin-top: 20px;
-    overflow-x: auto;
-    white-space: nowrap;
-}
-
-.display-main {
-    color: #ecf0f1;
-    font-size: 32px;
-    text-align: right;
-    font-family: 'Courier New', monospace;
-    margin-top: 5px;
-    overflow-x: auto;
-    white-space: nowrap;
-}
-
-/* 버튼 */
+/* 버튼 섹션 */
 .button-section {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 .button-row {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 8px;
-}
-
-.btn-calc {
-    padding: 15px 5px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: #fff;
-}
-
-.btn-calc:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.btn-calc:active {
-    transform: translateY(0);
-    box-shadow: none;
-}
-
-/* 버튼 타입별 색상 */
-.btn-number {
-    background: #34495e;
-}
-
-.btn-number:hover {
-    background: #4a5f7a;
-}
-
-.btn-operation {
-    background: #e74c3c;
-}
-
-.btn-operation:hover {
-    background: #c0392b;
-}
-
-.btn-function {
-    background: #3498db;
-}
-
-.btn-function:hover {
-    background: #2980b9;
-}
-
-.btn-equals {
-    background: #27ae60;
-    grid-column: span 2;
-}
-
-.btn-equals:hover {
-    background: #229954;
-}
-
-.btn-clear {
-    background: #e67e22;
-}
-
-.btn-clear:hover {
-    background: #d35400;
-}
-
-.btn-memory {
-    background: #9b59b6;
-}
-
-.btn-memory:hover {
-    background: #8e44ad;
-}
-
-.btn-mode {
-    background: #95a5a6;
-}
-
-.btn-mode:hover {
-    background: #7f8c8d;
+    gap: 10px;
 }
 
 .btn-zero {
     grid-column: span 2;
 }
 
-/* shift 모드 */
-.calculator.shift-mode .btn-function[data-action="sin"],
-.calculator.shift-mode .btn-function[data-action="cos"],
-.calculator.shift-mode .btn-function[data-action="tan"] {
-    background: #e74c3c;
+/* 디스플레이 스타일 */
+.display-mode {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.angle-mode {
+    padding: 3px 8px;
+    background: rgba(102, 126, 234, 0.2);
+    border-radius: 5px;
+    font-weight: 600;
+}
+
+.memory-indicator {
+    margin-left: 10px;
+    color: #f39c12;
+    font-weight: 600;
+}
+
+.display-expression {
+    color: #6c757d;
+    font-size: 14px;
+    text-align: right;
+    min-height: 25px;
+    margin-top: 25px;
+    overflow-x: auto;
+    white-space: nowrap;
+    font-family: 'Courier New', monospace;
+}
+
+.display-main {
+    color: #212529;
+    font-size: 36px;
+    text-align: right;
+    font-family: 'Courier New', monospace;
+    margin-top: 5px;
+    overflow-x: auto;
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.dark .display-main {
+    color: #e9ecef;
 }
 
 /* 반응형 */
 @media (max-width: 576px) {
-    .calculator {
+    .calculator-modern {
         padding: 15px;
     }
     
-    .btn-calc {
-        padding: 12px 3px;
+    .btn-calc-modern {
+        padding: 12px 4px;
         font-size: 12px;
     }
     
     .display-main {
-        font-size: 24px;
+        font-size: 28px;
     }
-}
-
-/* 다크모드 지원 */
-.dark-mode .calculator {
-    background: #1a1a1a;
-}
-
-.dark-mode .display-section {
-    background: #2a2a2a;
-}
-
-.dark-mode .angle-mode {
-    background: #1a1a1a;
 }
 </style>
 

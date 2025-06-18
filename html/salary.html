@@ -1,68 +1,93 @@
 <div class="container mt-5 mb-5">
-    <h2 class="mb-4">연봉 실수령액 계산기 (2023년 기준)</h2>
+    <div class="text-center mb-5">
+        <h1 class="h2 mb-3">
+            <span class="d-inline-block p-3 rounded-circle bg-success bg-opacity-10 mb-3">
+                <i class="fas fa-money-check-alt text-success"></i>
+            </span>
+            <br>
+            연봉 실수령액 계산기
+        </h1>
+        <p class="text-muted">2023년 기준으로 정확한 실수령액을 계산해드립니다</p>
+    </div>
 
-    <div class="row g-3 mb-4 align-items-end">
-        <div class="col-md-4">
-            <label for="annual_salary" class="form-label">연봉 (원)</label>
-            <input type="number" class="form-control" id="annual_salary" placeholder="예: 50000000" value="50000000">
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">급여 정보 입력</h5>
         </div>
-        <div class="col-md-3">
-            <label for="non_taxable_monthly" class="form-label">월 비과세액 (원)</label>
-            <span class="form-text">월 20만원까지 식대 비과세 (2023년 기준)</span>
-            <input type="number" class="form-control" id="non_taxable_monthly" value="200000" title="예: 식대 20만원">
-        </div>
-        <div class="col-md-3">
-            <label for="dependents_count" class="form-label">부양가족 수 (본인 포함)</label>
-            <input type="number" class="form-control" id="dependents_count" value="1" min="1">
-        </div>
-        <div class="col-md-2">
-            <button type="button" class="btn btn-primary w-100" id="calculate_salary_button">계산하기</button>
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="annual_salary" class="form-label">연봉 (원)</label>
+                    <input type="number" class="form-control" id="annual_salary" placeholder="예: 50000000" value="50000000">
+                </div>
+                <div class="col-md-3">
+                    <label for="non_taxable_monthly" class="form-label">월 비과세액 (원)</label>
+                    <span class="form-text">월 20만원까지 식대 비과세 (2023년 기준)</span>
+                    <input type="number" class="form-control" id="non_taxable_monthly" value="200000" title="예: 식대 20만원">
+                </div>
+                <div class="col-md-3">
+                    <label for="dependents_count" class="form-label">부양가족 수 (본인 포함)</label>
+                    <input type="number" class="form-control" id="dependents_count" value="1" min="1">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-primary w-100" id="calculate_salary_button">
+                        <i class="fas fa-calculator me-1"></i>계산하기
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
     <div id="salary_results_container" style="display: none;">
-        <hr class="my-4">
-        <h4>계산 결과</h4>
-        <div class="row mt-3">
-            <div class="col-md-6">
-                <table class="table">
-                    <tbody>
-                        <tr>
-                            <th scope="row">입력 연봉</th>
-                            <td id="result_annual_salary"></td>
-                        </tr>
-                        <tr>
-                            <th scope="row">월 비과세액</th>
-                            <td id="result_non_taxable_monthly"></td>
-                        </tr>
-                         <tr>
-                            <th scope="row">연간 비과세액</th>
-                            <td id="result_non_taxable_annual"></td>
-                        </tr>
-                        <tr>
-                            <th scope="row">부양가족 수</th>
-                            <td id="result_dependents_count"></td>
-                        </tr>
-                    </tbody>
-                </table>
+        <!-- 결과 요약 카드 -->
+        <div class="card mb-4 border-0 shadow-lg animate-fadeIn">
+            <div class="card-header bg-gradient text-white" style="background: var(--success-gradient);">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>계산 결과 요약
+                </h5>
             </div>
-            <div class="col-md-6">
-                <table class="table">
-                    <tbody>
-                        <tr class="table-primary">
-                            <th scope="row" style="font-size: 1.2em;">월 예상 실수령액</th>
-                            <td id="result_net_monthly_pay" style="font-size: 1.2em; font-weight: bold;"></td>
-                        </tr>
-                        <tr>
-                            <th scope="row">월 예상 소득 (세전)</th>
-                            <td id="result_gross_monthly_pay"></td>
-                        </tr>
-                        <tr>
-                            <th scope="row">월 공제액 합계</th>
-                            <td id="result_total_monthly_deduction"></td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="border-end pe-4">
+                            <h6 class="text-muted mb-3">입력 정보</h6>
+                            <div class="mb-2">
+                                <span class="text-muted">입력 연봉:</span>
+                                <strong id="result_annual_salary" class="float-end"></strong>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-muted">월 비과세액:</span>
+                                <strong id="result_non_taxable_monthly" class="float-end"></strong>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-muted">연간 비과세액:</span>
+                                <strong id="result_non_taxable_annual" class="float-end"></strong>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-muted">부양가족 수:</span>
+                                <strong id="result_dependents_count" class="float-end"></strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-center">
+                            <div class="mb-4">
+                                <h6 class="text-muted mb-2">월 예상 실수령액</h6>
+                                <h2 id="result_net_monthly_pay" class="text-success fw-bold animate-number mb-0" style="font-size: 2.5rem;"></h2>
+                            </div>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <small class="text-muted d-block">월 소득 (세전)</small>
+                                    <strong id="result_gross_monthly_pay"></strong>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted d-block">월 공제액</small>
+                                    <strong id="result_total_monthly_deduction" class="text-danger"></strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

@@ -1,47 +1,80 @@
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-12 col-lg-10">
-            <h2 class="mb-4">한글 타자 연습</h2>
+            <div class="text-center mb-5">
+                <h1 class="h2 mb-3">
+                    <span class="d-inline-block p-3 rounded-circle bg-primary bg-opacity-10 mb-3">
+                        <i class="fas fa-keyboard text-primary"></i>
+                    </span>
+                    <br>
+                    한글 타자 연습
+                </h1>
+                <p class="text-muted">다양한 모드로 타자 실력을 향상시켜보세요</p>
+            </div>
             
             <!-- 타자 연습 버전 선택 -->
             <div class="row mb-4" id="version-selector">
                 <div class="col-6 col-md-6 col-lg-3 mb-3">
                     <div class="card h-100 practice-mode-card" data-practice-mode="free">
-                        <div class="card-body text-center">
-                            <i class="fas fa-keyboard fa-3x mb-3 text-primary"></i>
-                            <h5 class="card-title">자유 타자 연습</h5>
-                            <p class="card-text">자유롭게 타자를 연습할 수 있습니다. 원하는 텍스트를 입력하여 연습하세요.</p>
-                            <button class="btn btn-primary select-mode-btn">선택하기</button>
+                        <div class="card-body text-center d-flex flex-column">
+                            <div class="mode-icon-wrapper mb-3">
+                                <div class="mode-icon bg-primary bg-opacity-10 rounded-circle p-4 d-inline-block">
+                                    <i class="fas fa-keyboard fa-3x text-primary"></i>
+                                </div>
+                            </div>
+                            <h5 class="card-title fw-bold">자유 타자 연습</h5>
+                            <p class="card-text flex-grow-1">자유롭게 타자를 연습할 수 있습니다. 원하는 텍스트를 입력하여 연습하세요.</p>
+                            <button class="btn btn-primary select-mode-btn">
+                                <i class="fas fa-play me-2"></i>선택하기
+                            </button>
                         </div>
                     </div>
                 </div>
                 <div class="col-6 col-md-6 col-lg-3 mb-3">
                     <div class="card h-100 practice-mode-card" data-practice-mode="beginner">
-                        <div class="card-body text-center">
-                            <i class="fas fa-graduation-cap fa-3x mb-3 text-success"></i>
-                            <h5 class="card-title">초보자 타자 연습</h5>
-                            <p class="card-text">키보드 위치를 보며 타자를 익힐 수 있습니다. 타자 위치 학습에 최적화되어 있습니다.</p>
-                            <button class="btn btn-success select-mode-btn">선택하기</button>
+                        <div class="card-body text-center d-flex flex-column">
+                            <div class="mode-icon-wrapper mb-3">
+                                <div class="mode-icon bg-success bg-opacity-10 rounded-circle p-4 d-inline-block">
+                                    <i class="fas fa-graduation-cap fa-3x text-success"></i>
+                                </div>
+                            </div>
+                            <h5 class="card-title fw-bold">초보자 타자 연습</h5>
+                            <p class="card-text flex-grow-1">키보드 위치를 보며 타자를 익힐 수 있습니다. 타자 위치 학습에 최적화되어 있습니다.</p>
+                            <button class="btn btn-success select-mode-btn">
+                                <i class="fas fa-play me-2"></i>선택하기
+                            </button>
                         </div>
                     </div>
                 </div>
                 <div class="col-6 col-md-6 col-lg-3 mb-3">
                     <div class="card h-100 practice-mode-card" data-practice-mode="special">
-                        <div class="card-body text-center">
-                            <i class="fas fa-hashtag fa-3x mb-3 text-warning"></i>
-                            <h5 class="card-title">특수 타자 연습</h5>
-                            <p class="card-text">숫자, 특수문자, 천지인 등 특별한 타자를 연습할 수 있습니다.</p>
-                            <button class="btn btn-warning select-mode-btn">선택하기</button>
+                        <div class="card-body text-center d-flex flex-column">
+                            <div class="mode-icon-wrapper mb-3">
+                                <div class="mode-icon bg-warning bg-opacity-10 rounded-circle p-4 d-inline-block">
+                                    <i class="fas fa-hashtag fa-3x text-warning"></i>
+                                </div>
+                            </div>
+                            <h5 class="card-title fw-bold">특수 타자 연습</h5>
+                            <p class="card-text flex-grow-1">숫자, 특수문자, 천지인 등 특별한 타자를 연습할 수 있습니다.</p>
+                            <button class="btn btn-warning select-mode-btn">
+                                <i class="fas fa-play me-2"></i>선택하기
+                            </button>
                         </div>
                     </div>
                 </div>
                 <div class="col-6 col-md-6 col-lg-3 mb-3">
                     <div class="card h-100 practice-mode-card" data-practice-mode="standard">
-                        <div class="card-body text-center">
-                            <i class="fas fa-chart-line fa-3x mb-3 text-info"></i>
-                            <h5 class="card-title">표준 타자 연습</h5>
-                            <p class="card-text">단어, 문장, 문단을 단계별로 연습하며 실력을 향상시킬 수 있습니다.</p>
-                            <button class="btn btn-info select-mode-btn">선택하기</button>
+                        <div class="card-body text-center d-flex flex-column">
+                            <div class="mode-icon-wrapper mb-3">
+                                <div class="mode-icon bg-info bg-opacity-10 rounded-circle p-4 d-inline-block">
+                                    <i class="fas fa-chart-line fa-3x text-info"></i>
+                                </div>
+                            </div>
+                            <h5 class="card-title fw-bold">표준 타자 연습</h5>
+                            <p class="card-text flex-grow-1">단어, 문장, 문단을 단계별로 연습하며 실력을 향상시킬 수 있습니다.</p>
+                            <button class="btn btn-info select-mode-btn">
+                                <i class="fas fa-play me-2"></i>선택하기
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -203,49 +236,45 @@
                 </div>
                 
                 <!-- 공통 통계 영역 -->
-                <div class="row mt-4" id="stats-area" style="display: none;">
-                    <div class="col-6 col-md-3 mb-3">
-                        <div class="card text-center h-100 border-primary">
-                            <div class="card-body p-3">
-                                <h6 class="card-subtitle mb-2 text-muted">
-                                    <i class="fas fa-tachometer-alt"></i> 타수
-                                </h6>
-                                <h2 id="wpm" class="text-primary mb-0">0</h2>
-                                <small id="wpm-unit" class="text-muted">타/분</small>
+                <div class="row mt-4 g-3" id="stats-area" style="display: none;">
+                    <div class="col-6 col-md-3">
+                        <div class="stats-card h-100 text-center">
+                            <div class="stats-icon primary mx-auto mb-2">
+                                <i class="fas fa-tachometer-alt"></i>
                             </div>
+                            <h6 class="text-muted small mb-1">타수</h6>
+                            <h2 id="wpm" class="text-primary fw-bold mb-0 animate-number">0</h2>
+                            <small id="wpm-unit" class="text-muted">타/분</small>
                         </div>
                     </div>
-                    <div class="col-6 col-md-3 mb-3">
-                        <div class="card text-center h-100 border-success">
-                            <div class="card-body p-3">
-                                <h6 class="card-subtitle mb-2 text-muted">
-                                    <i class="fas fa-bullseye"></i> 정확도
-                                </h6>
-                                <h2 id="accuracy" class="text-success mb-0">100%</h2>
-                                <small class="text-muted">정확도</small>
+                    <div class="col-6 col-md-3">
+                        <div class="stats-card h-100 text-center">
+                            <div class="stats-icon success mx-auto mb-2">
+                                <i class="fas fa-bullseye"></i>
                             </div>
+                            <h6 class="text-muted small mb-1">정확도</h6>
+                            <h2 id="accuracy" class="text-success fw-bold mb-0 animate-number">100%</h2>
+                            <small class="text-muted">정확도</small>
                         </div>
                     </div>
-                    <div class="col-6 col-md-3 mb-3">
-                        <div class="card text-center h-100 border-info">
-                            <div class="card-body p-3">
-                                <h6 class="card-subtitle mb-2 text-muted">
-                                    <i class="fas fa-clock"></i> 시간
-                                </h6>
-                                <h2 id="time" class="text-info mb-0">0:00</h2>
-                                <small class="text-muted">경과 시간</small>
+                    <div class="col-6 col-md-3">
+                        <div class="stats-card h-100 text-center">
+                            <div class="stats-icon info mx-auto mb-2">
+                                <i class="fas fa-clock"></i>
                             </div>
+                            <h6 class="text-muted small mb-1">시간</h6>
+                            <h2 id="time" class="text-info fw-bold mb-0">0:00</h2>
+                            <small class="text-muted">경과 시간</small>
                         </div>
                     </div>
-                    <div class="col-6 col-md-3 mb-3">
-                        <div class="card text-center h-100 border-warning">
-                            <div class="card-body p-3">
-                                <h6 class="card-subtitle mb-2 text-muted">
-                                    <i class="fas fa-tasks"></i> 진행률
-                                </h6>
-                                <h2 id="progress" class="text-warning mb-0">0%</h2>
-                                <small class="text-muted">완료</small>
+                    <div class="col-6 col-md-3">
+                        <div class="stats-card h-100 text-center">
+                            <div class="stats-icon warning mx-auto mb-2">
+                                <i class="fas fa-tasks"></i>
                             </div>
+                            <h6 class="text-muted small mb-1">진행률</h6>
+                            <h2 id="progress" class="text-warning fw-bold mb-0 animate-number">0%</h2>
+                            <small class="text-muted">완료</small>
                         </div>
                     </div>
                 </div>
@@ -253,13 +282,18 @@
                 <!-- 남은 시간 표시 영역 -->
                 <div class="row mt-3">
                     <div class="col-12">
-                        <div class="card text-center border-danger">
-                            <div class="card-body py-3">
-                                <h5 id="remaining-time" class="mb-0 text-danger">
-                                    <i class="fas fa-hourglass-half"></i> 남은 시간: 5:00
-                                </h5>
-                                <div class="progress mt-2" style="height: 5px;">
-                                    <div id="time-progress-bar" class="progress-bar bg-danger" role="progressbar" style="width: 100%"></div>
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-hourglass-half text-danger me-2"></i>
+                                        <span id="remaining-time" class="text-danger fw-bold">남은 시간: 5:00</span>
+                                    </h6>
+                                    <small class="text-muted">5분 챌린지</small>
+                                </div>
+                                <div class="progress" style="height: 10px;">
+                                    <div id="time-progress-bar" class="progress-bar" role="progressbar" 
+                                         style="width: 100%; background: var(--warning-gradient);"></div>
                                 </div>
                             </div>
                         </div>

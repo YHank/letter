@@ -4,13 +4,23 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>글자수 세기 - 한글 글자수, 단어수, 문장수 계산기 | 무료 온라인 도구</title>
+        
+        <!-- 보안 헤더 -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://ajax.googleapis.com https://pagead2.googlesyndication.com https://www.googletagmanager.com https://translate.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https:; frame-src https://www.google.com https://pagead2.googlesyndication.com;">
+        <meta http-equiv="X-Content-Type-Options" content="nosniff">
+        <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+        <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1009706165028289"
      crossorigin="anonymous"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" 
             integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+            integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer">
         <link rel="stylesheet" href="/css/index.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+            integrity="sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs"
+            crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
         </script>
@@ -113,6 +123,12 @@
         </script>
     </head>
     <body>
+        <script>
+            // HTTPS 강제 적용
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                location.replace('https:' + window.location.href.substring(window.location.protocol.length));
+            }
+        </script>
         <nav class="navbar navbar-expand-xxl navbar-light bg-light" aria-label="Seventh navbar example">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/">글자수 세기</a>
@@ -174,46 +190,161 @@
             <h1 class="visually-hidden">온라인 글자수 세기 도구</h1>
             <div class="row px-0 mx-0 justify-content-center mt-4">
                 <div class="col-12 col-lg-7 mb-4">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h2 class="h6 mb-3">기본 통계</h2>
-                            <div> 공백 제외 글자 수: <span data-result="1" class="text-primary fw-bold">0</span></div>
-                            <div> 공백 포함 글자 수: <span data-result="2" class="fw-bold">0</span></div>
-                            <div> 단어 수 : <span data-result="3" class="text-success fw-bold">0</span></div>
-                            <div> 라인 수 : <span data-result="4" class="fw-bold">0</span></div>
+                    <div class="row g-3">
+                        <div class="col-6 col-md-3">
+                            <div class="stats-card h-100" role="region" aria-label="공백 제외 글자수">
+                                <div class="stats-icon primary" aria-hidden="true">
+                                    <i class="fas fa-font"></i>
+                                </div>
+                                <h6 class="text-muted small mb-1">공백 제외</h6>
+                                <h3 data-result="1" class="text-primary fw-bold mb-0" aria-live="polite" aria-atomic="true">0</h3>
+                                <small class="text-muted">글자</small>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <h2 class="h6 mb-3">텍스트 분석</h2>
-                            <div> 문장 수: <span data-result="sentences" class="fw-bold">0</span></div>
-                            <div> 평균 단어 길이: <span data-result="avg-word-length" class="fw-bold">0</span>자</div>
-                            <div> 예상 읽기 시간: <span data-result="reading-time" class="fw-bold">0</span></div>
-                            <div> 단락 수: <span data-result="paragraphs" class="fw-bold">0</span></div>
+                        <div class="col-6 col-md-3">
+                            <div class="stats-card h-100">
+                                <div class="stats-icon info">
+                                    <i class="fas fa-text-width"></i>
+                                </div>
+                                <h6 class="text-muted small mb-1">공백 포함</h6>
+                                <h3 data-result="2" class="fw-bold mb-0">0</h3>
+                                <small class="text-muted">글자</small>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stats-card h-100">
+                                <div class="stats-icon success">
+                                    <i class="fas fa-spell-check"></i>
+                                </div>
+                                <h6 class="text-muted small mb-1">단어 수</h6>
+                                <h3 data-result="3" class="text-success fw-bold mb-0">0</h3>
+                                <small class="text-muted">단어</small>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stats-card h-100">
+                                <div class="stats-icon warning">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <h6 class="text-muted small mb-1">읽기 시간</h6>
+                                <h3 data-result="reading-time" class="text-warning fw-bold mb-0">0</h3>
+                                <small class="text-muted">예상</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 추가 통계 -->
+                    <div class="row g-3 mt-1">
+                        <div class="col-6 col-md-3">
+                            <div class="stats-card h-100">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-align-left text-muted me-2"></i>
+                                    <div>
+                                        <small class="text-muted d-block">라인 수</small>
+                                        <strong data-result="4">0</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stats-card h-100">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-paragraph text-muted me-2"></i>
+                                    <div>
+                                        <small class="text-muted d-block">문장 수</small>
+                                        <strong data-result="sentences">0</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stats-card h-100">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-ruler-horizontal text-muted me-2"></i>
+                                    <div>
+                                        <small class="text-muted d-block">평균 길이</small>
+                                        <strong><span data-result="avg-word-length">0</span>자</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stats-card h-100">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-indent text-muted me-2"></i>
+                                    <div>
+                                        <small class="text-muted d-block">단락 수</small>
+                                        <strong data-result="paragraphs">0</strong>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- 텍스트 변환 도구 및 번역 -->
                 <div class="col-12 col-lg-7 mt-3 mb-3">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                        <div class="btn-group flex-wrap" role="group">
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-transform="uppercase">대문자</button>
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-transform="lowercase">소문자</button>
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-transform="capitalize">첫글자</button>
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-special">특수문자제거</button>
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-spaces">공백제거</button>
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-transform="trim-lines">공백정리</button>
-                            <button type="button" class="btn btn-outline-danger btn-sm" data-transform="clear">지우기</button>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="text-muted small">번역</span>
-                            <div id="google_translate_element"></div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                <div>
+                                    <h6 class="mb-2">텍스트 변환 도구</h6>
+                                    <div class="btn-group flex-wrap" role="group">
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="uppercase" data-bs-toggle="tooltip" title="모든 글자를 대문자로">
+                                            <i class="fas fa-font me-1"></i>대문자
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="lowercase" data-bs-toggle="tooltip" title="모든 글자를 소문자로">
+                                            <i class="fas fa-font me-1" style="font-size: 0.8em"></i>소문자
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="capitalize" data-bs-toggle="tooltip" title="각 단어의 첫 글자를 대문자로">
+                                            <i class="fas fa-text-height me-1"></i>첫글자
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-special" data-bs-toggle="tooltip" title="특수문자를 제거합니다">
+                                            <i class="fas fa-filter me-1"></i>특수문자제거
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-spaces" data-bs-toggle="tooltip" title="모든 공백을 제거합니다">
+                                            <i class="fas fa-compress me-1"></i>공백제거
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="trim-lines" data-bs-toggle="tooltip" title="각 줄의 앞뒤 공백을 정리합니다">
+                                            <i class="fas fa-align-left me-1"></i>공백정리
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" data-transform="clear" data-bs-toggle="tooltip" title="모든 텍스트를 지웁니다">
+                                            <i class="fas fa-trash me-1"></i>지우기
+                                        </button>
+                                    </div>
+                                    <div class="btn-group mt-2" role="group">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-action="undo" data-bs-toggle="tooltip" title="실행 취소 (Ctrl+Z)">
+                                            <i class="fas fa-undo me-1"></i>실행 취소
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-action="redo" data-bs-toggle="tooltip" title="다시 실행 (Ctrl+Y)">
+                                            <i class="fas fa-redo me-1"></i>다시 실행
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-muted small">
+                                        <i class="fas fa-language me-1"></i>번역
+                                    </span>
+                                    <div id="google_translate_element"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- 텍스트 입력 영역 -->
-                <div id="letter_count" contenteditable="true" class="editable col-12 col-lg-7 border border-dark fs-6 p-4 overflow-auto" style="height:500px" role="textbox" aria-label="텍스트 입력 영역" aria-describedby="input-help"></div>
-                <small id="input-help" class="form-text text-muted col-12 col-lg-7 mt-2">텍스트를 입력하거나 붙여넣기하세요. 자동으로 저장됩니다.</small>
+                <div class="col-12 col-lg-7 position-relative">
+                    <div id="letter_count" contenteditable="true" class="editable border border-dark fs-6 p-4 overflow-auto" style="height:500px; resize: vertical; min-height: 300px; max-height: 800px;" role="textbox" aria-label="텍스트 입력 영역" aria-describedby="input-help"></div>
+                    <div id="save-indicator" class="position-absolute top-0 end-0 m-3 badge bg-success d-none" role="status" aria-live="polite">
+                        <i class="fas fa-check me-1" aria-hidden="true"></i>저장됨
+                    </div>
+                    <div class="resize-handle position-absolute bottom-0 end-0 m-2 text-muted" style="cursor: ns-resize;">
+                        <i class="fas fa-grip-lines" title="드래그하여 크기 조절"></i>
+                    </div>
+                </div>
+                <small id="input-help" class="form-text text-muted col-12 col-lg-7 mt-2">
+                    <i class="fas fa-info-circle me-1"></i>텍스트를 입력하거나 붙여넣기하세요. 자동으로 저장됩니다.
+                </small>
 
             <div class="mt-5 col-12 col-lg-7 mb-4 text-secondary">
                 <h3 class="pt-5">글자수 세기 기능의 필요성</h3>
@@ -276,29 +407,31 @@
             </div>
         </footer>
         <script src="/js/darkmode.js"></script>
-        <script src="/js/index.js?12"></script> 
-        <script src="/js/spellcheck_client.js?2"></script>
-        <script src="/js/spellcheck_simple.js?2"></script>
-        <script src="/js/practice_data.js"></script>
-        <script src="/js/typing_practice.js?12"></script>
-        <script src="/js/salary_calculator.js?2"></script>
-        <script src="/js/insurance_calculator.js?1"></script>
-        <script src="/js/scientific_calculator.js?1"></script>
-        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        <script src="/js/index.js?13"></script>
+        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" defer></script>
         <script>
-// get 으로 page 가 넘어오면.
-console.log('script');
-if(location.search){
-    let url = new URL(location.href);
-    let params = new URLSearchParams(url.search);
-    let page = params.get('page');
-    if(page){
-        let target = document.querySelector(`[data-move="${page}"]`);
-        if(target){
-            $('main').load('/html/'+page+'.html');
+// URL 파라미터로 페이지 로드
+(function() {
+    try {
+        if(location.search){
+            const url = new URL(location.href);
+            const params = new URLSearchParams(url.search);
+            const page = params.get('page');
+            if(page){
+                const target = document.querySelector(`[data-move="${page}"]`);
+                if(target){
+                    $('main').load('/html/'+page+'.html', function(response, status, xhr) {
+                        if (status === "success" && typeof loadPageScript === 'function') {
+                            loadPageScript(page);
+                        }
+                    });
+                }
+            }
         }
+    } catch(e) {
+        console.error('페이지 로드 중 오류:', e);
     }
-}
+})();
 </script>
     </body>
 </html>

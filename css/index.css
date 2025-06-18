@@ -13,6 +13,17 @@
     --table-hover: #f8f9fa;
     --btn-primary-bg: #0d6efd;
     --btn-primary-text: #ffffff;
+    
+    /* 새로운 디자인 시스템 색상 */
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    --warning-gradient: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+    --info-gradient: linear-gradient(135deg, #2af598 0%, #009efd 100%);
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 다크 모드 색상 */
@@ -322,4 +333,469 @@ body {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
+}
+
+/* ===== 새로운 UI/UX 개선 스타일 ===== */
+
+/* 애니메이션 정의 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes countUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 네비게이션 바 개선 */
+.navbar {
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(10px);
+    background-color: rgba(248, 249, 250, 0.95) !important;
+}
+
+.dark .navbar {
+    background-color: rgba(33, 37, 41, 0.95) !important;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.3rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.nav-link {
+    position: relative;
+    transition: var(--transition);
+    font-weight: 500;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--primary-gradient);
+    transition: var(--transition);
+    transform: translateX(-50%);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 80%;
+}
+
+/* 카드 스타일 개선 */
+.card {
+    border: none;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl);
+}
+
+/* 메인 페이지 통계 개선 */
+[data-result] {
+    transition: var(--transition);
+    display: inline-block;
+}
+
+[data-result].changing {
+    animation: pulse 0.3s ease;
+    color: #667eea;
+}
+
+/* 입력 영역 개선 */
+.editable {
+    border-radius: 15px !important;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+    resize: vertical;
+}
+
+.editable:focus {
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
+    border-color: #667eea !important;
+    outline: none;
+}
+
+/* 크기 조절 핸들 스타일 */
+.resize-handle {
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
+.resize-handle:hover {
+    opacity: 1;
+}
+
+/* 사용자 정의 크기 조절 표시기 */
+.editable::-webkit-resizer {
+    display: none;
+}
+
+/* 버튼 스타일 개선 */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* 텍스트 변환 버튼 그룹 개선 */
+.btn-group {
+    background: var(--card-bg);
+    padding: 0.5rem;
+    border-radius: 10px;
+    box-shadow: var(--shadow-md);
+}
+
+/* 툴팁 스타일 */
+[data-bs-toggle="tooltip"] {
+    cursor: help;
+}
+
+/* 타자 연습 카드 개선 */
+.practice-mode-card {
+    border: none;
+    background: var(--card-bg);
+    box-shadow: var(--shadow-md);
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+}
+
+.practice-mode-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+    transform: scaleX(0);
+    transition: var(--transition);
+}
+
+.practice-mode-card:hover::before {
+    transform: scaleX(1);
+}
+
+.practice-mode-card .fas {
+    transition: var(--transition);
+}
+
+.practice-mode-card:hover .fas {
+    transform: scale(1.2) rotate(5deg);
+}
+
+/* 진행률 바 개선 */
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar {
+    background: var(--primary-gradient);
+    transition: width 0.3s ease;
+}
+
+/* 키보드 시각화 개선 */
+.keyboard-container .key {
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    position: relative;
+    font-weight: 600;
+}
+
+.dark .keyboard-container .key {
+    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+    color: #e9ecef;
+}
+
+.keyboard-container .key::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--primary-gradient);
+    opacity: 0;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.keyboard-container .key.active {
+    transform: translateY(2px) scale(0.95);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.keyboard-container .key.active::before {
+    opacity: 0.8;
+}
+
+.keyboard-container .key:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 입력 필드 개선 */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* 결과 카드 애니메이션 */
+#resultSection .card {
+    animation: slideIn 0.5s ease forwards;
+    animation-delay: 0.1s;
+    opacity: 0;
+}
+
+#resultSection .card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+#resultSection .card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+/* 모달 개선 */
+.modal-content {
+    border: none;
+    border-radius: 15px;
+    box-shadow: var(--shadow-xl);
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background: var(--primary-gradient);
+    color: white;
+    border-radius: 15px 15px 0 0;
+}
+
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+/* 테이블 개선 */
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table th {
+    background-color: rgba(0, 0, 0, 0.03);
+    font-weight: 600;
+}
+
+.dark .table th {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* 로딩 애니메이션 */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(102, 126, 234, 0.3);
+    border-radius: 50%;
+    border-top-color: #667eea;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 페이드인 애니메이션 클래스 */
+.animate-fadeIn {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* 결과 카드 스타일 */
+.result-card {
+    transition: var(--transition);
+    border: 2px solid transparent;
+}
+
+.result-card:hover {
+    transform: translateY(-5px);
+    border-color: currentColor;
+}
+
+/* 그라데이션 배경 헤더 */
+.bg-gradient {
+    background: var(--primary-gradient);
+}
+
+/* 공학용 계산기 개선 스타일 */
+.calculator-modern {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: var(--shadow-xl);
+    max-width: 520px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.dark .calculator-modern {
+    background: #1a1a1a;
+}
+
+.display-modern {
+    background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 25px;
+    min-height: 120px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.dark .display-modern {
+    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+}
+
+.btn-calc-modern {
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-calc-modern::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+}
+
+.btn-calc-modern:hover::before {
+    width: 100px;
+    height: 100px;
+}
+
+.btn-calc-modern:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-calc-modern:active {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 계산기 버튼 색상 개선 */
+.btn-calc-modern.number {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.btn-calc-modern.operation {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+
+.btn-calc-modern.function {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+
+.btn-calc-modern.memory {
+    background: linear-gradient(135deg, #fa709a, #fee140);
+}
+
+.btn-calc-modern.clear {
+    background: linear-gradient(135deg, #f77062, #fe5196);
+}
+
+.btn-calc-modern.equals {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    grid-column: span 2;
+}
+
+.btn-calc-modern.mode {
+    background: linear-gradient(135deg, #a8c0ff, #3f2b96);
+}
+
+/* 반응형 개선 */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .btn-group {
+        flex-wrap: wrap;
+        padding: 0.5rem;
+    }
+    
+    .btn-group .btn {
+        margin: 0.2rem;
+    }
 }
