@@ -2,11 +2,11 @@
 function initializeSimpleSpellchecker() {
     console.log('간단한 맞춤법 검사기 초기화 중...');
     
-    const inputArea = document.getElementById('simple_spellcheck_input');
-    const checkBtn = document.getElementById('simple_check_btn');
-    const clearBtn = document.getElementById('simple_clear_btn');
-    const applyBtn = document.getElementById('simple_apply_btn');
-    const resultsDiv = document.getElementById('simple_results');
+    const inputArea = DOMUtils.getElement('#simple_spellcheck_input');
+    const checkBtn = DOMUtils.getElement('#simple_check_btn');
+    const clearBtn = DOMUtils.getElement('#simple_clear_btn');
+    const applyBtn = DOMUtils.getElement('#simple_apply_btn');
+    const resultsDiv = DOMUtils.getElement('#simple_results');
     
     if (!inputArea || !checkBtn || !clearBtn) {
         console.error('필수 요소를 찾을 수 없습니다');
@@ -16,7 +16,7 @@ function initializeSimpleSpellchecker() {
     let lastResults = null;
     
     // 맞춤법 검사
-    checkBtn.addEventListener('click', function() {
+    DOMUtils.addEvent(checkBtn, 'click', function() {
         const text = inputArea.value.trim();
         if (!text) {
             alert('검사할 텍스트를 입력해주세요.');
@@ -44,7 +44,7 @@ function initializeSimpleSpellchecker() {
     });
     
     // 지우기
-    clearBtn.addEventListener('click', function() {
+    DOMUtils.addEvent(clearBtn, 'click', function() {
         inputArea.value = '';
         resultsDiv.style.display = 'none';
         applyBtn.style.display = 'none';
@@ -52,7 +52,7 @@ function initializeSimpleSpellchecker() {
     });
     
     // 교정 적용
-    applyBtn.addEventListener('click', function() {
+    DOMUtils.addEvent(applyBtn, 'click', function() {
         if (lastResults && lastResults.corrected) {
             inputArea.value = lastResults.corrected;
             
@@ -73,7 +73,7 @@ function initializeSimpleSpellchecker() {
     });
     
     // 엔터키로 검사 실행
-    inputArea.addEventListener('keydown', function(e) {
+    DOMUtils.addEvent(inputArea, 'keydown', function(e) {
         if (e.ctrlKey && e.key === 'Enter') {
             checkBtn.click();
         }

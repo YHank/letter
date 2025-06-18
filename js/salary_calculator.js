@@ -212,8 +212,8 @@ function calculateNetMonthlyPay(annualSalary, nonTaxableMonthlyAmount, dependent
 
 // UI 업데이트 함수 (결과 표시)
 function displaySalaryCalculationResults(annualSalary, nonTaxableMonthly, dependentsCount) {
-    const resultsContainer = document.getElementById('salary_results_container');
-    const errorDiv = document.getElementById('error_message');
+    const resultsContainer = DOMUtils.getElement('#salary_results_container');
+    const errorDiv = DOMUtils.getElement('#error_message');
     errorDiv.style.display = 'none'; // 이전 오류 메시지 숨김
 
     // 입력값 유효성 검사
@@ -258,33 +258,33 @@ function displaySalaryCalculationResults(annualSalary, nonTaxableMonthly, depend
     const totalMonthlyDeduction = Math.round((anp + ahi + altc + aei + finalIncomeTax + localIncomeTax) / 12);
     const netMonthlyPay = Math.round((annualSalary - (anp + ahi + altc + aei + finalIncomeTax + localIncomeTax)) / 12);
 
-    document.getElementById('result_annual_salary').textContent = annualSalary.toLocaleString() + '원';
-    document.getElementById('result_non_taxable_monthly').textContent = nonTaxableMonthly.toLocaleString() + '원';
-    document.getElementById('result_non_taxable_annual').textContent = nonTaxableAnnual.toLocaleString() + '원';
-    document.getElementById('result_dependents_count').textContent = dependentsCount + '명';
+    DOMUtils.getElement('#result_annual_salary').textContent = NumberUtils.addCommas(annualSalary) + '원';
+    DOMUtils.getElement('#result_non_taxable_monthly').textContent = NumberUtils.addCommas(nonTaxableMonthly) + '원';
+    DOMUtils.getElement('#result_non_taxable_annual').textContent = NumberUtils.addCommas(nonTaxableAnnual) + '원';
+    DOMUtils.getElement('#result_dependents_count').textContent = dependentsCount + '명';
 
-    document.getElementById('result_net_monthly_pay').textContent = netMonthlyPay.toLocaleString() + '원';
-    document.getElementById('result_gross_monthly_pay').textContent = Math.round(annualSalary / 12).toLocaleString() + '원';
-    document.getElementById('result_total_monthly_deduction').textContent = totalMonthlyDeduction.toLocaleString() + '원';
+    DOMUtils.getElement('#result_net_monthly_pay').textContent = NumberUtils.addCommas(netMonthlyPay) + '원';
+    DOMUtils.getElement('#result_gross_monthly_pay').textContent = NumberUtils.addCommas(Math.round(annualSalary / 12)) + '원';
+    DOMUtils.getElement('#result_total_monthly_deduction').textContent = NumberUtils.addCommas(totalMonthlyDeduction) + '원';
 
-    document.getElementById('deduction_national_pension').textContent = Math.round(anp / 12).toLocaleString();
-    document.getElementById('deduction_health_insurance').textContent = Math.round(ahi / 12).toLocaleString();
-    document.getElementById('deduction_long_term_care').textContent = Math.round(altc / 12).toLocaleString();
-    document.getElementById('deduction_employment_insurance').textContent = Math.round(aei / 12).toLocaleString();
-    document.getElementById('deduction_income_tax').textContent = Math.round(finalIncomeTax / 12).toLocaleString();
-    document.getElementById('deduction_local_income_tax').textContent = Math.round(localIncomeTax / 12).toLocaleString();
+    DOMUtils.getElement('#deduction_national_pension').textContent = NumberUtils.addCommas(Math.round(anp / 12));
+    DOMUtils.getElement('#deduction_health_insurance').textContent = NumberUtils.addCommas(Math.round(ahi / 12));
+    DOMUtils.getElement('#deduction_long_term_care').textContent = NumberUtils.addCommas(Math.round(altc / 12));
+    DOMUtils.getElement('#deduction_employment_insurance').textContent = NumberUtils.addCommas(Math.round(aei / 12));
+    DOMUtils.getElement('#deduction_income_tax').textContent = NumberUtils.addCommas(Math.round(finalIncomeTax / 12));
+    DOMUtils.getElement('#deduction_local_income_tax').textContent = NumberUtils.addCommas(Math.round(localIncomeTax / 12));
 
     resultsContainer.style.display = 'block';
 }
 
 function initializeSalaryPage() {
-    const calculateButton = document.getElementById('calculate_salary_button');
-    const annualSalaryInput = document.getElementById('annual_salary');
-    const nonTaxableMonthlyInput = document.getElementById('non_taxable_monthly');
-    const dependentsCountInput = document.getElementById('dependents_count');
+    const calculateButton = DOMUtils.getElement('#calculate_salary_button');
+    const annualSalaryInput = DOMUtils.getElement('#annual_salary');
+    const nonTaxableMonthlyInput = DOMUtils.getElement('#non_taxable_monthly');
+    const dependentsCountInput = DOMUtils.getElement('#dependents_count');
 
     if (calculateButton && annualSalaryInput && nonTaxableMonthlyInput && dependentsCountInput) {
-        calculateButton.addEventListener('click', function() {
+        DOMUtils.addEvent(calculateButton, 'click', function() {
             const annualSalary = parseInt(annualSalaryInput.value, 10);
             const nonTaxableMonthly = parseInt(nonTaxableMonthlyInput.value, 10);
             const dependentsCount = parseInt(dependentsCountInput.value, 10);

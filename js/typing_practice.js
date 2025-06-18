@@ -42,12 +42,11 @@ const practiceRecords = {
         if (records.length > 100) {
             records.shift();
         }
-        localStorage.setItem('typingPracticeRecords', JSON.stringify(records));
+        StorageUtils.save('typingPracticeRecords', records);
     },
     
     load: function() {
-        const saved = localStorage.getItem('typingPracticeRecords');
-        return saved ? JSON.parse(saved) : [];
+        return StorageUtils.load('typingPracticeRecords', []);
     },
     
     getBestWPM: function(mode) {
@@ -73,15 +72,14 @@ const practiceRecords = {
 // 업적 시스템
 const achievementSystem = {
     getUnlocked: function() {
-        const saved = localStorage.getItem('typingAchievements');
-        return saved ? JSON.parse(saved) : [];
+        return StorageUtils.load('typingAchievements', []);
     },
     
     unlock: function(achievementId) {
         const unlocked = this.getUnlocked();
         if (!unlocked.includes(achievementId)) {
             unlocked.push(achievementId);
-            localStorage.setItem('typingAchievements', JSON.stringify(unlocked));
+            StorageUtils.save('typingAchievements', unlocked);
             
             // 업적 획득 알림
             const achievement = typingConfig.achievements.find(a => a.id === achievementId);
@@ -161,7 +159,7 @@ function cleanupTypingPractice() {
         }
         
         // 모든 버튼의 이벤트 리스너를 강제로 제거 (클론으로)
-        document.querySelectorAll('.select-mode-btn').forEach(btn => {
+        DOMUtils.getElements('.select-mode-btn').forEach(btn => {
             const newBtn = btn.cloneNode(true);
             if (btn.parentNode) {
                 btn.parentNode.replaceChild(newBtn, btn);
@@ -203,12 +201,12 @@ function initializeTypingPracticeNew() {
     };
     
     // DOM 요소들
-    const versionSelector = document.getElementById('version-selector');
-    const practiceArea = document.getElementById('practice-area');
-    const backToMenuBtn = document.getElementById('back-to-menu');
-    const statsArea = document.getElementById('stats-area');
-    const langKoreanBtn = document.getElementById('lang-korean');
-    const langEnglishBtn = document.getElementById('lang-english');
+    const versionSelector = DOMUtils.getElement('#version-selector');
+    const practiceArea = DOMUtils.getElement('#practice-area');
+    const backToMenuBtn = DOMUtils.getElement('#back-to-menu');
+    const statsArea = DOMUtils.getElement('#stats-area');
+    const langKoreanBtn = DOMUtils.getElement('#lang-korean');
+    const langEnglishBtn = DOMUtils.getElement('#lang-english');
     
     // 기존 이벤트 리스너 제거 함수
     function removeEventListener(element, event, handler) {
@@ -236,7 +234,7 @@ function initializeTypingPracticeNew() {
     }
     
     // 모드 선택 - 이벤트 위임 방식으로 변경 (강화된 버전)
-    const versionSelectorElement = document.getElementById('version-selector');
+    const versionSelectorElement = DOMUtils.getElement('#version-selector');
     if (versionSelectorElement) {
         // 모든 기존 클릭 이벤트 리스너 강제 제거
         const clonedElement = versionSelectorElement.cloneNode(true);

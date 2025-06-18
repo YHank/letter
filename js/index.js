@@ -129,11 +129,15 @@ function countParagraphs(text) {
 
 // 자동 저장 함수
 function autoSave(text) {
-    localStorage.setItem('letterCountDraft', text);
-    localStorage.setItem('letterCountDraftTime', new Date().toISOString());
+    const saveData = {
+        draft: text,
+        time: new Date().toISOString()
+    };
+    
+    StorageUtils.save('letterCountData', saveData);
     
     // 저장 인디케이터 표시
-    const saveIndicator = document.getElementById('save-indicator');
+    const saveIndicator = DOMUtils.getElement('#save-indicator');
     if (saveIndicator) {
         saveIndicator.classList.remove('d-none');
         saveIndicator.classList.add('animate-fadeIn');
@@ -147,42 +151,36 @@ function autoSave(text) {
 
 // 저장된 내용 복원
 function restoreDraft() {
-    const draft = localStorage.getItem('letterCountDraft');
-    const draftTime = localStorage.getItem('letterCountDraftTime');
+    const savedData = StorageUtils.load('letterCountData');
     
-    if (draft) {
-        const letterCountElement = document.querySelector('#letter_count');
-        letterCountElement.innerText = draft;
-        
-        // 복원 알림 표시 (선택사항)
-        if (draftTime) {
-            const savedDate = new Date(draftTime);
-            const timeString = savedDate.toLocaleString('ko-KR');
-            console.log(`자동 저장된 내용을 복원했습니다. (저장 시간: ${timeString})`);
+    if (savedData && savedData.draft) {
+        const letterCountElement = DOMUtils.getElement('#letter_count');
+        if (letterCountElement) {
+            letterCountElement.innerText = savedData.draft;
+            
+            // 복원 후 통계 업데이트
+            updateStatistics();
         }
-        
-        // 복원 후 통계 업데이트
-        updateStatistics();
     }
 }
 
 // 통계 업데이트 함수
 function updateStatistics() {
     try {
-        const letterCountElement = document.querySelector('#letter_count');
+        const letterCountElement = DOMUtils.getElement('#letter_count');
         const letter = letterCountElement.innerText;
         
         // 텍스트가 비어있는지 확인
         if (!letter || letter.trim() === '') {
             // 모든 통계를 0으로 초기화
-            document.querySelector('[data-result="1"]').textContent = '0';
-            document.querySelector('[data-result="2"]').textContent = '0';
-            document.querySelector('[data-result="3"]').textContent = '0';
-            document.querySelector('[data-result="4"]').textContent = '0';
-            document.querySelector('[data-result="sentences"]').textContent = '0';
-            document.querySelector('[data-result="avg-word-length"]').textContent = '0';
-            document.querySelector('[data-result="reading-time"]').textContent = '0';
-            document.querySelector('[data-result="paragraphs"]').textContent = '0';
+            DOMUtils.getElement('[data-result="1"]').textContent = '0';
+            DOMUtils.getElement('[data-result="2"]').textContent = '0';
+            DOMUtils.getElement('[data-result="3"]').textContent = '0';
+            DOMUtils.getElement('[data-result="4"]').textContent = '0';
+            DOMUtils.getElement('[data-result="sentences"]').textContent = '0';
+            DOMUtils.getElement('[data-result="avg-word-length"]').textContent = '0';
+            DOMUtils.getElement('[data-result="reading-time"]').textContent = '0';
+            DOMUtils.getElement('[data-result="paragraphs"]').textContent = '0';
             
             // 빈 텍스트도 저장
             autoSave(letter);
@@ -206,7 +204,7 @@ function updateStatistics() {
     
     // 통계 업데이트 함수 (애니메이션 효과 포함)
     function updateStatWithAnimation(selector, newValue) {
-        const element = document.querySelector(selector);
+        const element = DOMUtils.getElement(selector);
         if (element && element.textContent !== newValue.toString()) {
             element.classList.add('changing');
             element.textContent = newValue;
@@ -295,7 +293,7 @@ const debouncedAddHistory = debounce(function(text) {
 }, 500);
 
 // 메인 입력 이벤트 리스너
-document.querySelector('#letter_count').addEventListener('input', function(e) {
+DOMUtils.addEvent('#letter_count', 'input', function(e) {
     const text = e.target.innerText;
     debouncedUpdate();
     debouncedAddHistory(text);
@@ -332,7 +330,7 @@ const textTransformations = {
 
 // 텍스트 변환 처리
 function handleTextTransform(transformType) {
-    const letterCountElement = document.querySelector('#letter_count');
+    const letterCountElement = DOMUtils.getElement('#letter_count');
     const currentText = letterCountElement.innerText;
     
     if (transformType in textTransformations) {
@@ -366,9 +364,9 @@ function handleTextTransform(transformType) {
 }
 
 // DOMContentLoaded 이벤트
-document.addEventListener('DOMContentLoaded', function(){
+DOMUtils.addEvent(document, 'DOMContentLoaded', function(){
     // Bootstrap 툴팁 초기화
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipTriggerList = [].slice.call(DOMUtils.getElements('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
@@ -377,14 +375,14 @@ document.addEventListener('DOMContentLoaded', function(){
     restoreDraft();
     
     // 저장된 텍스트 영역 높이 복원
-    const savedHeight = localStorage.getItem('letterCountTextAreaHeight');
+    const savedHeight = StorageUtils.load('letterCountTextAreaHeight');
     if (savedHeight) {
-        const letterCountElement = document.querySelector('#letter_count');
+        const letterCountElement = DOMUtils.getElement('#letter_count');
         letterCountElement.style.height = savedHeight;
     }
     
     // 텍스트 영역 크기 조절 이벤트 처리
-    const letterCountElement = document.querySelector('#letter_count');
+    const letterCountElement = DOMUtils.getElement('#letter_count');
     let isResizing = false;
     let startY = 0;
     let startHeight = 0;
@@ -393,14 +391,14 @@ document.addEventListener('DOMContentLoaded', function(){
     const resizeObserver = new ResizeObserver(entries => {
         for (let entry of entries) {
             const newHeight = entry.contentRect.height + 'px';
-            localStorage.setItem('letterCountTextAreaHeight', newHeight);
+            StorageUtils.save('letterCountTextAreaHeight', newHeight);
         }
     });
     
     resizeObserver.observe(letterCountElement);
     
     // 키보드 단축키 처리
-    document.addEventListener('keydown', function(e) {
+    DOMUtils.addEvent(document, 'keydown', function(e) {
         // Ctrl+Z (Windows/Linux) 또는 Cmd+Z (Mac) - 실행 취소
         if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
             e.preventDefault();
@@ -443,7 +441,7 @@ document.addEventListener('DOMContentLoaded', function(){
         // Tab 키 - 접근성을 위한 포커스 이동
         if (e.key === 'Tab' && !e.shiftKey && document.activeElement === letterCountElement) {
             // 다음 포커스 가능한 요소로 이동
-            const focusableElements = document.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            const focusableElements = DOMUtils.getElements('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
             const currentIndex = Array.from(focusableElements).indexOf(document.activeElement);
             if (currentIndex < focusableElements.length - 1) {
                 e.preventDefault();
@@ -454,8 +452,8 @@ document.addEventListener('DOMContentLoaded', function(){
     
     // 실행 취소/다시 실행 버튼 상태 업데이트
     function updateUndoRedoButtons() {
-        const undoBtn = document.querySelector('[data-action="undo"]');
-        const redoBtn = document.querySelector('[data-action="redo"]');
+        const undoBtn = DOMUtils.getElement('[data-action="undo"]');
+        const redoBtn = DOMUtils.getElement('[data-action="redo"]');
         
         if (undoBtn) {
             undoBtn.disabled = !textHistory.canUndo();
@@ -466,16 +464,13 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     
     // 텍스트 변환 버튼 이벤트 리스너
-    document.querySelectorAll('[data-transform]').forEach(button => {
-        button.addEventListener('click', function() {
-            const transformType = this.dataset.transform;
-            handleTextTransform(transformType);
-        });
+    DOMUtils.addEventToAll('[data-transform]', 'click', function() {
+        const transformType = this.dataset.transform;
+        handleTextTransform(transformType);
     });
     
     // 실행 취소/다시 실행 버튼 이벤트 리스너
-    document.querySelectorAll('[data-action="undo"], [data-action="redo"]').forEach(button => {
-        button.addEventListener('click', function() {
+    DOMUtils.addEventToAll('[data-action="undo"], [data-action="redo"]', 'click', function() {
             const action = this.dataset.action;
             if (action === 'undo') {
                 const prevText = textHistory.undo();
@@ -492,22 +487,18 @@ document.addEventListener('DOMContentLoaded', function(){
                     updateUndoRedoButtons();
                 }
             }
-        });
     });
     
     // 초기 버튼 상태 업데이트
     updateUndoRedoButtons();
     
     // 통계 내보내기 버튼 이벤트 리스너
-    const exportBtn = document.getElementById('export-stats');
-    if (exportBtn) {
-        exportBtn.addEventListener('click', function() {
-            exportStatistics();
-        });
-    }
+    DOMUtils.addEvent('#export-stats', 'click', function() {
+        exportStatistics();
+    });
     
     // 붙여넣기 이벤트 처리 (보안 강화)
-    letterCountElement.addEventListener('paste', function(e) {
+    DOMUtils.addEvent(letterCountElement, 'paste', function(e) {
         e.preventDefault();
         
         // 클립보드에서 순수 텍스트만 가져오기
@@ -541,8 +532,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
     
     // 페이지 네비게이션 처리
-    document.querySelectorAll('[data-move]').forEach(function(link){
-        link.addEventListener('click', function(e){
+    DOMUtils.addEventToAll('[data-move]', 'click', function(e){
             const page = this.dataset.move;
             e.preventDefault();
             
@@ -597,7 +587,6 @@ document.addEventListener('DOMContentLoaded', function(){
                     }
                 });
             });
-        });
     });
 });
 
@@ -649,20 +638,20 @@ function loadPageScript(page) {
 // 통계 내보내기 함수
 function exportStatistics() {
     try {
-        const letterCountElement = document.querySelector('#letter_count');
+        const letterCountElement = DOMUtils.getElement('#letter_count');
         const text = letterCountElement.innerText;
         
         // 현재 통계 수집
         const stats = {
-            '작성일시': new Date().toLocaleString('ko-KR'),
-            '공백제외_글자수': document.querySelector('[data-result="1"]').textContent,
-            '공백포함_글자수': document.querySelector('[data-result="2"]').textContent,
-            '단어수': document.querySelector('[data-result="3"]').textContent,
-            '라인수': document.querySelector('[data-result="4"]').textContent,
-            '문장수': document.querySelector('[data-result="sentences"]').textContent,
-            '평균단어길이': document.querySelector('[data-result="avg-word-length"]').textContent,
-            '읽기시간': document.querySelector('[data-result="reading-time"]').textContent,
-            '단락수': document.querySelector('[data-result="paragraphs"]').textContent,
+            '작성일시': TimeUtils.getCurrentTimeKR(),
+            '공백제외_글자수': DOMUtils.getElement('[data-result="1"]').textContent,
+            '공백포함_글자수': DOMUtils.getElement('[data-result="2"]').textContent,
+            '단어수': DOMUtils.getElement('[data-result="3"]').textContent,
+            '라인수': DOMUtils.getElement('[data-result="4"]').textContent,
+            '문장수': DOMUtils.getElement('[data-result="sentences"]').textContent,
+            '평균단어길이': DOMUtils.getElement('[data-result="avg-word-length"]').textContent,
+            '읽기시간': DOMUtils.getElement('[data-result="reading-time"]').textContent,
+            '단락수': DOMUtils.getElement('[data-result="paragraphs"]').textContent,
             '텍스트길이': text.length,
             '텍스트_미리보기': text.substring(0, 100) + (text.length > 100 ? '...' : '')
         };
