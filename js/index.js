@@ -492,6 +492,45 @@ DOMUtils.addEvent(document, 'DOMContentLoaded', function(){
     // 초기 버튼 상태 업데이트
     updateUndoRedoButtons();
     
+    // 초기 네비게이션 상태 설정
+    const currentPage = getCurrentPageFromURL();
+    updateNavigationState(currentPage);
+    
+    // 홈 버튼 클릭 처리 (로고와 '글자수 / 단어수' 메뉴)
+    DOMUtils.addEventToAll('.navbar-brand, .navbar-nav a[href="/"]', 'click', function(e) {
+        e.preventDefault();
+        updateNavigationState('home');
+        updateURLState('home');
+        
+        // 메인 콘텐츠를 홈페이지로 복원
+        const mainElement = $('main');
+        mainElement.fadeOut(200, function() {
+            // 홈페이지 콘텐츠 로드 (현재 index.html의 기본 콘텐츠)
+            location.reload(); // 간단하게 페이지 새로고침으로 홈으로 돌아가기
+        });
+    });
+    
+    // 브라우저 뒤로가기/앞으로가기 처리
+    window.addEventListener('popstate', function(e) {
+        const page = e.state?.page || getCurrentPageFromURL();
+        updateNavigationState(page);
+        
+        if (page === 'home') {
+            location.reload();
+        } else {
+            // 해당 페이지 로드
+            const mainElement = $('main');
+            mainElement.load('/html/'+page+'.html', function(response, status, xhr) {
+                if (status === "success") {
+                    loadPageScript(page).then(() => {
+                        // 페이지별 초기화 함수 호출
+                        // (기존 switch 문과 동일한 로직)
+                    });
+                }
+            });
+        }
+    });
+    
     // 통계 내보내기 버튼 이벤트 리스너
     DOMUtils.addEvent('#export-stats', 'click', function() {
         exportStatistics();
@@ -535,6 +574,12 @@ DOMUtils.addEvent(document, 'DOMContentLoaded', function(){
     DOMUtils.addEventToAll('[data-move]', 'click', function(e){
             const page = this.dataset.move;
             e.preventDefault();
+            
+            // 네비게이션 상태 업데이트
+            updateNavigationState(page);
+            
+            // URL 상태 업데이트
+            updateURLState(page);
             
             // 로딩 상태 표시
             const mainElement = $('main');
@@ -628,11 +673,87 @@ function loadPageScript(page) {
         'typing_practice': ['/js/practice_data.js', '/js/typing_practice.js?13'],
         'salary': ['/js/salary_calculator.js?3'],
         'insurance_calculator': ['/js/insurance_calculator.js?2'],
-        'scientific_calculator': ['/js/scientific_calculator.js?2']
+        'scientific_calculator': ['/js/scientific_calculator.js?3']
     };
     
     const scripts = scriptMap[page] || [];
     return Promise.all(scripts.map(src => loadScript(src)));
+}
+
+// 네비게이션 상태 관리 함수들
+function updateNavigationState(currentPage = 'home') {
+    console.log('네비게이션 상태 업데이트:', currentPage);
+    
+    // 모든 네비게이션 링크에서 active 클래스 제거
+    document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+        link.classList.remove('active');
+        link.removeAttribute('aria-current');
+    });
+    
+    // 드롭다운 아이템에서도 active 클래스 제거
+    document.querySelectorAll('.dropdown-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // 현재 페이지에 맞는 메뉴 활성화
+    const pageMenuMap = {
+        'home': '.navbar-nav a[href="/"]',
+        'spellcheck_simple': 'a[data-move="spellcheck_simple"]',
+        'salary': 'a[data-move="salary"]',
+        'typing_practice': 'a[data-move="typing_practice"]',
+        'insurance_calculator': 'a[data-move="insurance_calculator"]',
+        'severancepay': 'a[data-move="severancepay"]',
+        'scientific_calculator': 'a[data-move="scientific_calculator"]'
+    };
+    
+    const selector = pageMenuMap[currentPage];
+    console.log('선택자:', selector);
+    
+    if (selector) {
+        const activeLink = document.querySelector(selector);
+        console.log('찾은 링크:', activeLink);
+        
+        if (activeLink) {
+            activeLink.classList.add('active');
+            console.log('active 클래스 추가됨');
+            
+            // 홈페이지인 경우 aria-current 추가
+            if (currentPage === 'home') {
+                activeLink.setAttribute('aria-current', 'page');
+                console.log('aria-current 속성 추가됨');
+            }
+            
+            // 드롭다운 메뉴인 경우 부모 드롭다운도 활성화
+            const dropdownParent = activeLink.closest('.dropdown');
+            if (dropdownParent) {
+                const dropdownToggle = dropdownParent.querySelector('.dropdown-toggle');
+                if (dropdownToggle) {
+                    dropdownToggle.classList.add('active');
+                    console.log('드롭다운 토글 활성화됨');
+                }
+            }
+        } else {
+            console.log('링크를 찾지 못했습니다');
+        }
+    } else {
+        console.log('페이지 매핑을 찾지 못했습니다');
+    }
+}
+
+function getCurrentPageFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = urlParams.get('page');
+    return page || 'home';
+}
+
+function updateURLState(page) {
+    if (page === 'home') {
+        // 홈페이지인 경우 URL을 루트로 설정
+        window.history.pushState({page: 'home'}, '', '/');
+    } else {
+        // 다른 페이지인 경우 쿼리 파라미터 추가
+        window.history.pushState({page: page}, '', `/?page=${page}`);
+    }
 }
 
 // 통계 내보내기 함수

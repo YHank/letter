@@ -21,7 +21,7 @@ function initializeScientificCalculator() {
     const expressionDisplay = document.getElementById('expressionDisplay');
     const angleModeDisplay = document.getElementById('angleMode');
     const memoryIndicator = document.getElementById('memoryIndicator');
-    const calculatorElement = document.querySelector('.calculator');
+    const calculatorElement = document.querySelector('.calculator-modern');
 
     // 디스플레이 업데이트
     function updateDisplay() {
@@ -342,7 +342,7 @@ function initializeScientificCalculator() {
     }
 
     // 버튼 클릭 이벤트 처리
-    document.querySelectorAll('.btn-calc').forEach(button => {
+    document.querySelectorAll('.btn-calc-modern').forEach(button => {
         button.addEventListener('click', () => {
             const action = button.dataset.action;
             const value = button.dataset.value;
@@ -395,7 +395,7 @@ function initializeScientificCalculator() {
     // 키보드 이벤트 처리
     document.addEventListener('keydown', (e) => {
         // 계산기가 표시되어 있을 때만 키보드 이벤트 처리
-        if (!calculatorElement.offsetParent) return;
+        if (!calculatorElement || !calculatorElement.offsetParent) return;
 
         if (e.key >= '0' && e.key <= '9') {
             inputNumber(e.key);
