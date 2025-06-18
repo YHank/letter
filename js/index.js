@@ -1,16 +1,3 @@
-// Debounce 함수 - 성능 최적화를 위해 입력 이벤트를 지연시킴
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
 // XSS 방지를 위한 HTML 이스케이프 함수
 function escapeHtml(text) {
     const map = {
@@ -28,269 +15,132 @@ function getSafeText(element) {
     return element.textContent || element.innerText || '';
 }
 
-// 토스트 알림 시스템
-const Toast = {
-    container: null,
-    
-    init() {
-        if (!this.container) {
-            this.container = document.createElement('div');
-            this.container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
-            this.container.style.zIndex = '1050';
-            document.body.appendChild(this.container);
-        }
-    },
-    
-    show(message, type = 'info', duration = 3000) {
-        this.init();
-        
-        const toastId = 'toast-' + Date.now();
-        const toast = document.createElement('div');
-        toast.className = `toast align-items-center text-white bg-${type} border-0`;
-        toast.id = toastId;
-        toast.setAttribute('role', 'alert');
-        toast.setAttribute('aria-live', 'assertive');
-        toast.setAttribute('aria-atomic', 'true');
-        
-        const iconMap = {
-            'success': 'fa-check-circle',
-            'danger': 'fa-exclamation-circle',
-            'warning': 'fa-exclamation-triangle',
-            'info': 'fa-info-circle'
-        };
-        
-        toast.innerHTML = `
-            <div class="d-flex">
-                <div class="toast-body">
-                    <i class="fas ${iconMap[type] || iconMap.info} me-2"></i>${escapeHtml(message)}
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        `;
-        
-        this.container.appendChild(toast);
-        
-        const bsToast = new bootstrap.Toast(toast, {
-            autohide: true,
-            delay: duration
-        });
-        
-        bsToast.show();
-        
-        toast.addEventListener('hidden.bs.toast', () => {
-            toast.remove();
-        });
-    }
-};
-
-// 텍스트 분석 함수들
-function countSentences(text) {
-    // 한국어와 영어 문장 종결 부호를 모두 고려
-    const sentences = text.match(/[^.!?。！？]+[.!?。！？]+/g) || [];
-    return sentences.length;
-}
-
-function calculateAverageWordLength(text) {
-    const words = text.trim().split(/\s+/).filter(word => word.length > 0);
-    if (words.length === 0) return 0;
-    
-    const totalLength = words.reduce((sum, word) => sum + word.length, 0);
-    return (totalLength / words.length).toFixed(1);
-}
-
-function calculateReadingTime(text) {
-    if (!text || text.trim() === '') return '0';
-    
-    // 한국어 평균 읽기 속도: 분당 300-500자 (평균 400자)
-    // 영어 평균 읽기 속도: 분당 200-250단어
-    const charCount = text.replace(/\s/g, '').length;
-    if (charCount === 0) return '0';
-    
-    const minutes = charCount / 400;
-    
-    if (minutes < 1) {
-        return "1분 미만";
-    } else if (minutes < 60) {
-        return `약 ${Math.ceil(minutes)}분`;
-    } else {
-        const hours = Math.floor(minutes / 60);
-        const remainingMinutes = Math.ceil(minutes % 60);
-        return `약 ${hours}시간 ${remainingMinutes}분`;
-    }
-}
-
-function countParagraphs(text) {
-    if (!text || text.trim() === '') return 0;
-    
-    // 두 개 이상의 연속된 줄바꿈을 단락 구분으로 간주
-    const paragraphs = text.split(/\n\s*\n/).filter(para => para.trim().length > 0);
-    return paragraphs.length || 1;
-}
-
-// 자동 저장 함수
-function autoSave(text) {
+// 일반화된 자동 저장 함수
+function autoSaveDraft(key, content, indicatorSelector = null) {
     const saveData = {
-        draft: text,
+        draft: content,
         time: new Date().toISOString()
     };
     
-    StorageUtils.save('letterCountData', saveData);
+    StorageUtils.save(key, saveData);
     
-    // 저장 인디케이터 표시
-    const saveIndicator = DOMUtils.getElement('#save-indicator');
-    if (saveIndicator) {
-        saveIndicator.classList.remove('d-none');
-        saveIndicator.classList.add('animate-fadeIn');
-        
-        // 2초 후 숨기기
-        setTimeout(() => {
-            saveIndicator.classList.add('d-none');
-        }, 2000);
-    }
-}
+    if (indicatorSelector) {
+        const saveIndicator = DOMUtils.getElement(indicatorSelector);
+        if (saveIndicator) {
+            saveIndicator.classList.remove('d-none');
+            saveIndicator.classList.add('animate-fadeIn');
 
-// 저장된 내용 복원
-function restoreDraft() {
-    const savedData = StorageUtils.load('letterCountData');
-    
-    if (savedData && savedData.draft) {
-        const letterCountElement = DOMUtils.getElement('#letter_count');
-        if (letterCountElement) {
-            letterCountElement.innerText = savedData.draft;
-            
-            // 복원 후 통계 업데이트
-            updateStatistics();
+            setTimeout(() => {
+                saveIndicator.classList.add('d-none');
+            }, 2000);
         }
     }
 }
+
+// 일반화된 저장 내용 복원 함수
+function restoreDraftContent(key, targetElementSelector, onRestoreCallback = null) {
+    const savedData = StorageUtils.load(key);
+    
+    if (savedData && savedData.draft) {
+        const targetElement = DOMUtils.getElement(targetElementSelector);
+        if (targetElement) {
+            targetElement.innerText = savedData.draft;
+            
+            if (onRestoreCallback && typeof onRestoreCallback === 'function') {
+                onRestoreCallback(savedData.draft);
+            }
+        }
+    }
+}
+
+// 기존 autoSave 및 restoreDraft 호출 부분을 새 함수로 대체
+function autoSave(text) {
+    autoSaveDraft('letterCountData', text, '#save-indicator');
+}
+
+function restoreDraft() {
+    // restoreDraftContent('#letter_count', updateStatistics); // 이전 버전
+    restoreDraftContent('letterCountData', '#letter_count', updateStatistics); // 수정된 버전
+}
+
 
 // 통계 업데이트 함수
 function updateStatistics() {
     try {
         const letterCountElement = DOMUtils.getElement('#letter_count');
-        const letter = letterCountElement.innerText;
-        
-        // 텍스트가 비어있는지 확인
-        if (!letter || letter.trim() === '') {
-            // 모든 통계를 0으로 초기화
-            DOMUtils.getElement('[data-result="1"]').textContent = '0';
-            DOMUtils.getElement('[data-result="2"]').textContent = '0';
-            DOMUtils.getElement('[data-result="3"]').textContent = '0';
-            DOMUtils.getElement('[data-result="4"]').textContent = '0';
-            DOMUtils.getElement('[data-result="sentences"]').textContent = '0';
-            DOMUtils.getElement('[data-result="avg-word-length"]').textContent = '0';
-            DOMUtils.getElement('[data-result="reading-time"]').textContent = '0';
-            DOMUtils.getElement('[data-result="paragraphs"]').textContent = '0';
-            
-            // 빈 텍스트도 저장
-            autoSave(letter);
+        const text = letterCountElement.innerText;
+
+        // 통계 업데이트 함수 (애니메이션 효과 포함)
+        function updateStatWithAnimation(selector, newValue) {
+            const element = DOMUtils.getElement(selector);
+            if (element) {
+                const currentValue = element.textContent;
+                // newValue를 문자열로 변환하여 비교 (숫자 0과 문자열 "0"이 다르게 취급되는 것 방지)
+                const newValueStr = String(newValue);
+                if (currentValue !== newValueStr) {
+                    element.classList.add('changing');
+                    element.textContent = newValueStr;
+                    setTimeout(() => {
+                        element.classList.remove('changing');
+                    }, 300);
+                }
+            }
+        }
+
+        if (!text || text.trim() === '') {
+            const statsToReset = {
+                '[data-result="1"]': '0', // 공백제외 글자수
+                '[data-result="2"]': '0', // 공백포함 글자수
+                '[data-result="3"]': '0', // 단어수
+                '[data-result="4"]': '0', // 라인수
+                '[data-result="sentences"]': '0', // 문장수
+                '[data-result="avg-word-length"]': '0', // 평균 단어 길이
+                '[data-result="reading-time"]': '0', // 읽기 시간
+                '[data-result="paragraphs"]': '0'  // 단락수
+            };
+            for (const selector in statsToReset) {
+                updateStatWithAnimation(selector, statsToReset[selector]);
+            }
+            autoSave(text); // 빈 텍스트도 저장
             return;
         }
-    
-    // 기본 통계
-    let letter_count = letter.replace(/ /g, '').replace(/\n/g, '');
-    let letter_count2 = letter.length;
-    let word_count = letter.split(' ').length;
-    let wrod_count2 = letter.split(/\n/).length;
-    let line_count = letter.split('\n').length;
-    
-    // 빈 줄 처리
-    let line_count2 = 0;
-    letter.split('\n').forEach(function(enter){
-        if(enter == ''){
-            line_count2++;
+
+        // 기본 통계 계산
+        const charsNoSpaces = text.replace(/\s/g, '').length;
+        const charsWithSpaces = text.length;
+
+        // 단어수 계산 수정: 비어있는 문자열이나 공백만 있는 문자열을 단어로 카운트하지 않도록 수정
+        const words = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+
+        const lines = text.split('\n').length;
+
+        // 통계 데이터 객체
+        const statsData = {
+            '[data-result="1"]': charsNoSpaces,
+            '[data-result="2"]': charsWithSpaces,
+            '[data-result="3"]': words,
+            '[data-result="4"]': lines,
+            '[data-result="sentences"]': countSentences(text), // textAnalysis.js 함수 사용
+            '[data-result="avg-word-length"]': calculateAverageWordLength(text), // textAnalysis.js 함수 사용
+            '[data-result="reading-time"]': calculateReadingTime(text), // textAnalysis.js 함수 사용
+            '[data-result="paragraphs"]': countParagraphs(text) // textAnalysis.js 함수 사용
+        };
+
+        // 통계 업데이트
+        for (const selector in statsData) {
+            updateStatWithAnimation(selector, statsData[selector]);
         }
-    })
-    
-    // 통계 업데이트 함수 (애니메이션 효과 포함)
-    function updateStatWithAnimation(selector, newValue) {
-        const element = DOMUtils.getElement(selector);
-        if (element && element.textContent !== newValue.toString()) {
-            element.classList.add('changing');
-            element.textContent = newValue;
-            setTimeout(() => {
-                element.classList.remove('changing');
-            }, 300);
-        }
-    }
-    
-    // 기본 통계 업데이트
-    updateStatWithAnimation('[data-result="1"]', letter_count.length);
-    updateStatWithAnimation('[data-result="2"]', letter_count2);
-    updateStatWithAnimation('[data-result="3"]', word_count+wrod_count2-line_count2-1);
-    updateStatWithAnimation('[data-result="4"]', line_count);
-    
-    // 텍스트 분석 통계 업데이트
-    updateStatWithAnimation('[data-result="sentences"]', countSentences(letter));
-    updateStatWithAnimation('[data-result="avg-word-length"]', calculateAverageWordLength(letter));
-    updateStatWithAnimation('[data-result="reading-time"]', calculateReadingTime(letter));
-    updateStatWithAnimation('[data-result="paragraphs"]', countParagraphs(letter));
-    
-        // 자동 저장
-        autoSave(letter);
+
+        autoSave(text); // 자동 저장
     } catch (error) {
         console.error('통계 업데이트 중 오류:', error);
+        // 사용자에게 오류 알림 (옵션)
+        // Toast.show('통계 업데이트 중 오류가 발생했습니다.', 'danger');
     }
 }
 
 // Debounce를 적용한 업데이트 함수
 const debouncedUpdate = debounce(updateStatistics, 300);
-
-// 실행 취소/다시 실행을 위한 히스토리 관리
-const textHistory = {
-    states: [''],
-    currentIndex: 0,
-    maxHistorySize: 50,
-    
-    // 상태 추가
-    addState: function(text) {
-        // 현재 인덱스 이후의 상태들은 제거 (새로운 분기 생성)
-        this.states = this.states.slice(0, this.currentIndex + 1);
-        
-        // 새로운 상태 추가
-        this.states.push(text);
-        
-        // 최대 크기 제한
-        if (this.states.length > this.maxHistorySize) {
-            this.states.shift();
-        } else {
-            this.currentIndex++;
-        }
-    },
-    
-    // 실행 취소
-    undo: function() {
-        if (this.currentIndex > 0) {
-            this.currentIndex--;
-            return this.states[this.currentIndex];
-        }
-        return null;
-    },
-    
-    // 다시 실행
-    redo: function() {
-        if (this.currentIndex < this.states.length - 1) {
-            this.currentIndex++;
-            return this.states[this.currentIndex];
-        }
-        return null;
-    },
-    
-    // 실행 취소 가능 여부
-    canUndo: function() {
-        return this.currentIndex > 0;
-    },
-    
-    // 다시 실행 가능 여부
-    canRedo: function() {
-        return this.currentIndex < this.states.length - 1;
-    }
-};
-
-// 히스토리에 상태 추가 (디바운스 적용)
-const debouncedAddHistory = debounce(function(text) {
-    textHistory.addState(text);
-}, 500);
 
 // 메인 입력 이벤트 리스너
 DOMUtils.addEvent('#letter_count', 'input', function(e) {
@@ -371,14 +221,19 @@ DOMUtils.addEvent(document, 'DOMContentLoaded', function(){
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
     
-    // 저장된 내용 복원
+    // 저장된 내용 복원 (일반화된 함수 사용)
+    // restoreDraftContent('letterCountData', '#letter_count', updateStatistics);
+    // DOMContentLoaded 시점에는 restoreDraft()를 직접 호출하도록 유지하고,
+    // restoreDraft 내부에서 일반화된 함수를 호출하도록 수정합니다.
     restoreDraft();
     
-    // 저장된 텍스트 영역 높이 복원
+    // 저장된 텍스트 영역 높이 복원 (이 부분은 유지)
     const savedHeight = StorageUtils.load('letterCountTextAreaHeight');
     if (savedHeight) {
         const letterCountElement = DOMUtils.getElement('#letter_count');
-        letterCountElement.style.height = savedHeight;
+        if (letterCountElement) { // 요소 존재 확인 추가
+            letterCountElement.style.height = savedHeight;
+        }
     }
     
     // 텍스트 영역 크기 조절 이벤트 처리
@@ -424,7 +279,8 @@ DOMUtils.addEvent(document, 'DOMContentLoaded', function(){
         // Ctrl+S (Windows/Linux) 또는 Cmd+S (Mac) - 저장 (자동 저장이지만 명시적 저장 피드백)
         if ((e.ctrlKey || e.metaKey) && e.key === 's') {
             e.preventDefault();
-            autoSave(letterCountElement.innerText);
+            // autoSave(letterCountElement.innerText); // 기존 호출
+            autoSaveDraft('letterCountData', letterCountElement.innerText, '#save-indicator'); // 일반화된 함수 사용
             Toast.show('저장되었습니다', 'success', 2000);
         }
         
