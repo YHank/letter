@@ -123,7 +123,7 @@ class StorageManager {
             // 저장된 지 너무 오래되었는지 확인 (30일)
             const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
             if (savedData.timestamp && savedData.timestamp < thirtyDaysAgo) {
-                console.log('저장된 데이터가 오래되어 복원하지 않습니다.');
+                // console.log('저장된 데이터가 오래되어 복원하지 않습니다.');
                 return null;
             }
             
