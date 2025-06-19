@@ -1,0 +1,85 @@
+{
+  "app": {
+    "title": "Character Counter - Korean Text Tool",
+    "description": "A free online tool that counts characters, words, and sentences in Korean and English text in real-time."
+  },
+  "navigation": {
+    "home": "Home",
+    "tools": "Tools",
+    "spellcheck": "Spell Check",
+    "typing_practice": "Typing Practice",
+    "calculators": "Calculators",
+    "salary": "Salary Calculator",
+    "insurance": "Insurance Calculator",
+    "severance": "Severance Calculator",
+    "scientific": "Scientific Calculator"
+  },
+  "stats": {
+    "characters_without_spaces": "Excl. Spaces",
+    "characters_with_spaces": "Incl. Spaces",
+    "words": "Words",
+    "reading_time": "Reading Time",
+    "lines": "Lines",
+    "sentences": "Sentences",
+    "paragraphs": "Paragraphs",
+    "avg_word_length": "Avg Word Length",
+    "characters": "characters",
+    "words_unit": "words",
+    "lines_unit": "lines",
+    "sentences_unit": "sentences",
+    "paragraphs_unit": "paragraphs",
+    "estimated": "estimated"
+  },
+  "buttons": {
+    "clear": "Clear",
+    "uppercase": "UPPERCASE",
+    "lowercase": "lowercase",
+    "capitalize": "Capitalize",
+    "remove_special": "Remove Special",
+    "remove_spaces": "Remove Spaces",
+    "trim_lines": "Trim Lines",
+    "undo": "Undo",
+    "redo": "Redo",
+    "export_stats": "Export Stats",
+    "install_app": "Install App",
+    "update": "Update"
+  },
+  "placeholders": {
+    "text_input": "Enter your text here...",
+    "search": "Search..."
+  },
+  "messages": {
+    "language_changed": "Language has been changed",
+    "app_installed": "App installed successfully! Check your home screen.",
+    "offline_mode": "You're offline. Basic features are still available",
+    "online_restored": "Internet connection restored",
+    "error_occurred": "An error occurred",
+    "saved": "Saved",
+    "statistics_exported": "Statistics exported to CSV file",
+    "text_restored": "Previous work has been restored",
+    "transform_completed": "Text transformation completed"
+  },
+  "help": {
+    "title": "Help & Instructions",
+    "text_transform": "Text Transform",
+    "statistics": "Statistics",
+    "tips": "Tips & Usage",
+    "shortcuts": "Keyboard Shortcuts"
+  },
+  "themes": {
+    "light": "Light Mode",
+    "dark": "Dark Mode",
+    "auto": "Auto"
+  },
+  "time_units": {
+    "seconds": "sec",
+    "minutes": "min",
+    "hours": "hr"
+  },
+  "errors": {
+    "network_error": "Please check your network connection",
+    "page_not_found": "The requested page was not found",
+    "server_error": "Server error occurred. Please try again later",
+    "storage_full": "Storage is full. Cleaning up old data"
+  }
+}

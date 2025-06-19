@@ -18,6 +18,20 @@
             integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
             crossorigin="anonymous" referrerpolicy="no-referrer">
         <link rel="stylesheet" href="/css/index.css">
+        
+        <!-- PWA Manifest -->
+        <link rel="manifest" href="/manifest.json">
+        <meta name="theme-color" content="#0d6efd">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="글자수세기">
+        <link rel="apple-touch-icon" href="/icon-180x180.png">
+        
+        <!-- Favicons -->
+        <link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/icon-16x16.png">
+        <link rel="shortcut icon" href="/favicon.ico">
+        
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"
             integrity="sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs"
             crossorigin="anonymous"></script>
@@ -123,6 +137,10 @@
         </script>
     </head>
     <body>
+        <!-- 스킵 링크 -->
+        <a href="#main-content" class="skip-link">메인 콘텐츠로 건너뛰기</a>
+        <a href="#text-input" class="skip-link">텍스트 입력으로 건너뛰기</a>
+        
         <script>
             // HTTPS 강제 적용
             if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
@@ -186,7 +204,7 @@
                 </script>
             </div>
         </div>
-        <main class="container" role="main">
+        <main class="container" role="main" id="main-content">
             <h1 class="visually-hidden">온라인 글자수 세기 도구</h1>
             <div class="row px-0 mx-0 justify-content-center mt-4">
                 <div class="col-12 col-lg-7 mb-4">
@@ -204,32 +222,32 @@
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
-                            <div class="stats-card h-100">
-                                <div class="stats-icon info">
+                            <div class="stats-card h-100" role="region" aria-label="공백 포함 글자수">
+                                <div class="stats-icon info" aria-hidden="true">
                                     <i class="fas fa-text-width"></i>
                                 </div>
                                 <h6 class="text-muted small mb-1">공백 포함</h6>
-                                <h3 data-result="2" class="fw-bold mb-0">0</h3>
+                                <h3 data-result="2" class="fw-bold mb-0" aria-live="polite" aria-atomic="true">0</h3>
                                 <small class="text-muted">글자</small>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
-                            <div class="stats-card h-100">
-                                <div class="stats-icon success">
+                            <div class="stats-card h-100" role="region" aria-label="단어 수">
+                                <div class="stats-icon success" aria-hidden="true">
                                     <i class="fas fa-spell-check"></i>
                                 </div>
                                 <h6 class="text-muted small mb-1">단어 수</h6>
-                                <h3 data-result="3" class="text-success fw-bold mb-0">0</h3>
+                                <h3 data-result="3" class="text-success fw-bold mb-0" aria-live="polite" aria-atomic="true">0</h3>
                                 <small class="text-muted">단어</small>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
-                            <div class="stats-card h-100">
-                                <div class="stats-icon warning">
+                            <div class="stats-card h-100" role="region" aria-label="예상 읽기 시간">
+                                <div class="stats-icon warning" aria-hidden="true">
                                     <i class="fas fa-clock"></i>
                                 </div>
                                 <h6 class="text-muted small mb-1">읽기 시간</h6>
-                                <h3 data-result="reading-time" class="text-warning fw-bold mb-0">0</h3>
+                                <h3 data-result="reading-time" class="text-warning fw-bold mb-0" aria-live="polite" aria-atomic="true">0</h3>
                                 <small class="text-muted">예상</small>
                             </div>
                         </div>
@@ -238,45 +256,45 @@
                     <!-- 추가 통계 -->
                     <div class="row g-3 mt-1">
                         <div class="col-6 col-md-3">
-                            <div class="stats-card h-100">
+                            <div class="stats-card h-100" role="region" aria-label="라인 수">
                                 <div class="d-flex align-items-center">
-                                    <i class="fas fa-align-left text-muted me-2"></i>
+                                    <i class="fas fa-align-left text-muted me-2" aria-hidden="true"></i>
                                     <div>
                                         <small class="text-muted d-block">라인 수</small>
-                                        <strong data-result="4">0</strong>
+                                        <strong data-result="4" aria-live="polite">0</strong>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
-                            <div class="stats-card h-100">
+                            <div class="stats-card h-100" role="region" aria-label="문장 수">
                                 <div class="d-flex align-items-center">
-                                    <i class="fas fa-paragraph text-muted me-2"></i>
+                                    <i class="fas fa-paragraph text-muted me-2" aria-hidden="true"></i>
                                     <div>
                                         <small class="text-muted d-block">문장 수</small>
-                                        <strong data-result="sentences">0</strong>
+                                        <strong data-result="sentences" aria-live="polite">0</strong>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
-                            <div class="stats-card h-100">
+                            <div class="stats-card h-100" role="region" aria-label="평균 단어 길이">
                                 <div class="d-flex align-items-center">
-                                    <i class="fas fa-ruler-horizontal text-muted me-2"></i>
+                                    <i class="fas fa-ruler-horizontal text-muted me-2" aria-hidden="true"></i>
                                     <div>
                                         <small class="text-muted d-block">평균 길이</small>
-                                        <strong><span data-result="avg-word-length">0</span>자</strong>
+                                        <strong aria-live="polite"><span data-result="avg-word-length">0</span>자</strong>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
-                            <div class="stats-card h-100">
+                            <div class="stats-card h-100" role="region" aria-label="단락 수">
                                 <div class="d-flex align-items-center">
-                                    <i class="fas fa-indent text-muted me-2"></i>
+                                    <i class="fas fa-indent text-muted me-2" aria-hidden="true"></i>
                                     <div>
                                         <small class="text-muted d-block">단락 수</small>
-                                        <strong data-result="paragraphs">0</strong>
+                                        <strong data-result="paragraphs" aria-live="polite">0</strong>
                                     </div>
                                 </div>
                             </div>
@@ -292,35 +310,35 @@
                             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                                 <div>
                                     <h3 class="h6 mb-2">텍스트 변환 도구</h3>
-                                    <div class="btn-group flex-wrap" role="group">
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="uppercase" data-bs-toggle="tooltip" title="모든 글자를 대문자로">
-                                            <i class="fas fa-font me-1"></i>대문자
+                                    <div class="btn-group flex-wrap" role="group" aria-label="텍스트 변환 도구">
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="uppercase" data-bs-toggle="tooltip" title="모든 글자를 대문자로" aria-describedby="uppercase-help">
+                                            <i class="fas fa-font me-1" aria-hidden="true"></i>대문자
                                         </button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="lowercase" data-bs-toggle="tooltip" title="모든 글자를 소문자로">
-                                            <i class="fas fa-font me-1" style="font-size: 0.8em"></i>소문자
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="lowercase" data-bs-toggle="tooltip" title="모든 글자를 소문자로" aria-describedby="lowercase-help">
+                                            <i class="fas fa-font me-1" style="font-size: 0.8em" aria-hidden="true"></i>소문자
                                         </button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="capitalize" data-bs-toggle="tooltip" title="각 단어의 첫 글자를 대문자로">
-                                            <i class="fas fa-text-height me-1"></i>첫글자
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="capitalize" data-bs-toggle="tooltip" title="각 단어의 첫 글자를 대문자로" aria-describedby="capitalize-help">
+                                            <i class="fas fa-text-height me-1" aria-hidden="true"></i>첫글자
                                         </button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-special" data-bs-toggle="tooltip" title="특수문자를 제거합니다">
-                                            <i class="fas fa-filter me-1"></i>특수문자제거
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-special" data-bs-toggle="tooltip" title="특수문자를 제거합니다" aria-describedby="remove-special-help">
+                                            <i class="fas fa-filter me-1" aria-hidden="true"></i>특수문자제거
                                         </button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-spaces" data-bs-toggle="tooltip" title="모든 공백을 제거합니다">
-                                            <i class="fas fa-compress me-1"></i>공백제거
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-spaces" data-bs-toggle="tooltip" title="모든 공백을 제거합니다" aria-describedby="remove-spaces-help">
+                                            <i class="fas fa-compress me-1" aria-hidden="true"></i>공백제거
                                         </button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="trim-lines" data-bs-toggle="tooltip" title="각 줄의 앞뒤 공백을 정리합니다">
-                                            <i class="fas fa-align-left me-1"></i>공백정리
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="trim-lines" data-bs-toggle="tooltip" title="각 줄의 앞뒤 공백을 정리합니다" aria-describedby="trim-lines-help">
+                                            <i class="fas fa-align-left me-1" aria-hidden="true"></i>공백정리
                                         </button>
-                                        <button type="button" class="btn btn-outline-danger btn-sm" data-transform="clear" data-bs-toggle="tooltip" title="모든 텍스트를 지웁니다">
-                                            <i class="fas fa-trash me-1"></i>지우기
+                                        <button type="button" class="btn btn-outline-danger btn-sm" data-transform="clear" data-bs-toggle="tooltip" title="모든 텍스트를 지웁니다" aria-describedby="clear-help">
+                                            <i class="fas fa-trash me-1" aria-hidden="true"></i>지우기
                                         </button>
                                     </div>
-                                    <div class="btn-group mt-2" role="group">
-                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-action="undo" data-bs-toggle="tooltip" title="실행 취소 (Ctrl+Z)">
-                                            <i class="fas fa-undo me-1"></i>실행 취소
+                                    <div class="btn-group mt-2" role="group" aria-label="실행 취소 및 다시 실행">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-action="undo" data-bs-toggle="tooltip" title="실행 취소 (Ctrl+Z)" aria-keyshortcuts="Ctrl+Z">
+                                            <i class="fas fa-undo me-1" aria-hidden="true"></i>실행 취소
                                         </button>
-                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-action="redo" data-bs-toggle="tooltip" title="다시 실행 (Ctrl+Y)">
-                                            <i class="fas fa-redo me-1"></i>다시 실행
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-action="redo" data-bs-toggle="tooltip" title="다시 실행 (Ctrl+Y)" aria-keyshortcuts="Ctrl+Y">
+                                            <i class="fas fa-redo me-1" aria-hidden="true"></i>다시 실행
                                         </button>
                                     </div>
                                 </div>
@@ -338,7 +356,8 @@
                     </div>
                 <!-- 텍스트 입력 영역 -->
                 <div class="col-12 col-lg-7 position-relative">
-                    <div id="letter_count" contenteditable="true" class="editable border border-dark fs-6 p-4 overflow-auto" style="height:500px; resize: vertical; min-height: 300px; max-height: 800px;" role="textbox" aria-label="텍스트 입력 영역" aria-describedby="input-help"></div>
+                    <div class="mobile-drag-indicator" title="위아래로 드래그하여 크기 조절"></div>
+                    <div id="letter_count" contenteditable="true" class="editable border border-dark fs-6 p-4 overflow-auto" style="height:500px; resize: vertical; min-height: 300px; max-height: 800px;" role="textbox" aria-label="텍스트 입력 영역" aria-describedby="input-help" tabindex="0"></div>
                     <div id="save-indicator" class="position-absolute top-0 end-0 m-3 badge bg-success d-none" role="status" aria-live="polite">
                         <i class="fas fa-check me-1" aria-hidden="true"></i>저장됨
                     </div>
@@ -387,6 +406,96 @@
                 </div>
                 </div>
                 
+                <!-- 고급 텍스트 분석 -->
+                <div class="col-12 mt-4">
+                    <section class="card" id="advanced-analysis-section" style="display: none;">
+                        <div class="card-header">
+                            <h3 class="h5 mb-0">
+                                <i class="fas fa-chart-line me-2"></i>고급 텍스트 분석
+                                <button type="button" class="btn btn-sm btn-outline-secondary ms-2" id="toggle-advanced-analysis">
+                                    <i class="fas fa-eye-slash"></i> 숨기기
+                                </button>
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <!-- 감정 분석 -->
+                                <div class="col-md-6 col-lg-3">
+                                    <div class="h-100 p-3 border rounded">
+                                        <h4 class="h6 text-primary mb-3">
+                                            <i class="fas fa-heart me-2"></i>감정 분석
+                                        </h4>
+                                        <div id="sentiment-result">
+                                            <div class="text-center text-muted">
+                                                <i class="fas fa-smile fa-2x mb-2"></i>
+                                                <p class="small">텍스트를 입력하면<br>감정을 분석합니다</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 가독성 점수 -->
+                                <div class="col-md-6 col-lg-3">
+                                    <div class="h-100 p-3 border rounded">
+                                        <h4 class="h6 text-success mb-3">
+                                            <i class="fas fa-book-open me-2"></i>가독성 점수
+                                        </h4>
+                                        <div id="readability-result">
+                                            <div class="text-center text-muted">
+                                                <i class="fas fa-graduation-cap fa-2x mb-2"></i>
+                                                <p class="small">텍스트의 읽기<br>난이도를 측정합니다</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 문체 분석 -->
+                                <div class="col-md-6 col-lg-3">
+                                    <div class="h-100 p-3 border rounded">
+                                        <h4 class="h6 text-info mb-3">
+                                            <i class="fas fa-pen-fancy me-2"></i>문체 분석
+                                        </h4>
+                                        <div id="writing-style-result">
+                                            <div class="text-center text-muted">
+                                                <i class="fas fa-feather-alt fa-2x mb-2"></i>
+                                                <p class="small">글의 격식성과<br>어조를 분석합니다</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 키워드 분석 -->
+                                <div class="col-md-6 col-lg-3">
+                                    <div class="h-100 p-3 border rounded">
+                                        <h4 class="h6 text-warning mb-3">
+                                            <i class="fas fa-key me-2"></i>키워드 분석
+                                        </h4>
+                                        <div id="keywords-result">
+                                            <div class="text-center text-muted">
+                                                <i class="fas fa-tags fa-2x mb-2"></i>
+                                                <p class="small">주요 키워드와<br>빈도를 분석합니다</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 상세 분석 버튼 -->
+                            <div class="text-center mt-3">
+                                <button type="button" class="btn btn-primary" id="perform-advanced-analysis" disabled>
+                                    <i class="fas fa-magic me-2"></i>상세 분석 실행
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- 고급 분석 표시 버튼 -->
+                    <div class="text-center mt-3" id="show-advanced-analysis-btn">
+                        <button type="button" class="btn btn-outline-primary" id="show-advanced-analysis">
+                            <i class="fas fa-chart-line me-2"></i>고급 텍스트 분석 보기
+                        </button>
+                    </div>
+                </div>
 
             </div>
 
@@ -556,11 +665,24 @@
             </div>
         </div>
         
-        <script src="/js/utils.js"></script>
-        <script src="/js/darkmode.js"></script>
-        <script src="/js/index.js?17"></script>
+        <script src="/js/utils.js" defer></script>
+        <script src="/js/darkmode.js" defer></script>
+        <script src="/js/text-analyzer.js" defer></script>
+        <script src="/js/navigation-manager.js" defer></script>
+        <script src="/js/storage-manager.js" defer></script>
+        <script src="/js/i18n.js" defer></script>
+        <script src="/js/advanced-analyzer.js" defer></script>
+        <script src="/js/pwa.js" defer></script>
+        <script src="/js/index.js?26" defer></script>
         <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" defer></script>
         <script>
+// 에러 핸들러 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof ErrorHandler !== 'undefined') {
+        ErrorHandler.init();
+    }
+});
+
 // URL 파라미터로 페이지 로드 (네비게이션 상태 관리와 통합)
 (function() {
     try {

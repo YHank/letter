@@ -1,0 +1,85 @@
+{
+  "app": {
+    "title": "字符计数器 - 韩语文本工具",
+    "description": "实时计算韩语和英语文本的字符数、单词数和句子数的免费在线工具。"
+  },
+  "navigation": {
+    "home": "首页",
+    "tools": "工具",
+    "spellcheck": "拼写检查",
+    "typing_practice": "打字练习",
+    "calculators": "计算器",
+    "salary": "工资计算器",
+    "insurance": "保险计算器",
+    "severance": "遣散费计算器",
+    "scientific": "科学计算器"
+  },
+  "stats": {
+    "characters_without_spaces": "不含空格",
+    "characters_with_spaces": "含空格",
+    "words": "词数",
+    "reading_time": "阅读时间",
+    "lines": "行数",
+    "sentences": "句数",
+    "paragraphs": "段落数",
+    "avg_word_length": "平均词长",
+    "characters": "字符",
+    "words_unit": "词",
+    "lines_unit": "行",
+    "sentences_unit": "句",
+    "paragraphs_unit": "段",
+    "estimated": "预计"
+  },
+  "buttons": {
+    "clear": "清空",
+    "uppercase": "大写",
+    "lowercase": "小写",
+    "capitalize": "首字母大写",
+    "remove_special": "删除特殊字符",
+    "remove_spaces": "删除空格",
+    "trim_lines": "整理空格",
+    "undo": "撤销",
+    "redo": "重做",
+    "export_stats": "导出统计",
+    "install_app": "安装应用",
+    "update": "更新"
+  },
+  "placeholders": {
+    "text_input": "请在此输入文本...",
+    "search": "搜索..."
+  },
+  "messages": {
+    "language_changed": "语言已更改",
+    "app_installed": "应用安装成功！请检查您的主屏幕。",
+    "offline_mode": "当前为离线模式。基本功能仍可使用",
+    "online_restored": "网络连接已恢复",
+    "error_occurred": "发生错误",
+    "saved": "已保存",
+    "statistics_exported": "统计数据已导出为CSV文件",
+    "text_restored": "之前的工作已恢复",
+    "transform_completed": "文本转换完成"
+  },
+  "help": {
+    "title": "帮助和说明",
+    "text_transform": "文本转换",
+    "statistics": "统计说明",
+    "tips": "提示和用法",
+    "shortcuts": "键盘快捷键"
+  },
+  "themes": {
+    "light": "浅色模式",
+    "dark": "深色模式",
+    "auto": "自动"
+  },
+  "time_units": {
+    "seconds": "秒",
+    "minutes": "分",
+    "hours": "小时"
+  },
+  "errors": {
+    "network_error": "请检查您的网络连接",
+    "page_not_found": "未找到请求的页面",
+    "server_error": "服务器错误。请稍后重试",
+    "storage_full": "存储空间已满。正在清理旧数据"
+  }
+}

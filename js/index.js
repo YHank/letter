@@ -1,3 +1,42 @@
+// 전역 에러 핸들러
+class ErrorHandler {
+    static init() {
+        // JavaScript 에러 처리
+        window.addEventListener('error', (event) => {
+            console.error('JavaScript 에러:', event.error);
+            Toast.show('예상치 못한 오류가 발생했습니다. 페이지를 새로고침 해주세요.', 'danger', 5000);
+        });
+
+        // Promise rejection 처리
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('처리되지 않은 Promise 거부:', event.reason);
+            Toast.show('비동기 작업 중 오류가 발생했습니다.', 'warning', 4000);
+        });
+
+        // 네트워크 상태 감지
+        window.addEventListener('online', () => {
+            Toast.show('인터넷 연결이 복구되었습니다.', 'success');
+        });
+
+        window.addEventListener('offline', () => {
+            Toast.show('인터넷 연결이 끊어졌습니다. 일부 기능이 제한될 수 있습니다.', 'warning', 5000);
+        });
+    }
+
+    static handleAjaxError(xhr, status, error) {
+        console.error('AJAX 에러:', { xhr, status, error });
+        if (xhr.status === 0) {
+            Toast.show('네트워크 연결을 확인해주세요.', 'danger');
+        } else if (xhr.status === 404) {
+            Toast.show('요청한 페이지를 찾을 수 없습니다.', 'warning');
+        } else if (xhr.status >= 500) {
+            Toast.show('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'danger');
+        } else {
+            Toast.show('요청 처리 중 오류가 발생했습니다.', 'warning');
+        }
+    }
+}
+
 // Debounce 함수 - 성능 최적화를 위해 입력 이벤트를 지연시킴
 function debounce(func, wait) {
     let timeout;
@@ -83,75 +122,16 @@ const Toast = {
     }
 };
 
-// 텍스트 분석 함수들
-function countSentences(text) {
-    // 한국어와 영어 문장 종결 부호를 모두 고려
-    const sentences = text.match(/[^.!?。！？]+[.!?。！？]+/g) || [];
-    return sentences.length;
-}
+// 텍스트 분석은 text-analyzer.js 모듈을 사용
 
-function calculateAverageWordLength(text) {
-    const words = text.trim().split(/\s+/).filter(word => word.length > 0);
-    if (words.length === 0) return 0;
-    
-    const totalLength = words.reduce((sum, word) => sum + word.length, 0);
-    return (totalLength / words.length).toFixed(1);
-}
-
-function calculateReadingTime(text) {
-    if (!text || text.trim() === '') return '0';
-    
-    // 한국어 평균 읽기 속도: 분당 300-500자 (평균 400자)
-    // 영어 평균 읽기 속도: 분당 200-250단어
-    const charCount = text.replace(/\s/g, '').length;
-    if (charCount === 0) return '0';
-    
-    const minutes = charCount / 400;
-    
-    if (minutes < 1) {
-        return "1분 미만";
-    } else if (minutes < 60) {
-        return `약 ${Math.ceil(minutes)}분`;
-    } else {
-        const hours = Math.floor(minutes / 60);
-        const remainingMinutes = Math.ceil(minutes % 60);
-        return `약 ${hours}시간 ${remainingMinutes}분`;
-    }
-}
-
-function countParagraphs(text) {
-    if (!text || text.trim() === '') return 0;
-    
-    // 두 개 이상의 연속된 줄바꿈을 단락 구분으로 간주
-    const paragraphs = text.split(/\n\s*\n/).filter(para => para.trim().length > 0);
-    return paragraphs.length || 1;
-}
-
-// 자동 저장 함수
+// 자동 저장 (StorageManager 모듈 사용)
 function autoSave(text) {
-    const saveData = {
-        draft: text,
-        time: new Date().toISOString()
-    };
-    
-    StorageUtils.save('letterCountData', saveData);
-    
-    // 저장 인디케이터 표시
-    const saveIndicator = DOMUtils.getElement('#save-indicator');
-    if (saveIndicator) {
-        saveIndicator.classList.remove('d-none');
-        saveIndicator.classList.add('animate-fadeIn');
-        
-        // 2초 후 숨기기
-        setTimeout(() => {
-            saveIndicator.classList.add('d-none');
-        }, 2000);
-    }
+    window.storageManager.autoSaveText(text);
 }
 
-// 저장된 내용 복원
+// 저장된 내용 복원 (StorageManager 모듈 사용)
 function restoreDraft() {
-    const savedData = StorageUtils.load('letterCountData');
+    const savedData = window.storageManager.restoreText();
     
     if (savedData && savedData.draft) {
         const letterCountElement = DOMUtils.getElement('#letter_count');
@@ -160,76 +140,54 @@ function restoreDraft() {
             
             // 복원 후 통계 업데이트
             updateStatistics();
+            
+            // 복원 알림
+            if (window.Toast) {
+                Toast.show('이전 작업이 복원되었습니다.', 'info', 3000);
+            }
         }
     }
 }
 
-// 통계 업데이트 함수
+// 통계 업데이트 함수 (TextAnalyzer 모듈 사용)
 function updateStatistics() {
     try {
         const letterCountElement = DOMUtils.getElement('#letter_count');
-        const letter = letterCountElement.innerText;
+        const text = letterCountElement ? letterCountElement.innerText : '';
         
-        // 텍스트가 비어있는지 확인
-        if (!letter || letter.trim() === '') {
-            // 모든 통계를 0으로 초기화
-            DOMUtils.getElement('[data-result="1"]').textContent = '0';
-            DOMUtils.getElement('[data-result="2"]').textContent = '0';
-            DOMUtils.getElement('[data-result="3"]').textContent = '0';
-            DOMUtils.getElement('[data-result="4"]').textContent = '0';
-            DOMUtils.getElement('[data-result="sentences"]').textContent = '0';
-            DOMUtils.getElement('[data-result="avg-word-length"]').textContent = '0';
-            DOMUtils.getElement('[data-result="reading-time"]').textContent = '0';
-            DOMUtils.getElement('[data-result="paragraphs"]').textContent = '0';
-            
-            // 빈 텍스트도 저장
-            autoSave(letter);
-            return;
+        // TextAnalyzer 모듈로 모든 통계 분석
+        const stats = window.textAnalyzer.analyzeText(text);
+        
+        // 통계 업데이트 함수 (애니메이션 효과 포함)
+        function updateStatWithAnimation(selector, newValue) {
+            const element = DOMUtils.getElement(selector);
+            if (element && element.textContent !== newValue.toString()) {
+                element.classList.add('changing');
+                element.textContent = newValue;
+                setTimeout(() => {
+                    element.classList.remove('changing');
+                }, 300);
+            }
         }
-    
-    // 기본 통계
-    let letter_count = letter.replace(/ /g, '').replace(/\n/g, '');
-    let letter_count2 = letter.length;
-    let word_count = letter.split(' ').length;
-    let wrod_count2 = letter.split(/\n/).length;
-    let line_count = letter.split('\n').length;
-    
-    // 빈 줄 처리
-    let line_count2 = 0;
-    letter.split('\n').forEach(function(enter){
-        if(enter == ''){
-            line_count2++;
-        }
-    })
-    
-    // 통계 업데이트 함수 (애니메이션 효과 포함)
-    function updateStatWithAnimation(selector, newValue) {
-        const element = DOMUtils.getElement(selector);
-        if (element && element.textContent !== newValue.toString()) {
-            element.classList.add('changing');
-            element.textContent = newValue;
-            setTimeout(() => {
-                element.classList.remove('changing');
-            }, 300);
-        }
-    }
-    
-    // 기본 통계 업데이트
-    updateStatWithAnimation('[data-result="1"]', letter_count.length);
-    updateStatWithAnimation('[data-result="2"]', letter_count2);
-    updateStatWithAnimation('[data-result="3"]', word_count+wrod_count2-line_count2-1);
-    updateStatWithAnimation('[data-result="4"]', line_count);
-    
-    // 텍스트 분석 통계 업데이트
-    updateStatWithAnimation('[data-result="sentences"]', countSentences(letter));
-    updateStatWithAnimation('[data-result="avg-word-length"]', calculateAverageWordLength(letter));
-    updateStatWithAnimation('[data-result="reading-time"]', calculateReadingTime(letter));
-    updateStatWithAnimation('[data-result="paragraphs"]', countParagraphs(letter));
-    
+        
+        // 통계 업데이트
+        updateStatWithAnimation('[data-result="1"]', stats.charactersWithoutSpaces);
+        updateStatWithAnimation('[data-result="2"]', stats.charactersWithSpaces);
+        updateStatWithAnimation('[data-result="3"]', stats.words);
+        updateStatWithAnimation('[data-result="4"]', stats.lines);
+        updateStatWithAnimation('[data-result="sentences"]', stats.sentences);
+        updateStatWithAnimation('[data-result="avg-word-length"]', stats.averageWordLength);
+        updateStatWithAnimation('[data-result="reading-time"]', stats.readingTime);
+        updateStatWithAnimation('[data-result="paragraphs"]', stats.paragraphs);
+        
         // 자동 저장
-        autoSave(letter);
+        autoSave(text);
     } catch (error) {
         console.error('통계 업데이트 중 오류:', error);
+        // 오류 시 사용자에게 알림
+        if (window.ErrorHandler) {
+            ErrorHandler.handleAjaxError({ status: 500 }, 'error', error);
+        }
     }
 }
 
@@ -307,34 +265,14 @@ DOMUtils.addEvent('#letter_count', 'input', function(e) {
 });
 
 // 텍스트 변환 함수들
-const textTransformations = {
-    uppercase: (text) => text.toUpperCase(),
-    lowercase: (text) => text.toLowerCase(),
-    capitalize: (text) => {
-        return text.replace(/\b\w/g, char => char.toUpperCase());
-    },
-    'remove-special': (text) => {
-        // 한글, 영어, 숫자, 공백, 줄바꿈만 남기고 제거
-        return text.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9\s\n]/g, '');
-    },
-    'remove-spaces': (text) => {
-        // 줄바꿈은 유지하고 공백만 제거
-        return text.replace(/ /g, '');
-    },
-    'trim-lines': (text) => {
-        // 각 줄의 앞뒤 공백 제거
-        return text.split('\n').map(line => line.trim()).join('\n');
-    },
-    clear: () => ''
-};
-
-// 텍스트 변환 처리
+// 텍스트 변환 처리 (TextAnalyzer 모듈 사용)
 function handleTextTransform(transformType) {
     const letterCountElement = DOMUtils.getElement('#letter_count');
     const currentText = letterCountElement.innerText;
     
-    if (transformType in textTransformations) {
-        const transformedText = textTransformations[transformType](currentText);
+    // TextAnalyzer 모듈의 transform 객체 사용
+    if (transformType in window.textAnalyzer.transform) {
+        const transformedText = window.textAnalyzer.transform[transformType](currentText);
         letterCountElement.innerText = transformedText;
         
         // 변환 후 통계 업데이트
@@ -375,7 +313,7 @@ DOMUtils.addEvent(document, 'DOMContentLoaded', function(){
     restoreDraft();
     
     // 저장된 텍스트 영역 높이 복원
-    const savedHeight = StorageUtils.load('letterCountTextAreaHeight');
+    const savedHeight = window.storageManager.restoreTextAreaHeight();
     if (savedHeight) {
         const letterCountElement = DOMUtils.getElement('#letter_count');
         letterCountElement.style.height = savedHeight;
@@ -391,7 +329,7 @@ DOMUtils.addEvent(document, 'DOMContentLoaded', function(){
     const resizeObserver = new ResizeObserver(entries => {
         for (let entry of entries) {
             const newHeight = entry.contentRect.height + 'px';
-            StorageUtils.save('letterCountTextAreaHeight', newHeight);
+            window.storageManager.saveTextAreaHeight(newHeight);
         }
     });
     
@@ -492,44 +430,26 @@ DOMUtils.addEvent(document, 'DOMContentLoaded', function(){
     // 초기 버튼 상태 업데이트
     updateUndoRedoButtons();
     
-    // 초기 네비게이션 상태 설정
-    const currentPage = getCurrentPageFromURL();
-    updateNavigationState(currentPage);
+    // NavigationManager 초기화
+    window.navigationManager.init();
     
-    // 홈 버튼 클릭 처리 (로고와 '글자수 / 단어수' 메뉴)
-    DOMUtils.addEventToAll('.navbar-brand, .navbar-nav a[href="/"]', 'click', function(e) {
-        e.preventDefault();
-        updateNavigationState('home');
-        updateURLState('home');
-        
-        // 메인 콘텐츠를 홈페이지로 복원
-        const mainElement = $('main');
-        mainElement.fadeOut(200, function() {
-            // 홈페이지 콘텐츠 로드 (현재 index.html의 기본 콘텐츠)
-            location.reload(); // 간단하게 페이지 새로고침으로 홈으로 돌아가기
+    // PWA 기능 초기화
+    if (window.pwaManager) {
+        window.pwaManager.init();
+        window.pwaManager.setupNetworkMonitoring();
+    }
+    
+    // i18n 국제화 기능 초기화
+    if (window.i18nManager) {
+        window.i18nManager.init().then(() => {
+            console.log('다국어 지원 시스템 초기화 완료');
+        }).catch(error => {
+            console.error('i18n 초기화 실패:', error);
         });
-    });
+    }
     
-    // 브라우저 뒤로가기/앞으로가기 처리
-    window.addEventListener('popstate', function(e) {
-        const page = e.state?.page || getCurrentPageFromURL();
-        updateNavigationState(page);
-        
-        if (page === 'home') {
-            location.reload();
-        } else {
-            // 해당 페이지 로드
-            const mainElement = $('main');
-            mainElement.load('/html/'+page+'.html', function(response, status, xhr) {
-                if (status === "success") {
-                    loadPageScript(page).then(() => {
-                        // 페이지별 초기화 함수 호출
-                        // (기존 switch 문과 동일한 로직)
-                    });
-                }
-            });
-        }
-    });
+    // 고급 분석 기능 초기화
+    setupAdvancedAnalysis();
     
     // 통계 내보내기 버튼 이벤트 리스너
     DOMUtils.addEvent('#export-stats', 'click', function() {
@@ -570,69 +490,7 @@ DOMUtils.addEvent(document, 'DOMContentLoaded', function(){
         updateStatistics();
     });
     
-    // 페이지 네비게이션 처리
-    DOMUtils.addEventToAll('[data-move]', 'click', function(e){
-            const page = this.dataset.move;
-            e.preventDefault();
-            
-            // 네비게이션 상태 업데이트
-            updateNavigationState(page);
-            
-            // URL 상태 업데이트
-            updateURLState(page);
-            
-            // 로딩 상태 표시
-            const mainElement = $('main');
-            mainElement.html('<div class="text-center py-5"><div class="loading mx-auto mb-3"></div><p class="text-muted">페이지를 불러오는 중...</p></div>');
-            
-            // 페이드 아웃 효과
-            mainElement.fadeOut(200, function() {
-                // 페이지 로드
-                mainElement.load('/html/'+page+'.html', function(response, status, xhr) {
-                    if (status === "success") {
-                        // 페이드 인 효과
-                        mainElement.fadeIn(300);
-                        
-                        // 동적 스크립트 로딩
-                        loadPageScript(page).then(() => {
-                            // 페이지별 초기화 함수 호출
-                            switch(page) {
-                                case 'spellcheck_simple':
-                                    if (typeof initializeSimpleSpellchecker === 'function') {
-                                        setTimeout(initializeSimpleSpellchecker, 100);
-                                    }
-                                    break;
-                                case 'typing_practice':
-                                    if (typeof initializeTypingPracticeNew === 'function') {
-                                        setTimeout(initializeTypingPracticeNew, 100);
-                                    } else if (typeof initializeTypingPractice === 'function') {
-                                        setTimeout(initializeTypingPractice, 100);
-                                    }
-                                    break;
-                                case 'salary':
-                                    if (typeof initializeSalaryPage === 'function') {
-                                        setTimeout(initializeSalaryPage, 100);
-                                    }
-                                    break;
-                                case 'insurance_calculator':
-                                    if (typeof initializeInsuranceCalculator === 'function') {
-                                        setTimeout(initializeInsuranceCalculator, 100);
-                                    }
-                                    break;
-                                case 'scientific_calculator':
-                                    if (typeof initializeScientificCalculator === 'function') {
-                                        setTimeout(initializeScientificCalculator, 100);
-                                    }
-                                    break;
-                            }
-                        });
-                    } else if (status === "error") {
-                        console.error("Error loading page: " + xhr.status + " " + xhr.statusText);
-                        mainElement.html('<div class="alert alert-danger m-4"><i class="fas fa-exclamation-triangle me-2"></i>페이지를 불러올 수 없습니다. 다시 시도해주세요.</div>').fadeIn(300);
-                    }
-                });
-            });
-    });
+    // 페이지 네비게이션은 NavigationManager에서 처리
 });
 
 // Google 번역 초기화 함수
@@ -666,95 +524,7 @@ function loadScript(src) {
     });
 }
 
-// 페이지별 필요한 스크립트 로딩
-function loadPageScript(page) {
-    const scriptMap = {
-        'spellcheck_simple': ['/js/spellcheck_simple.js?3'],
-        'typing_practice': ['/js/practice_data.js', '/js/typing_practice.js?13'],
-        'salary': ['/js/salary_calculator.js?3'],
-        'insurance_calculator': ['/js/insurance_calculator.js?2'],
-        'scientific_calculator': ['/js/scientific_calculator.js?3']
-    };
-    
-    const scripts = scriptMap[page] || [];
-    return Promise.all(scripts.map(src => loadScript(src)));
-}
-
-// 네비게이션 상태 관리 함수들
-function updateNavigationState(currentPage = 'home') {
-    console.log('네비게이션 상태 업데이트:', currentPage);
-    
-    // 모든 네비게이션 링크에서 active 클래스 제거
-    document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
-        link.classList.remove('active');
-        link.removeAttribute('aria-current');
-    });
-    
-    // 드롭다운 아이템에서도 active 클래스 제거
-    document.querySelectorAll('.dropdown-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    
-    // 현재 페이지에 맞는 메뉴 활성화
-    const pageMenuMap = {
-        'home': '.navbar-nav a[href="/"]',
-        'spellcheck_simple': 'a[data-move="spellcheck_simple"]',
-        'salary': 'a[data-move="salary"]',
-        'typing_practice': 'a[data-move="typing_practice"]',
-        'insurance_calculator': 'a[data-move="insurance_calculator"]',
-        'severancepay': 'a[data-move="severancepay"]',
-        'scientific_calculator': 'a[data-move="scientific_calculator"]'
-    };
-    
-    const selector = pageMenuMap[currentPage];
-    console.log('선택자:', selector);
-    
-    if (selector) {
-        const activeLink = document.querySelector(selector);
-        console.log('찾은 링크:', activeLink);
-        
-        if (activeLink) {
-            activeLink.classList.add('active');
-            console.log('active 클래스 추가됨');
-            
-            // 홈페이지인 경우 aria-current 추가
-            if (currentPage === 'home') {
-                activeLink.setAttribute('aria-current', 'page');
-                console.log('aria-current 속성 추가됨');
-            }
-            
-            // 드롭다운 메뉴인 경우 부모 드롭다운도 활성화
-            const dropdownParent = activeLink.closest('.dropdown');
-            if (dropdownParent) {
-                const dropdownToggle = dropdownParent.querySelector('.dropdown-toggle');
-                if (dropdownToggle) {
-                    dropdownToggle.classList.add('active');
-                    console.log('드롭다운 토글 활성화됨');
-                }
-            }
-        } else {
-            console.log('링크를 찾지 못했습니다');
-        }
-    } else {
-        console.log('페이지 매핑을 찾지 못했습니다');
-    }
-}
-
-function getCurrentPageFromURL() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const page = urlParams.get('page');
-    return page || 'home';
-}
-
-function updateURLState(page) {
-    if (page === 'home') {
-        // 홈페이지인 경우 URL을 루트로 설정
-        window.history.pushState({page: 'home'}, '', '/');
-    } else {
-        // 다른 페이지인 경우 쿼리 파라미터 추가
-        window.history.pushState({page: page}, '', `/?page=${page}`);
-    }
-}
+// 네비게이션 관리는 NavigationManager 모듈에서 처리
 
 // 통계 내보내기 함수
 function exportStatistics() {
@@ -806,3 +576,455 @@ function exportStatistics() {
         Toast.show('통계 내보내기 중 오류가 발생했습니다', 'danger');
     }
 }
+
+// 모바일 터치 인터페이스 개선
+class MobileTouchHandler {
+    constructor() {
+        this.textArea = null;
+        this.dragIndicator = null;
+        this.isDragging = false;
+        this.startY = 0;
+        this.startHeight = 0;
+        this.minHeight = 150;
+        this.maxHeight = 600;
+    }
+
+    init() {
+        this.textArea = document.getElementById('letter_count');
+        this.dragIndicator = document.querySelector('.mobile-drag-indicator');
+        
+        if (!this.textArea || !this.dragIndicator) return;
+
+        // 모바일 감지
+        const isMobile = window.innerWidth <= 768;
+        if (!isMobile) return;
+
+        this.setupTouchEvents();
+    }
+
+    setupTouchEvents() {
+        // 드래그 인디케이터 터치 이벤트
+        this.dragIndicator.addEventListener('touchstart', (e) => {
+            this.isDragging = true;
+            this.startY = e.touches[0].clientY;
+            this.startHeight = parseInt(window.getComputedStyle(this.textArea).height);
+            
+            // 드래그 시작 피드백
+            this.dragIndicator.style.background = 'var(--btn-primary-bg)';
+            document.body.style.userSelect = 'none';
+            
+            e.preventDefault();
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!this.isDragging) return;
+            
+            const currentY = e.touches[0].clientY;
+            const deltaY = currentY - this.startY;
+            const newHeight = Math.max(
+                this.minHeight, 
+                Math.min(this.maxHeight, this.startHeight + deltaY)
+            );
+            
+            this.textArea.style.height = newHeight + 'px';
+            e.preventDefault();
+        });
+
+        document.addEventListener('touchend', () => {
+            if (!this.isDragging) return;
+            
+            this.isDragging = false;
+            this.dragIndicator.style.background = 'var(--border-color)';
+            document.body.style.userSelect = '';
+            
+            // 터치 종료 피드백
+            this.dragIndicator.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                this.dragIndicator.style.transform = 'scale(1)';
+            }, 150);
+        });
+
+        // 텍스트 영역 터치 최적화
+        this.textArea.addEventListener('touchstart', () => {
+            // 터치 시작 시 포커스 보장
+            setTimeout(() => {
+                this.textArea.focus();
+            }, 100);
+        });
+
+        // 더블 탭으로 텍스트 영역 크기 토글
+        let lastTap = 0;
+        this.dragIndicator.addEventListener('touchend', (e) => {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            
+            if (tapLength < 500 && tapLength > 0) {
+                // 더블 탭 감지
+                this.toggleTextAreaSize();
+                e.preventDefault();
+            }
+            lastTap = currentTime;
+        });
+    }
+
+    toggleTextAreaSize() {
+        const currentHeight = parseInt(window.getComputedStyle(this.textArea).height);
+        const isCompact = currentHeight <= 200;
+        
+        const newHeight = isCompact ? 400 : 150;
+        this.textArea.style.height = newHeight + 'px';
+        
+        // 토글 피드백
+        Toast.show(
+            isCompact ? '텍스트 영역을 확장했습니다' : '텍스트 영역을 축소했습니다', 
+            'info', 
+            2000
+        );
+    }
+}
+
+// 키보드 접근성 핸들러
+class KeyboardAccessibilityHandler {
+    constructor() {
+        this.lastFocused = null;
+    }
+
+    init() {
+        this.setupKeyboardShortcuts();
+        this.setupSkipLinks();
+        this.setupFocusManagement();
+    }
+
+    setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + / : 포커스를 텍스트 영역으로 이동
+            if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+                e.preventDefault();
+                const textArea = document.getElementById('letter_count');
+                if (textArea) {
+                    textArea.focus();
+                    Toast.show('텍스트 입력 영역으로 포커스가 이동했습니다', 'info', 2000);
+                }
+            }
+
+            // ESC: 모달이나 드롭다운 닫기
+            if (e.key === 'Escape') {
+                const openModals = document.querySelectorAll('.modal.show');
+                const openDropdowns = document.querySelectorAll('.dropdown-menu.show');
+                
+                if (openModals.length > 0) {
+                    openModals[0].querySelector('[data-bs-dismiss="modal"]')?.click();
+                } else if (openDropdowns.length > 0) {
+                    document.body.click(); // 드롭다운 닫기
+                }
+            }
+
+            // Alt + 숫자: 빠른 버튼 접근
+            if (e.altKey && !isNaN(e.key) && e.key !== '0') {
+                e.preventDefault();
+                const buttonIndex = parseInt(e.key) - 1;
+                const buttons = document.querySelectorAll('[data-transform], [data-action]');
+                if (buttons[buttonIndex]) {
+                    buttons[buttonIndex].focus();
+                    buttons[buttonIndex].click();
+                }
+            }
+        });
+    }
+
+    setupSkipLinks() {
+        // 스킵 링크 동작 개선
+        const skipLinks = document.querySelectorAll('.skip-link');
+        skipLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                const target = document.getElementById(targetId);
+                
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    
+                    // 포커스 가능한 요소인지 확인 후 포커스
+                    if (target.tabIndex >= 0 || target.tagName === 'INPUT' || 
+                        target.tagName === 'TEXTAREA' || target.contentEditable === 'true') {
+                        target.focus();
+                    } else {
+                        // 포커스할 수 없는 요소면 tabindex 임시 추가
+                        target.tabIndex = -1;
+                        target.focus();
+                        target.addEventListener('blur', () => {
+                            target.removeAttribute('tabindex');
+                        }, { once: true });
+                    }
+                }
+            });
+        });
+    }
+
+    setupFocusManagement() {
+        // 포커스 트랩 관리
+        const focusableSelectors = [
+            'a[href]',
+            'button:not([disabled])',
+            'input:not([disabled])',
+            'select:not([disabled])',
+            'textarea:not([disabled])',
+            '[contenteditable="true"]',
+            '[tabindex]:not([tabindex="-1"])'
+        ].join(',');
+
+        // 페이지 로드 시 첫 번째 포커스 가능한 요소 찾기
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstFocusable = document.querySelector(focusableSelectors);
+            if (firstFocusable && !document.activeElement || document.activeElement === document.body) {
+                // 자동 포커스는 사용자 상호작용 후에만
+                setTimeout(() => {
+                    if (!document.activeElement || document.activeElement === document.body) {
+                        firstFocusable.focus();
+                    }
+                }, 100);
+            }
+        });
+
+        // 모달이 열릴 때 포커스 관리
+        document.addEventListener('shown.bs.modal', (e) => {
+            const modal = e.target;
+            const firstFocusable = modal.querySelector(focusableSelectors);
+            if (firstFocusable) {
+                firstFocusable.focus();
+            }
+        });
+
+        // 탭 키 탐색 시 시각적 피드백
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                document.body.classList.add('keyboard-navigation');
+            }
+        });
+
+        document.addEventListener('mousedown', () => {
+            document.body.classList.remove('keyboard-navigation');
+        });
+    }
+}
+
+// 고급 텍스트 분석 기능 설정
+function setupAdvancedAnalysis() {
+    // 고급 분석 표시/숨기기 버튼
+    DOMUtils.addEvent('#show-advanced-analysis', 'click', function() {
+        const section = DOMUtils.getElement('#advanced-analysis-section');
+        const btnContainer = DOMUtils.getElement('#show-advanced-analysis-btn');
+        if (section && btnContainer) {
+            section.style.display = 'block';
+            btnContainer.style.display = 'none';
+            
+            // 자동으로 분석 실행 (텍스트가 있는 경우)
+            const letterCountElement = DOMUtils.getElement('#letter_count');
+            if (letterCountElement && letterCountElement.innerText.trim()) {
+                performAdvancedAnalysis();
+            }
+        }
+    });
+    
+    // 고급 분석 숨기기 버튼
+    DOMUtils.addEvent('#toggle-advanced-analysis', 'click', function() {
+        const section = DOMUtils.getElement('#advanced-analysis-section');
+        const btnContainer = DOMUtils.getElement('#show-advanced-analysis-btn');
+        if (section && btnContainer) {
+            section.style.display = 'none';
+            btnContainer.style.display = 'block';
+        }
+    });
+    
+    // 상세 분석 실행 버튼
+    DOMUtils.addEvent('#perform-advanced-analysis', 'click', function() {
+        performAdvancedAnalysis();
+    });
+    
+    // 텍스트 입력 시 고급 분석 버튼 활성화
+    DOMUtils.addEvent('#letter_count', 'input', debounce(function() {
+        const button = DOMUtils.getElement('#perform-advanced-analysis');
+        const text = this.innerText.trim();
+        
+        if (button) {
+            button.disabled = text.length < 10; // 최소 10글자 이상
+            
+            // 고급 분석이 표시된 상태이고 충분한 텍스트가 있으면 자동 분석
+            const section = DOMUtils.getElement('#advanced-analysis-section');
+            if (section && section.style.display !== 'none' && text.length > 50) {
+                performAdvancedAnalysis();
+            }
+        }
+    }, 1000));
+}
+
+// 고급 분석 실행
+function performAdvancedAnalysis() {
+    const letterCountElement = DOMUtils.getElement('#letter_count');
+    const text = letterCountElement ? letterCountElement.innerText.trim() : '';
+    
+    if (text.length < 10) {
+        if (window.Toast) {
+            Toast.show('분석하려면 최소 10글자 이상 입력해주세요', 'warning', 3000);
+        }
+        return;
+    }
+    
+    if (!window.advancedAnalyzer) {
+        console.error('고급 분석 모듈이 로드되지 않았습니다');
+        return;
+    }
+    
+    try {
+        // 로딩 상태 표시
+        showAnalysisLoading();
+        
+        // 분석 실행 (약간의 지연으로 로딩 효과)
+        setTimeout(() => {
+            const analysis = window.advancedAnalyzer.performAdvancedAnalysis(text);
+            const formatted = window.advancedAnalyzer.formatAnalysisResults(analysis);
+            
+            // 결과 표시
+            displaySentimentResult(formatted.sentiment);
+            displayReadabilityResult(formatted.readability);
+            displayWritingStyleResult(formatted.writingStyle);
+            displayKeywordsResult(formatted.keywords);
+            
+            console.log('고급 분석 완료:', analysis);
+            
+            if (window.Toast) {
+                Toast.show('고급 텍스트 분석이 완료되었습니다', 'success', 3000);
+            }
+        }, 500);
+        
+    } catch (error) {
+        console.error('고급 분석 중 오류:', error);
+        if (window.Toast) {
+            Toast.show('분석 중 오류가 발생했습니다', 'danger', 3000);
+        }
+    }
+}
+
+// 분석 로딩 상태 표시
+function showAnalysisLoading() {
+    const containers = ['#sentiment-result', '#readability-result', '#writing-style-result', '#keywords-result'];
+    
+    containers.forEach(selector => {
+        const container = DOMUtils.getElement(selector);
+        if (container) {
+            container.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border spinner-border-sm text-primary mb-2" role="status">
+                        <span class="visually-hidden">분석 중...</span>
+                    </div>
+                    <p class="small text-muted mb-0">분석 중...</p>
+                </div>
+            `;
+        }
+    });
+}
+
+// 감정 분석 결과 표시
+function displaySentimentResult(sentiment) {
+    const container = DOMUtils.getElement('#sentiment-result');
+    if (!container) return;
+    
+    const emotionIcon = sentiment.label === '긍정적' ? 'fa-smile text-success' : 
+                       sentiment.label === '부정적' ? 'fa-frown text-danger' : 
+                       'fa-meh text-secondary';
+    
+    container.innerHTML = `
+        <div class="text-center">
+            <i class="fas ${emotionIcon} fa-2x mb-2"></i>
+            <h5 class="h6 mb-1">${sentiment.label}</h5>
+            <p class="small text-muted mb-2">${sentiment.description}</p>
+            <div class="small">
+                <strong>신뢰도:</strong> ${sentiment.confidence}
+            </div>
+        </div>
+    `;
+}
+
+// 가독성 분석 결과 표시
+function displayReadabilityResult(readability) {
+    const container = DOMUtils.getElement('#readability-result');
+    if (!container) return;
+    
+    const scoreColor = readability.score >= 80 ? 'success' : 
+                      readability.score >= 60 ? 'warning' : 
+                      'danger';
+    
+    container.innerHTML = `
+        <div class="text-center">
+            <div class="progress mb-3" style="height: 8px;">
+                <div class="progress-bar bg-${scoreColor}" style="width: ${readability.score}%"></div>
+            </div>
+            <h5 class="h6 mb-1">${readability.level}</h5>
+            <p class="small text-muted mb-2">${readability.description}</p>
+            <div class="small">
+                <strong>점수:</strong> ${readability.score}/100
+            </div>
+        </div>
+    `;
+}
+
+// 문체 분석 결과 표시
+function displayWritingStyleResult(style) {
+    const container = DOMUtils.getElement('#writing-style-result');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div>
+            <div class="mb-2">
+                <span class="badge bg-primary">${style.formality}</span>
+            </div>
+            <div class="mb-2">
+                <span class="badge bg-info">${style.tone}</span>
+            </div>
+            <div class="small text-muted">
+                <div>질문: ${style.features.questionCount}개</div>
+                <div>감탄: ${style.features.exclamationCount}개</div>
+                <div>복합문: ${Math.round(style.features.avgSentenceComplexity * 100)}%</div>
+            </div>
+        </div>
+    `;
+}
+
+// 키워드 분석 결과 표시
+function displayKeywordsResult(keywords) {
+    const container = DOMUtils.getElement('#keywords-result');
+    if (!container) return;
+    
+    if (keywords.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-muted">
+                <i class="fas fa-info-circle mb-2"></i>
+                <p class="small">키워드를 찾을 수 없습니다</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const keywordList = keywords.slice(0, 5).map((keyword, index) => `
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="small">${keyword.word}</span>
+            <span class="badge bg-secondary">${keyword.frequency}</span>
+        </div>
+    `).join('');
+    
+    container.innerHTML = `
+        <div class="keywords-list">
+            ${keywordList}
+            ${keywords.length > 5 ? `<div class="small text-muted text-center mt-2">+${keywords.length - 5}개 더</div>` : ''}
+        </div>
+    `;
+}
+
+// 모바일 터치 핸들러 초기화
+document.addEventListener('DOMContentLoaded', () => {
+    const mobileHandler = new MobileTouchHandler();
+    mobileHandler.init();
+    
+    const keyboardHandler = new KeyboardAccessibilityHandler();
+    keyboardHandler.init();
+});

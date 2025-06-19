@@ -1,0 +1,150 @@
+{
+  "name": "글자수 세기 - 한글 텍스트 도구",
+  "short_name": "글자수세기",
+  "description": "한글과 영어의 글자수, 단어수, 문장수를 실시간으로 계산하는 무료 온라인 도구입니다. 맞춤법 검사, 연봉 계산기, 타자 연습 등 다양한 기능을 제공합니다.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#0d6efd",
+  "background_color": "#ffffff",
+  "lang": "ko",
+  "categories": ["productivity", "utilities", "education"],
+  "icons": [
+    {
+      "src": "/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-96x96.png",
+      "sizes": "96x96", 
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png", 
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-384x384.png", 
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512", 
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "글자수 세기",
+      "short_name": "글자수",
+      "description": "텍스트의 글자수를 세어보세요",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "맞춤법 검사",
+      "short_name": "맞춤법",
+      "description": "한글 맞춤법을 검사해보세요",
+      "url": "/?page=spellcheck_simple",
+      "icons": [
+        {
+          "src": "/icon-96x96.png", 
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "타자 연습",
+      "short_name": "타자연습",
+      "description": "한글/영어 타자 연습을 해보세요",
+      "url": "/?page=typing_practice",
+      "icons": [
+        {
+          "src": "/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "연봉 계산기",
+      "short_name": "연봉계산",
+      "description": "실수령액을 계산해보세요",
+      "url": "/?page=salary",
+      "icons": [
+        {
+          "src": "/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "글자수 세기 메인 화면"
+    },
+    {
+      "src": "/screenshot-narrow.png", 
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "모바일 글자수 세기 화면"
+    }
+  ],
+  "features": [
+    "실시간 글자수 계산",
+    "공백 포함/제외 옵션", 
+    "단어수 및 문장수 계산",
+    "예상 읽기 시간 표시",
+    "자동 저장 기능",
+    "텍스트 변환 도구",
+    "다크모드 지원",
+    "맞춤법 검사",
+    "타자 연습",
+    "연봉 계산기",
+    "4대보험료 계산기"
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}

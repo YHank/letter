@@ -40,6 +40,18 @@
     --table-hover: #343a40;
     --btn-primary-bg: #0d6efd;
     --btn-primary-text: #ffffff;
+    
+    /* 다크모드 전용 추가 색상 */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.5);
+    --shadow-xl: 0 20px 25px rgba(0,0,0,0.6);
+    --toast-bg: #2d3748;
+    --toast-border: #4a5568;
+    --modal-bg: #2d3748;
+    --modal-border: #4a5568;
+    --dropdown-bg: #2d3748;
+    --dropdown-border: #4a5568;
 }
 
 /* 기본 다크모드 스타일 */
@@ -780,7 +792,33 @@ body {
     background: linear-gradient(135deg, #a8c0ff, #3f2b96);
 }
 
-/* 반응형 개선 */
+/* 터치 최적화 */
+@media (pointer: coarse) {
+    .btn, .form-control, .form-select {
+        min-height: 44px; /* Apple 터치 가이드라인 */
+        font-size: 16px; /* iOS 줌 방지 */
+    }
+    
+    .nav-link {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* 터치 피드백 개선 */
+    .btn:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+    }
+    
+    /* 스크롤 영역 터치 최적화 */
+    .overflow-auto {
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+}
+
+/* 모바일 세로 (768px 이하) */
 @media (max-width: 768px) {
     .navbar-brand {
         font-size: 1.1rem;
@@ -788,14 +826,342 @@ body {
     
     .card {
         margin-bottom: 1rem;
+        border-radius: 12px;
     }
     
     .btn-group {
         flex-wrap: wrap;
         padding: 0.5rem;
+        gap: 0.5rem;
     }
     
     .btn-group .btn {
-        margin: 0.2rem;
+        flex: 1;
+        min-width: calc(50% - 0.25rem);
+        margin: 0;
     }
+    
+    /* 텍스트 영역 모바일 최적화 */
+    #text-input {
+        min-height: 200px;
+        resize: vertical;
+        touch-action: manipulation;
+    }
+    
+    /* 통계 카드 모바일 레이아웃 */
+    .stats-card {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .stats-card h6 {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stats-card .h4 {
+        font-size: 1.5rem;
+    }
+    
+    /* 모바일 네비게이션 개선 */
+    .navbar-nav {
+        margin-top: 0.5rem;
+    }
+    
+    .dropdown-menu {
+        border-radius: 12px;
+        box-shadow: var(--shadow-lg);
+    }
+}
+
+/* 작은 모바일 (576px 이하) */
+@media (max-width: 576px) {
+    .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .card {
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .btn-group .btn {
+        min-width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stats-card {
+        padding: 0.75rem;
+        text-align: center;
+    }
+    
+    .stats-card .h4 {
+        font-size: 1.25rem;
+    }
+    
+    /* 작은 화면에서 텍스트 영역 크기 조절 핸들 숨김 */
+    #text-input {
+        resize: none;
+        min-height: 150px;
+    }
+    
+    /* 모바일 전용 드래그 인디케이터 */
+    .mobile-drag-indicator {
+        display: block;
+        width: 40px;
+        height: 4px;
+        background: var(--border-color);
+        border-radius: 2px;
+        margin: 0.5rem auto;
+        cursor: ns-resize;
+    }
+}
+
+/* 데스크톱에서 모바일 인디케이터 숨김 */
+@media (min-width: 577px) {
+    .mobile-drag-indicator {
+        display: none;
+    }
+}
+
+/* 키보드 접근성 향상 */
+.btn:focus,
+.form-control:focus,
+.form-select:focus,
+[contenteditable]:focus {
+    outline: 2px solid var(--btn-primary-bg);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
+/* 고대비 포커스 인디케이터 */
+@media (prefers-contrast: high) {
+    .btn:focus,
+    .form-control:focus,
+    .form-select:focus,
+    [contenteditable]:focus {
+        outline: 3px solid currentColor;
+        outline-offset: 2px;
+    }
+}
+
+/* 스킵 링크 */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--btn-primary-bg);
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 1000;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.skip-link:focus {
+    top: 6px;
+}
+
+/* 키보드 전용 사용자를 위한 개선 */
+@media (prefers-reduced-motion: no-preference) {
+    .btn:focus {
+        transition: var(--transition);
+    }
+}
+
+/* 터치 디바이스가 아닐 때 hover 효과 */
+@media (hover: hover) {
+    .btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+    }
+}
+
+/* 키보드 네비게이션 개선 */
+.nav-link:focus,
+.dropdown-item:focus {
+    background-color: var(--hover-bg);
+    outline: 2px solid var(--btn-primary-bg);
+    outline-offset: -2px;
+}
+
+/* 통계 카드 키보드 포커스 */
+.stats-card:focus-within {
+    outline: 2px solid var(--btn-primary-bg);
+    outline-offset: 2px;
+    box-shadow: var(--shadow-lg);
+}
+
+/* 다크모드 컴포넌트 완성도 개선 */
+.dark .navbar-light {
+    background-color: var(--navbar-bg) !important;
+}
+
+.dark .navbar-light .navbar-brand,
+.dark .navbar-light .navbar-nav .nav-link {
+    color: var(--text-color) !important;
+}
+
+.dark .navbar-light .navbar-nav .nav-link:hover,
+.dark .navbar-light .navbar-nav .nav-link:focus {
+    color: var(--btn-primary-bg) !important;
+    background-color: var(--hover-bg);
+}
+
+.dark .navbar-toggler {
+    border-color: var(--border-color);
+}
+
+.dark .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28233, 236, 239, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='m4 7h22m-22 6h22m-22 6h22'/%3e%3c/svg%3e");
+}
+
+.dark .dropdown-menu {
+    background-color: var(--dropdown-bg);
+    border-color: var(--dropdown-border);
+    box-shadow: var(--shadow-lg);
+}
+
+.dark .dropdown-item {
+    color: var(--text-color);
+}
+
+.dark .dropdown-item:hover,
+.dark .dropdown-item:focus {
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+}
+
+.dark .dropdown-divider {
+    border-color: var(--border-color);
+}
+
+.dark .card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.dark .border-dark {
+    border-color: var(--border-color) !important;
+}
+
+.dark .text-muted {
+    color: var(--secondary-text) !important;
+}
+
+.dark .bg-light {
+    background-color: var(--card-bg) !important;
+}
+
+.dark .modal-content {
+    background-color: var(--modal-bg);
+    border-color: var(--modal-border);
+    color: var(--text-color);
+}
+
+.dark .modal-header {
+    border-color: var(--border-color);
+}
+
+.dark .modal-footer {
+    border-color: var(--border-color);
+}
+
+.dark .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.dark .form-control {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.dark .form-control:focus {
+    background-color: var(--input-bg);
+    border-color: var(--btn-primary-bg);
+    color: var(--text-color);
+}
+
+.dark .form-select {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.dark .toast {
+    background-color: var(--toast-bg);
+    border-color: var(--toast-border);
+    color: var(--text-color);
+}
+
+.dark .badge {
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+}
+
+.dark .mobile-drag-indicator {
+    background-color: var(--border-color);
+}
+
+.dark .skip-link {
+    background-color: var(--btn-primary-bg);
+    color: white;
+}
+
+.dark .resize-handle {
+    color: var(--secondary-text);
+}
+
+/* 다크모드 그라데이션 조정 */
+.dark .stats-icon.primary {
+    background: linear-gradient(135deg, #4c6ef5 0%, #364fc7 100%);
+}
+
+.dark .stats-icon.info {
+    background: linear-gradient(135deg, #339af0 0%, #1c7ed6 100%);
+}
+
+.dark .stats-icon.success {
+    background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+}
+
+.dark .stats-icon.warning {
+    background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%);
+}
+
+/* 다크모드 버튼 스타일 개선 */
+.dark .btn-outline-primary {
+    color: var(--btn-primary-bg);
+    border-color: var(--btn-primary-bg);
+}
+
+.dark .btn-outline-primary:hover {
+    background-color: var(--btn-primary-bg);
+    border-color: var(--btn-primary-bg);
+    color: white;
+}
+
+.dark .btn-outline-secondary {
+    color: var(--secondary-text);
+    border-color: var(--border-color);
+}
+
+.dark .btn-outline-secondary:hover {
+    background-color: var(--hover-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.dark .btn-outline-success {
+    color: #51cf66;
+    border-color: #51cf66;
+}
+
+.dark .btn-outline-danger {
+    color: #ff6b6b;
+    border-color: #ff6b6b;
 }

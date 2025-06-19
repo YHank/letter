@@ -1,0 +1,85 @@
+{
+  "app": {
+    "title": "글자수 세기 - 한글 텍스트 도구",
+    "description": "한글과 영어의 글자수, 단어수, 문장수를 실시간으로 계산하는 무료 온라인 도구입니다."
+  },
+  "navigation": {
+    "home": "홈",
+    "tools": "도구",
+    "spellcheck": "맞춤법 검사",
+    "typing_practice": "타자 연습",
+    "calculators": "계산기",
+    "salary": "연봉 계산기",
+    "insurance": "4대보험료 계산기",
+    "severance": "퇴직금 계산기",
+    "scientific": "공학용 계산기"
+  },
+  "stats": {
+    "characters_without_spaces": "공백 제외",
+    "characters_with_spaces": "공백 포함",
+    "words": "단어 수",
+    "reading_time": "읽기 시간",
+    "lines": "라인 수",
+    "sentences": "문장 수",
+    "paragraphs": "단락 수",
+    "avg_word_length": "평균 단어 길이",
+    "characters": "글자",
+    "words_unit": "단어",
+    "lines_unit": "줄",
+    "sentences_unit": "문장",
+    "paragraphs_unit": "단락",
+    "estimated": "예상"
+  },
+  "buttons": {
+    "clear": "지우기",
+    "uppercase": "대문자",
+    "lowercase": "소문자",
+    "capitalize": "첫글자 대문자",
+    "remove_special": "특수문자 제거",
+    "remove_spaces": "공백 제거",
+    "trim_lines": "공백 정리",
+    "undo": "실행 취소",
+    "redo": "다시 실행",
+    "export_stats": "통계 내보내기",
+    "install_app": "앱 설치",
+    "update": "업데이트"
+  },
+  "placeholders": {
+    "text_input": "여기에 텍스트를 입력하세요...",
+    "search": "검색..."
+  },
+  "messages": {
+    "language_changed": "언어가 변경되었습니다",
+    "app_installed": "앱이 성공적으로 설치되었습니다! 홈 화면에서 확인하세요.",
+    "offline_mode": "오프라인 모드입니다. 기본 기능은 계속 사용할 수 있습니다",
+    "online_restored": "인터넷 연결이 복구되었습니다",
+    "error_occurred": "오류가 발생했습니다",
+    "saved": "저장되었습니다",
+    "statistics_exported": "통계를 CSV 파일로 내보냈습니다",
+    "text_restored": "이전 작업이 복원되었습니다",
+    "transform_completed": "텍스트 변환 완료"
+  },
+  "help": {
+    "title": "사용법 및 도움말",
+    "text_transform": "텍스트 변환",
+    "statistics": "통계 설명",
+    "tips": "팁과 활용법",
+    "shortcuts": "키보드 단축키"
+  },
+  "themes": {
+    "light": "라이트 모드",
+    "dark": "다크 모드",
+    "auto": "자동"
+  },
+  "time_units": {
+    "seconds": "초",
+    "minutes": "분",
+    "hours": "시간"
+  },
+  "errors": {
+    "network_error": "네트워크 연결을 확인해주세요",
+    "page_not_found": "요청한 페이지를 찾을 수 없습니다",
+    "server_error": "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요",
+    "storage_full": "저장소 용량이 부족합니다. 오래된 데이터를 정리합니다"
+  }
+}

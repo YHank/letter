@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>아이콘 생성기</title>
+    <style>
+        .icon-preview {
+            margin: 20px;
+            display: inline-block;
+            text-align: center;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>글자수 세기 앱 아이콘 생성</h1>
+    <p>이 페이지를 브라우저에서 열고 우클릭으로 각 아이콘을 저장하세요.</p>
+    
+    <div id="icons"></div>
+    
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        const iconsContainer = document.getElementById('icons');
+        
+        sizes.forEach(size => {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            canvas.download = `icon-${size}x${size}.png`;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // 배경 (흰색 원)
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, size, size);
+            
+            // 외곽 원 (파란색)
+            ctx.fillStyle = '#0d6efd';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/2 - 4, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // 내부 배경 (흰색 원)
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/2 - 12, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // 텍스트 "가" (한글 대표 문자)
+            ctx.fillStyle = '#0d6efd';
+            ctx.font = `bold ${size * 0.4}px "Malgun Gothic", "Apple SD Gothic Neo", sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('가', size/2, size/2);
+            
+            // 하단에 작은 숫자들 (123)
+            ctx.fillStyle = '#6c757d';
+            ctx.font = `${size * 0.12}px "Malgun Gothic", sans-serif`;
+            ctx.fillText('123', size/2, size * 0.8);
+            
+            const preview = document.createElement('div');
+            preview.className = 'icon-preview';
+            preview.innerHTML = `
+                <div>${size}x${size}</div>
+                ${canvas.outerHTML}
+                <br>
+                <button onclick="downloadIcon(this, ${size})">다운로드</button>
+            `;
+            iconsContainer.appendChild(preview);
+        });
+        
+        function downloadIcon(button, size) {
+            const canvas = button.parentElement.querySelector('canvas');
+            const link = document.createElement('a');
+            link.download = `icon-${size}x${size}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        // 자동으로 모든 아이콘 다운로드
+        setTimeout(() => {
+            if (confirm('모든 아이콘을 자동으로 다운로드하시겠습니까?')) {
+                sizes.forEach((size, index) => {
+                    setTimeout(() => {
+                        const canvas = document.querySelectorAll('canvas')[index];
+                        const link = document.createElement('a');
+                        link.download = `icon-${size}x${size}.png`;
+                        link.href = canvas.toDataURL();
+                        link.click();
+                    }, index * 500);
+                });
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

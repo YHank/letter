@@ -1,0 +1,85 @@
+{
+  "app": {
+    "title": "文字数カウンター - 韓国語テキストツール",
+    "description": "韓国語と英語のテキストの文字数、単語数、文章数をリアルタイムで計算する無料オンラインツールです。"
+  },
+  "navigation": {
+    "home": "ホーム",
+    "tools": "ツール",
+    "spellcheck": "スペルチェック",
+    "typing_practice": "タイピング練習",
+    "calculators": "計算機",
+    "salary": "給与計算機",
+    "insurance": "保険計算機",
+    "severance": "退職金計算機",
+    "scientific": "関数電卓"
+  },
+  "stats": {
+    "characters_without_spaces": "スペース除く",
+    "characters_with_spaces": "スペース含む",
+    "words": "単語数",
+    "reading_time": "読書時間",
+    "lines": "行数",
+    "sentences": "文章数",
+    "paragraphs": "段落数",
+    "avg_word_length": "平均単語長",
+    "characters": "文字",
+    "words_unit": "語",
+    "lines_unit": "行",
+    "sentences_unit": "文",
+    "paragraphs_unit": "段落",
+    "estimated": "推定"
+  },
+  "buttons": {
+    "clear": "クリア",
+    "uppercase": "大文字",
+    "lowercase": "小文字",
+    "capitalize": "語頭大文字",
+    "remove_special": "特殊文字削除",
+    "remove_spaces": "スペース削除",
+    "trim_lines": "行整理",
+    "undo": "元に戻す",
+    "redo": "やり直し",
+    "export_stats": "統計エクスポート",
+    "install_app": "アプリインストール",
+    "update": "アップデート"
+  },
+  "placeholders": {
+    "text_input": "ここにテキストを入力してください...",
+    "search": "検索..."
+  },
+  "messages": {
+    "language_changed": "言語が変更されました",
+    "app_installed": "アプリのインストールが完了しました！ホーム画面をご確認ください。",
+    "offline_mode": "オフラインモードです。基本機能は引き続き使用できます",
+    "online_restored": "インターネット接続が復旧しました",
+    "error_occurred": "エラーが発生しました",
+    "saved": "保存されました",
+    "statistics_exported": "統計をCSVファイルにエクスポートしました",
+    "text_restored": "前回の作業が復元されました",
+    "transform_completed": "テキスト変換が完了しました"
+  },
+  "help": {
+    "title": "ヘルプ・使用方法",
+    "text_transform": "テキスト変換",
+    "statistics": "統計説明",
+    "tips": "ヒントと活用法",
+    "shortcuts": "キーボードショートカット"
+  },
+  "themes": {
+    "light": "ライトモード",
+    "dark": "ダークモード",
+    "auto": "自動"
+  },
+  "time_units": {
+    "seconds": "秒",
+    "minutes": "分",
+    "hours": "時間"
+  },
+  "errors": {
+    "network_error": "ネットワーク接続を確認してください",
+    "page_not_found": "リクエストされたページが見つかりません",
+    "server_error": "サーバーエラーが発生しました。しばらく後に再試行してください",
+    "storage_full": "ストレージがいっぱいです。古いデータを整理します"
+  }
+}
