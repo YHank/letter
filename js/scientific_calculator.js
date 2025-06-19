@@ -1,6 +1,6 @@
 // 공학용 계산기 초기화 함수
 function initializeScientificCalculator() {
-    console.log('공학용 계산기 초기화');
+    // console.log('공학용 계산기 초기화');
     
     // 계산기 상태 관리
     const calculator = {

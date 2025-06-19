@@ -1,6 +1,6 @@
 // 4대보험료 계산기 초기화 함수
 function initializeInsuranceCalculator() {
-    console.log('4대보험료 계산기 초기화');
+    // console.log('4대보험료 계산기 초기화');
     
     // 상수 정의 (2025년 기준)
     const INSURANCE_RATES = {
@@ -225,7 +225,7 @@ function initializeInsuranceCalculator() {
     
     // 실시간 계산 함수
     const autoCalculate = debounce(() => {
-        const salaryValue = DOMUtils.getElement('#'monthlySalary').value.replace(/,/g, '');
+        const salaryValue = DOMUtils.getElement('#monthlySalary').value.replace(/,/g, '');
         if (salaryValue && parseFloat(salaryValue) >= LIMITS.salaryMin) {
             calculateInsurance();
         }

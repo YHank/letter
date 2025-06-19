@@ -1,6 +1,6 @@
 // 간단한 맞춤법 검사기 초기화 함수
 function initializeSimpleSpellchecker() {
-    console.log('간단한 맞춤법 검사기 초기화 중...');
+    // console.log('간단한 맞춤법 검사기 초기화 중...');
     
     const inputArea = DOMUtils.getElement('#simple_spellcheck_input');
     const checkBtn = DOMUtils.getElement('#simple_check_btn');

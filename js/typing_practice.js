@@ -173,11 +173,11 @@ function cleanupTypingPractice() {
 
 // 새로운 타자 연습 시스템
 function initializeTypingPracticeNew() {
-    console.log('새로운 타자 연습 시스템 초기화 중...');
+    // console.log('새로운 타자 연습 시스템 초기화 중...');
     
     // 이미 초기화되었으면 기존 상태 정리 후 재초기화
     if (typingPracticeState && typingPracticeState.initialized) {
-        console.log('타자 연습 시스템 재초기화 중...');
+        // console.log('타자 연습 시스템 재초기화 중...');
         cleanupTypingPractice();
     }
     
@@ -247,7 +247,7 @@ function initializeTypingPracticeNew() {
                 e.stopPropagation();
                 const modeCard = btn.closest('.practice-mode-card');
                 const mode = modeCard.dataset.practiceMode;
-                console.log('모드 선택:', mode); // 디버그용
+                // console.log('모드 선택:', mode); // 디버그용
                 selectMode(mode);
             }
         };

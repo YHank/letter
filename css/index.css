@@ -208,7 +208,18 @@ body {
     top: 0 !important;
 }
 
+/* 광고 컨테이너 z-index 조정 */
+.container ins.adsbygoogle,
+.container iframe[id^="aswift"] {
+    position: relative;
+    z-index: 1;
+}
+
 /* Bootstrap 컴포넌트 다크모드 스타일 */
+.dropdown-menu {
+    z-index: 1060;
+}
+
 .dark .dropdown-menu {
     background-color: var(--card-bg);
     border-color: var(--border-color);
@@ -376,6 +387,8 @@ body {
     box-shadow: var(--shadow-sm);
     backdrop-filter: blur(10px);
     background-color: rgba(248, 249, 250, 0.95) !important;
+    z-index: 1050;
+    position: relative;
 }
 
 .dark .navbar {
@@ -871,6 +884,7 @@ body {
     .dropdown-menu {
         border-radius: 12px;
         box-shadow: var(--shadow-lg);
+        z-index: 1060;
     }
 }
 

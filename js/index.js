@@ -1,9 +1,50 @@
+// 프로덕션 환경에서 console 메서드 재정의
+if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    const noop = function() {};
+    console.log = noop;
+    console.info = noop;
+    console.debug = noop;
+    // console.warn과 console.error는 유지
+}
+
 // 전역 에러 핸들러
 class ErrorHandler {
     static init() {
         // JavaScript 에러 처리
         window.addEventListener('error', (event) => {
             console.error('JavaScript 에러:', event.error);
+            console.error('에러 파일:', event.filename);
+            console.error('에러 라인:', event.lineno);
+            console.error('에러 열:', event.colno);
+            
+            // 광고 관련 에러는 무시
+            if (event.filename && (event.filename.includes('googlesyndication') || 
+                                  event.filename.includes('adsbygoogle') ||
+                                  event.filename.includes('pagead'))) {
+                event.preventDefault();
+                return;
+            }
+            
+            // 개발 모드 console 메서드는 무시
+            if (event.message && (event.message.includes('console.log') ||
+                                 event.message.includes('console.warn') ||
+                                 event.message.includes('console.info'))) {
+                event.preventDefault();
+                return;
+            }
+            
+            // 확장 프로그램 오류 무시
+            if (event.filename && event.filename.includes('extension://')) {
+                event.preventDefault();
+                return;
+            }
+            
+            // ResizeObserver 경고 무시
+            if (event.message && event.message.includes('ResizeObserver loop limit exceeded')) {
+                event.preventDefault();
+                return;
+            }
+            
             Toast.show('예상치 못한 오류가 발생했습니다. 페이지를 새로고침 해주세요.', 'danger', 5000);
         });
 
@@ -430,6 +471,10 @@ DOMUtils.addEvent(document, 'DOMContentLoaded', function(){
     // 초기 버튼 상태 업데이트
     updateUndoRedoButtons();
     
+    // Bootstrap 드롭다운 초기화
+    const dropdownElementList = document.querySelectorAll('.dropdown-toggle');
+    const dropdownList = [...dropdownElementList].map(dropdownToggleEl => new bootstrap.Dropdown(dropdownToggleEl));
+    
     // NavigationManager 초기화
     window.navigationManager.init();
     
@@ -442,7 +487,7 @@ DOMUtils.addEvent(document, 'DOMContentLoaded', function(){
     // i18n 국제화 기능 초기화
     if (window.i18nManager) {
         window.i18nManager.init().then(() => {
-            console.log('다국어 지원 시스템 초기화 완료');
+            // console.log('다국어 지원 시스템 초기화 완료');
         }).catch(error => {
             console.error('i18n 초기화 실패:', error);
         });
@@ -890,7 +935,7 @@ function performAdvancedAnalysis() {
             displayWritingStyleResult(formatted.writingStyle);
             displayKeywordsResult(formatted.keywords);
             
-            console.log('고급 분석 완료:', analysis);
+            // console.log('고급 분석 완료:', analysis);
             
             if (window.Toast) {
                 Toast.show('고급 텍스트 분석이 완료되었습니다', 'success', 3000);

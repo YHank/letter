@@ -160,21 +160,21 @@
                             <a class="nav-link active" aria-current="page" href="/">글자수 / 단어수</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-move="spellcheck_simple" href="void(0)">맞춤법 검사</a>
+                            <a class="nav-link" data-move="spellcheck_simple" href="#">맞춤법 검사</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-move="salary" href="void(0)">연봉실수령</a>
+                            <a class="nav-link" data-move="salary" href="#">연봉실수령</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-move="typing_practice" href="void(0)">타자연습</a>
+                            <a class="nav-link" data-move="typing_practice" href="#">타자연습</a>
                         </li>
                         
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">계산기 모음</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" data-move="insurance_calculator" href="void(0)">4대보험료 계산기</a></li>
-                                <li><a class="dropdown-item" data-move="severancepay" href="void(0)">퇴직금 계산기</a></li>
-                                <li><a class="dropdown-item" data-move="scientific_calculator" href="void(0)">공학용 계산기</a></li>
+                                <li><a class="dropdown-item" data-move="insurance_calculator" href="#">4대보험료 계산기</a></li>
+                                <li><a class="dropdown-item" data-move="severancepay" href="#">퇴직금 계산기</a></li>
+                                <li><a class="dropdown-item" data-move="scientific_calculator" href="#">공학용 계산기</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item disabled" href="#">더 많은 계산기 준비중...</a></li>
                             </ul>
@@ -199,9 +199,6 @@
                     style="display:inline-block;width:728px;height:90px"
                     data-ad-client="ca-pub-1009706165028289"
                     data-ad-slot="8081181989"></ins>
-                <script>
-                    (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>
             </div>
         </div>
         <main class="container" role="main" id="main-content">
@@ -519,9 +516,6 @@
                     data-ad-slot="6057653874"
                     data-ad-format="auto"
                     data-full-width-responsive="true"></ins>
-                <script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
             </div>
         </footer>
         
@@ -668,12 +662,13 @@
         <script src="/js/utils.js" defer></script>
         <script src="/js/darkmode.js" defer></script>
         <script src="/js/text-analyzer.js" defer></script>
-        <script src="/js/navigation-manager.js" defer></script>
+        <script src="/js/navigation-manager.js?4" defer></script>
         <script src="/js/storage-manager.js" defer></script>
         <script src="/js/i18n.js" defer></script>
         <script src="/js/advanced-analyzer.js" defer></script>
         <script src="/js/pwa.js" defer></script>
         <script src="/js/index.js?26" defer></script>
+        <script src="/js/ads-init.js" defer></script>
         <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" defer></script>
         <script>
 // 에러 핸들러 초기화
@@ -683,68 +678,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// URL 파라미터로 페이지 로드 (네비게이션 상태 관리와 통합)
-(function() {
-    try {
-        if(location.search){
-            const url = new URL(location.href);
-            const params = new URLSearchParams(url.search);
-            const page = params.get('page');
-            if(page){
-                const target = document.querySelector(`[data-move="${page}"]`);
-                if(target){
-                    // 네비게이션 상태 업데이트 (DOMContentLoaded 후에 실행)
-                    document.addEventListener('DOMContentLoaded', function() {
-                        if (typeof updateNavigationState === 'function') {
-                            updateNavigationState(page);
-                        }
-                    });
-                    
-                    $('main').load('/html/'+page+'.html', function(response, status, xhr) {
-                        if (status === "success" && typeof loadPageScript === 'function') {
-                            loadPageScript(page).then(() => {
-                                // 페이지별 초기화 함수 호출
-                                setTimeout(() => {
-                                    switch(page) {
-                                        case 'spellcheck_simple':
-                                            if (typeof initializeSimpleSpellchecker === 'function') {
-                                                initializeSimpleSpellchecker();
-                                            }
-                                            break;
-                                        case 'typing_practice':
-                                            if (typeof initializeTypingPracticeNew === 'function') {
-                                                initializeTypingPracticeNew();
-                                            } else if (typeof initializeTypingPractice === 'function') {
-                                                initializeTypingPractice();
-                                            }
-                                            break;
-                                        case 'salary':
-                                            if (typeof initializeSalaryPage === 'function') {
-                                                initializeSalaryPage();
-                                            }
-                                            break;
-                                        case 'insurance_calculator':
-                                            if (typeof initializeInsuranceCalculator === 'function') {
-                                                initializeInsuranceCalculator();
-                                            }
-                                            break;
-                                        case 'scientific_calculator':
-                                            if (typeof initializeScientificCalculator === 'function') {
-                                                initializeScientificCalculator();
-                                            }
-                                            break;
-                                    }
-                                }, 100);
-                            });
-                        }
-                    });
-                }
-            }
-        }
-    } catch(e) {
-        console.error('페이지 로드 중 오류:', e);
+// NavigationManager 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    // NavigationManager가 모든 라우팅을 처리하도록 함
+    if (window.navigationManager) {
+        window.navigationManager.init();
     }
-})();
+});
 </script>
     </body>
 </html>

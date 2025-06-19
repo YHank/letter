@@ -35,7 +35,7 @@ class PWAManager {
                     scope: '/'
                 });
                 
-                console.log('Service Worker 등록 성공:', this.swRegistration.scope);
+                // console.log('Service Worker 등록 성공:', this.swRegistration.scope);
                 
                 // 업데이트 확인
                 this.swRegistration.addEventListener('updatefound', () => {
@@ -55,7 +55,7 @@ class PWAManager {
                 }
             }
         } else {
-            console.log('Service Worker를 지원하지 않는 브라우저입니다');
+            // console.log('Service Worker를 지원하지 않는 브라우저입니다');
         }
     }
 
@@ -65,7 +65,7 @@ class PWAManager {
     setupInstallPrompt() {
         // beforeinstallprompt 이벤트 처리
         window.addEventListener('beforeinstallprompt', (e) => {
-            console.log('앱 설치 프롬프트 준비됨');
+            // console.log('앱 설치 프롬프트 준비됨');
             
             // 기본 프롬프트 방지
             e.preventDefault();
@@ -79,7 +79,7 @@ class PWAManager {
 
         // 앱 설치 완료 후
         window.addEventListener('appinstalled', () => {
-            console.log('앱 설치 완료');
+            // console.log('앱 설치 완료');
             this.isInstalled = true;
             this.hideInstallButton();
             
@@ -97,7 +97,7 @@ class PWAManager {
         
         newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                console.log('새로운 버전이 사용 가능합니다');
+                // console.log('새로운 버전이 사용 가능합니다');
                 this.showUpdateNotification();
             }
         });
@@ -219,12 +219,12 @@ class PWAManager {
             // 사용자 선택 결과 대기
             const { outcome } = await this.deferredPrompt.userChoice;
             
-            console.log('설치 프롬프트 결과:', outcome);
+            // console.log('설치 프롬프트 결과:', outcome);
             
             if (outcome === 'accepted') {
-                console.log('사용자가 앱 설치를 승인했습니다');
+                // console.log('사용자가 앱 설치를 승인했습니다');
             } else {
-                console.log('사용자가 앱 설치를 거부했습니다');
+                // console.log('사용자가 앱 설치를 거부했습니다');
             }
             
             // 프롬프트 재사용 불가하므로 null로 설정
@@ -263,7 +263,7 @@ class PWAManager {
         if (window.matchMedia('(display-mode: standalone)').matches || 
             window.navigator.standalone === true) {
             this.isInstalled = true;
-            console.log('PWA가 설치된 상태로 실행 중');
+            // console.log('PWA가 설치된 상태로 실행 중');
         }
     }
 
@@ -289,14 +289,14 @@ class PWAManager {
      */
     setupNetworkMonitoring() {
         window.addEventListener('online', () => {
-            console.log('온라인 상태로 변경됨');
+            // console.log('온라인 상태로 변경됨');
             if (window.Toast) {
                 Toast.show('인터넷 연결이 복구되었습니다', 'success', 3000);
             }
         });
 
         window.addEventListener('offline', () => {
-            console.log('오프라인 상태로 변경됨');
+            // console.log('오프라인 상태로 변경됨');
             if (window.Toast) {
                 Toast.show('오프라인 모드입니다. 기본 기능은 계속 사용할 수 있습니다', 'info', 5000);
             }

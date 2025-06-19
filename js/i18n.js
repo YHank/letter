@@ -38,7 +38,7 @@ class I18nManager {
         );
         
         await Promise.all(loadPromises);
-        console.log('모든 번역 파일 로드 완료');
+        // console.log('모든 번역 파일 로드 완료');
     }
 
     /**
@@ -49,7 +49,7 @@ class I18nManager {
             const response = await fetch(`/i18n/${language}.json`);
             if (response.ok) {
                 this.translations[language] = await response.json();
-                console.log(`${language} 번역 파일 로드 완료`);
+                // console.log(`${language} 번역 파일 로드 완료`);
             } else {
                 console.warn(`${language} 번역 파일을 찾을 수 없음`);
                 // 기본 번역으로 폴백
@@ -173,7 +173,7 @@ class I18nManager {
             Toast.show(message, 'success', 3000);
         }
 
-        console.log(`언어가 ${language}로 변경됨`);
+        // console.log(`언어가 ${language}로 변경됨`);
     }
 
     /**

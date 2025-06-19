@@ -60,6 +60,27 @@ class NavigationManager {
                 e.preventDefault();
                 const page = moveElement.dataset.move;
                 this.navigateToPage(page);
+                
+                // 드롭다운 메뉴 닫기
+                const dropdown = moveElement.closest('.dropdown');
+                if (dropdown) {
+                    const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
+                    const dropdownMenu = dropdown.querySelector('.dropdown-menu');
+                    if (dropdownToggle && dropdownMenu) {
+                        dropdownToggle.classList.remove('show');
+                        dropdownMenu.classList.remove('show');
+                        dropdownToggle.setAttribute('aria-expanded', 'false');
+                    }
+                }
+                
+                // 모바일 메뉴 닫기
+                const navbarCollapse = document.querySelector('.navbar-collapse');
+                if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                    const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                    if (bsCollapse) {
+                        bsCollapse.hide();
+                    }
+                }
             }
         });
 
@@ -154,10 +175,8 @@ class NavigationManager {
             
             this.currentPage = page;
             
-            // Google 애드센스 새로고침 (페이지 변경 시)
-            if (typeof adsbygoogle !== 'undefined') {
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            }
+            // Google 애드센스는 SPA에서 자동으로 처리하도록 남겨둠
+            // 광고 새로고침 로직 제거 - 오류 발생 방지
             
         } catch (error) {
             console.error(`페이지 로드 실패: ${page}`, error);
@@ -243,7 +262,7 @@ class NavigationManager {
      * @param {string} html - 페이지 HTML
      */
     updatePageContent(html) {
-        const container = document.querySelector('.container');
+        const container = document.querySelector('main.container');
         if (container) {
             container.innerHTML = html;
         }
@@ -296,7 +315,7 @@ class NavigationManager {
             'typing_practice': 'initializeTypingPractice',
             'salary': 'initializeSalaryPage',
             'insurance_calculator': 'initializeInsuranceCalculator',
-            'scientific_calculator': 'initializeCalculator'
+            'scientific_calculator': 'initializeScientificCalculator'
         };
 
         const initFunctionName = initFunctions[page];
@@ -313,7 +332,7 @@ class NavigationManager {
      * 로딩 상태 표시
      */
     showLoadingState() {
-        const container = document.querySelector('.container');
+        const container = document.querySelector('main.container');
         if (container) {
             container.innerHTML = `
                 <div class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
@@ -331,7 +350,7 @@ class NavigationManager {
      * @param {string} page - 페이지 이름
      */
     showErrorState(page) {
-        const container = document.querySelector('.container');
+        const container = document.querySelector('main.container');
         if (container) {
             container.innerHTML = `
                 <div class="alert alert-danger" role="alert">
