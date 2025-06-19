@@ -1,11 +1,11 @@
-<div class="container mt-4">
+<section class="container mt-4" aria-labelledby="insuranceCalculatorTitle">
     <div class="row">
         <div class="col-lg-12">
             <div class="main-content">
                 <div class="text-center mb-5">
-                    <h1 class="h2 mb-3">
+                    <h1 class="h2 mb-3" id="insuranceCalculatorTitle">
                         <span class="d-inline-block p-3 rounded-circle bg-primary bg-opacity-10 mb-3">
-                            <i class="fas fa-calculator text-primary"></i>
+                            <i class="fas fa-calculator text-primary" aria-hidden="true"></i>
                         </span>
                         <br>
                         4대보험료 계산기
@@ -13,7 +13,7 @@
                     <p class="text-muted">2025년 기준 4대보험료를 정확하게 계산해드립니다</p>
                 </div>
                 
-                <div class="alert alert-info mb-4 border-0 shadow-sm">
+                <div class="alert alert-info mb-4 border-0 shadow-sm" role="status">
                     <div class="d-flex align-items-center">
                         <i class="fas fa-info-circle me-2 fs-5"></i>
                         <div>
@@ -35,15 +35,15 @@
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="monthlySalary" 
                                            placeholder="3,000,000" inputmode="numeric"
-                                           pattern="[0-9,]*" autocomplete="off">
+                                           pattern="[0-9,]*" autocomplete="off" aria-describedby="monthlySalaryHelp">
                                     <span class="input-group-text">원</span>
                                 </div>
-                                <small class="text-muted">상여금, 수당 등을 모두 포함한 월 총급여액을 입력하세요.</small>
+                                <small id="monthlySalaryHelp" class="form-text text-muted">상여금, 수당 등을 모두 포함한 월 총급여액을 입력하세요.</small>
                             </div>
                             
                             <div class="col-md-6 mb-3">
                                 <label for="dependents" class="form-label">부양가족 수 (본인 포함)</label>
-                                <select class="form-select" id="dependents">
+                                <select class="form-select" id="dependents" aria-describedby="dependentsHelp">
                                     <option value="1" selected>1명</option>
                                     <option value="2">2명</option>
                                     <option value="3">3명</option>
@@ -56,23 +56,25 @@
                                     <option value="10">10명</option>
                                     <option value="11">11명 이상</option>
                                 </select>
-                                <small class="text-muted">소득세 계산에 사용됩니다.</small>
+                                <small id="dependentsHelp" class="form-text text-muted">소득세 계산에 사용됩니다.</small>
                             </div>
                         </div>
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="businessType" class="form-label">사업장 규모</label>
-                                <select class="form-select" id="businessType">
+                                <select class="form-select" id="businessType" aria-describedby="businessTypeHelp">
                                     <option value="regular" selected>일반 사업장</option>
                                     <option value="small">우선지원 대상기업 (150명 미만)</option>
+                                    <option value="medium">중견기업 (150인 이상 우선지원 대상기업, 150인~1000인 미만 일부)</option>
+                                    <option value="large">대규모 기업 (1000인 이상)</option>
                                 </select>
-                                <small class="text-muted">고용보험 요율 적용에 필요합니다.</small>
+                                <small id="businessTypeHelp" class="form-text text-muted">고용보험 요율 적용에 필요합니다.</small>
                             </div>
                             
                             <div class="col-md-6 mb-3">
                                 <label for="industrialCode" class="form-label">산재보험 업종</label>
-                                <select class="form-select" id="industrialCode">
+                                <select class="form-select" id="industrialCode" aria-describedby="industrialCodeHelp">
                                     <option value="0.7" selected>사무직 (0.7%)</option>
                                     <option value="1.0">도소매업 (1.0%)</option>
                                     <option value="1.1">전문서비스업 (1.1%)</option>
@@ -80,50 +82,51 @@
                                     <option value="2.4">건설업 (2.4%)</option>
                                     <option value="1.53">기타 (평균 1.53%)</option>
                                 </select>
+                                <small id="industrialCodeHelp" class="form-text text-muted">산재보험료율은 업종별 상이, 사업주 전액 부담.</small>
                             </div>
                         </div>
                         
                         <div class="text-center mt-3">
                             <button type="button" class="btn btn-primary btn-lg" id="calculateBtn">
-                                <i class="fas fa-calculator"></i> 보험료 계산하기
+                                <i class="fas fa-calculator" aria-hidden="true"></i> 보험료 계산하기
                             </button>
                             <button type="button" class="btn btn-secondary btn-lg ms-2" id="resetBtn">
-                                <i class="fas fa-redo"></i> 초기화
+                                <i class="fas fa-redo" aria-hidden="true"></i> 초기화
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- 결과 영역 -->
-                <div id="resultSection" class="d-none">
+                <section id="resultSection" class="d-none" aria-live="polite" aria-atomic="true">
                     <!-- 요약 정보 -->
                     <div class="card mb-4 border-0 shadow-lg">
                         <div class="card-header bg-gradient text-white" style="background: var(--primary-gradient);">
                             <h5 class="mb-0">
-                                <i class="fas fa-chart-pie me-2"></i>계산 결과 요약
+                                <i class="fas fa-chart-pie me-2" aria-hidden="true"></i>계산 결과 요약
                             </h5>
                         </div>
                         <div class="card-body">
                             <div class="row text-center g-4">
                                 <div class="col-md-4">
                                     <div class="result-card p-4 rounded" style="background-color: rgba(13, 110, 253, 0.1);">
-                                        <i class="fas fa-user-tie fs-1 text-primary mb-3"></i>
+                                        <i class="fas fa-user-tie fs-1 text-primary mb-3" aria-hidden="true"></i>
                                         <h6 class="text-muted mb-2">근로자 부담금</h6>
-                                        <h2 class="text-primary fw-bold animate-number" id="employeeTotal">0원</h2>
+                                        <h2 class="text-primary fw-bold animate-number" id="employeeTotal" aria-atomic="true">0원</h2>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="result-card p-4 rounded" style="background-color: rgba(220, 53, 69, 0.1);">
-                                        <i class="fas fa-building fs-1 text-danger mb-3"></i>
+                                        <i class="fas fa-building fs-1 text-danger mb-3" aria-hidden="true"></i>
                                         <h6 class="text-muted mb-2">사업주 부담금</h6>
-                                        <h2 class="text-danger fw-bold animate-number" id="employerTotal">0원</h2>
+                                        <h2 class="text-danger fw-bold animate-number" id="employerTotal" aria-atomic="true">0원</h2>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="result-card p-4 rounded" style="background-color: rgba(25, 135, 84, 0.1);">
-                                        <i class="fas fa-hand-holding-usd fs-1 text-success mb-3"></i>
+                                        <i class="fas fa-hand-holding-usd fs-1 text-success mb-3" aria-hidden="true"></i>
                                         <h6 class="text-muted mb-2">실수령액</h6>
-                                        <h2 class="text-success fw-bold animate-number" id="netSalary">0원</h2>
+                                        <h2 class="text-success fw-bold animate-number" id="netSalary" aria-atomic="true">0원</h2>
                                     </div>
                                 </div>
                             </div>
@@ -224,18 +227,18 @@
                         <h5 class="mb-0">참고사항</h5>
                     </div>
                     <div class="card-body">
-                        <ul class="mb-0">
-                            <li>2025년 1월 기준 요율이 적용됩니다.</li>
-                            <li>건강보험료율은 7.09%로 2년 연속 동결되었습니다.</li>
-                            <li>국민연금 기준소득월액 상한: 617만원, 하한: 39만원</li>
-                            <li>건강보험 보수월액 상한: 없음, 하한: 없음</li>
-                            <li>실제 급여명세서와 차이가 있을 수 있으니 참고용으로만 사용하세요.</li>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="fas fa-check-circle text-success me-2"></i>2025년 1월 기준 요율이 적용됩니다.</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>건강보험료율은 7.09%로 동결되었습니다.</li>
+                            <li><i class="fas fa-info-circle text-info me-2"></i>국민연금 기준소득월액 상한: 617만원, 하한: 39만원.</li>
+                            <li><i class="fas fa-info-circle text-info me-2"></i>건강보험 보수월액 상한은 없으나, 보험료 상한액이 존재합니다.</li>
+                            <li><i class="fas fa-exclamation-triangle text-warning me-2"></i>실제 급여명세서와 차이가 있을 수 있으니 참고용으로만 사용하세요.</li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
 <script src="/js/insurance_calculator.js"></script>

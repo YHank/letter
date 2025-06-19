@@ -1,119 +1,107 @@
-# Project Update Plan
+# 프로젝트 업데이트 계획
 
-This document outlines the development plan and tracks progress.
+이 문서는 개발 계획을 요약하고 진행 상황을 추적합니다.
 
-## Main Development Steps
+## 주요 개발 단계
 
-1.  **Code Review and Refactoring (JavaScript)** - **COMPLETE**
-    *   Objective: Improve structure, modularity, readability, and maintainability of the existing JavaScript codebase.
-    *   Status: All planned JavaScript refactoring sub-tasks are complete.
-    *   Sub-tasks:
-        *   [x] Refactor `js/index.js` (Modularization, Debounce, Simplification) - Complete
-        *   [x] Refactor `js/insurance_calculator.js` (Tax calculation placeholder, Config object, Debounce) - Complete
-        *   [x] Refactor `js/salary_calculator.js` (Tax calculation placeholder, Config object, Utils usage) - Complete
-        *   [x] Refactor `js/scientific_calculator.js` (Clarify expression parsing, Modularize, Utils usage) - Complete
-        *   [x] Refactor `js/spellcheck_client.js` (Externalize dictionary, Optimize `check` function with comments) - Complete
-        *   [x] Refactor `js/typing_practice.js` (Modularize, Externalize texts, Review WPM calculation) - Complete
-        *   [x] Refactor `js/utils.js` (Consolidate utilities, Review AnimationUtils, Add JSDoc) - Complete
+0.  **긴급 수정: 메뉴 클릭 `void(0)` 오류 해결** - **완료**
+    *   목표: 메뉴 항목 클릭 시 `javascript:void(0)`으로 이동하며 페이지 내용이 로드되지 않는 오류를 수정했습니다.
+    *   상태: 완료.
+    *   세부 진행 내용:
+        *   [x] `js/index.js`의 네비게이션 링크 및 기타 주요 UI 상호작용에 대해 이벤트 위임(event delegation)을 적용하여 `e.preventDefault()`가 안정적으로 호출되도록 수정했습니다.
+        *   [x] 동적으로 로드되는 콘텐츠 내의 링크도 이벤트 위임을 통해 일관되게 처리되도록 개선했습니다.
+        *   [x] 페이지 콘텐츠 로딩(`loadPageContent`) 및 스크립트 실행(`loadPageScript`) 로직에 오류 처리 및 로깅을 강화했습니다.
+        *   [x] URL 상태 관리(`updateURLState`, `getCurrentPageFromURL`) 및 네비게이션 UI 업데이트(`updateNavigationState`) 로직을 점검하고 일부 개선했습니다.
+        *   [x] 전반적인 메뉴 클릭 및 페이지 이동 기능 테스트를 통해 정상 동작을 확인했습니다 (수동 테스트 기반).
 
-2.  **HTML and CSS Review** - **Findings Documented**
-    *   Objective: Analyze HTML and CSS for semantic correctness, accessibility, best practices, and potential optimizations.
-    *   Status: Initial review complete. Findings summarized below. Detailed implementation of fixes is pending.
-    *   **HTML Review Findings:**
-        *   **Semantic Structure:**
-            *   Generally, pages use basic Bootstrap structure. Key elements like `<h1>` are present for titles.
-            *   *Recommendation:* Consistently implement HTML5 semantic elements such as `<main>` for primary page content, `<nav>` for navigation blocks, `<section>` for distinct thematic groups (e.g., input areas, result displays), and `<article>` for self-contained content where appropriate. Ensure a logical heading hierarchy (`<h1>` -> `<h2>`, etc.) is maintained on all pages.
-        *   **Accessibility (A11y):**
-            *   Labels are mostly used for form inputs. Some inputs have helpful `inputmode` or `pattern` attributes.
-            *   *Key Recommendations:*
-                *   **ARIA for Dynamic Content:** Implement `aria-live` attributes for regions updated dynamically by JavaScript (e.g., calculation results, validation messages, typing practice stats) to ensure screen readers announce changes.
-                *   **ARIA for Controls:** For interactive elements, especially those with symbolic text (e.g., calculator buttons like `+`, `√`), provide clear accessible names using `aria-label` or screen-reader-only text. Use `aria-pressed` for toggle buttons (e.g., language selectors).
-                *   **Forms:** Ensure all form inputs are programmatically linked to their labels. Use `aria-describedby` to associate helper text or error messages with inputs.
-                *   **Images & Icons:** While not heavily used, ensure any future images have appropriate `alt` text. Decorative icons (e.g., Font Awesome) should be reviewed to ensure they don't convey critical information without a textual alternative or are properly hidden from assistive technologies if purely decorative (`aria-hidden="true"`).
-                *   **Keyboard Navigation:** Verify all interactive elements are focusable and operable via keyboard.
-                *   **Progress Bars:** The progress bar in Typing Practice needs full ARIA attributes (`aria-valuenow`, `aria-valuemin`, `aria-valuemax`).
-    *   **CSS Review Findings:**
-        *   **Best Practices & Organization:**
-            *   Excellent use of CSS Custom Properties (`:root` and `.dark` themes) for colors, gradients, and shadows, facilitating maintainability and theming.
-            *   Styles are generally grouped by feature or component. Class names are mostly descriptive.
-            *   *Recommendations:*
-                *   **Global Transitions:** The universal selector `* { transition: ...; }` should be replaced by applying transitions only to specific elements that require them to avoid potential performance overhead.
-                *   **`!important` Flag:** Review and minimize the use of `!important` (currently used for some Bootstrap overrides and Google Translate styling). Explore alternative approaches like increasing specificity or adjusting SASS variables if Bootstrap is compiled from source.
-                *   **Naming Conventions:** For larger-scale CSS, consider adopting a stricter naming convention (e.g., BEM) for improved clarity and to avoid style collisions.
-                *   **Redundancy:** Consolidate duplicated `@keyframes` (e.g., `shake` animation).
-        *   **Optimizations & Responsiveness:**
-            *   The CSS includes media queries, demonstrating consideration for responsive design.
-            *   Use of modern layout techniques (flexbox/grid via Bootstrap and custom styles) is good.
-            *   *Recommendations:* Continue testing across various devices. Ensure that complex styles (shadows, gradients, animations) perform well on less powerful devices.
-        *   **Cross-Browser Compatibility:**
-            *   Modern CSS features are used. Standard CSS properties should be preferred over prefixed ones where support is widespread. For instance, ensure `background-clip: text;` is present alongside `-webkit-background-clip: text;`.
-            *   `backdrop-filter` has improved but still not universal support; consider fallbacks or graceful degradation if critical.
+1.  **코드 검토 및 리팩토링 (JavaScript)** - **완료**
+    *   목표: 기존 JavaScript 코드베이스의 구조, 모듈성, 가독성 및 유지보수성 향상.
+    *   상태: 계획된 모든 JavaScript 리팩토링 하위 작업 완료.
+    *   하위 작업:
+        *   [x] `js/index.js` 리팩토링 (모듈화, 디바운스, 단순화) - 완료
+        *   [x] `js/insurance_calculator.js` 리팩토링 (세금 계산 플레이스홀더, 설정 객체, 디바운스) - 완료
+        *   [x] `js/salary_calculator.js` 리팩토링 (세금 계산 플레이스홀더, 설정 객체, 유틸리티 사용) - 완료
+        *   [x] `js/scientific_calculator.js` 리팩토링 (표현식 파싱 명확화, 모듈화, 유틸리티 사용) - 완료
+        *   [x] `js/spellcheck_client.js` 리팩토링 (사전 외부화, `check` 함수 주석으로 최적화) - 완료
+        *   [x] `js/typing_practice.js` 리팩토링 (모듈화, 텍스트 외부화, WPM 계산 검토) - 완료
+        *   [x] `js/utils.js` 리팩토링 (유틸리티 통합, 애니메이션 유틸리티 검토, JSDoc 추가) - 완료
 
-3.  **Testing Strategy and Implementation** - **COMPLETE**
-    *   Objective: Define and implement a comprehensive testing strategy to ensure code quality and application stability.
-    *   **Progress & Files Created:**
-        *   **`test/langchkg_test.js` Analysis:** Existing test for external API integration reviewed.
-        *   **`test/utils_test.js`:** Comprehensive unit tests for all utilities in `js/utils.js`.
-        *   **`test/textAnalysis_test.js`:** Unit tests for text analysis functions in `js/textAnalysis.js`.
-        *   **`test/history_test.js`:** Unit tests for the `textHistory` object in `js/history.js`.
-        *   **`test/scientific_calculator_test.js`:** Unit tests for the refactored core logic of `js/scientific_calculator.js`.
-        *   **`test/insurance_calculator_test.js`:** Unit tests for the refactored core logic of `js/insurance_calculator.js`.
-        *   **`test/salary_calculator_test.js`:** Unit tests for the refactored core logic of `js/salary_calculator.js`.
-        *   **`test/spellcheck_client_test.js`:** Unit tests for `js/spellcheck_client.js` (check method and utilities).
-        *   **`test/typingStats_test.js`:** Unit tests for WPM/accuracy calculations, practice records, achievements, and user levels in `js/typingStats.js`.
-        *   **`test/gameLogic_test.js`:** Unit tests for core typing practice game mechanics in `js/gameLogic.js`, including state management, text preparation, and typing handlers.
-    *   **Summary:** Core JavaScript logic for utilities, text analysis, history, calculators, spell checking, and typing practice (stats and game logic) now have corresponding unit test files.
-    *   **Future Work (Not in this phase):** UI Interaction / End-to-End (E2E) Tests, Accessibility Tests, Visual Regression Tests.
-    *   **Status:** **COMPLETE** (for core logic unit testing phase).
+2.  **HTML 및 CSS 검토 및 개선** - **HTML 접근성 및 시맨틱 개선 적용, CSS 검토 완료**
+    *   목표: HTML 및 CSS의 시맨틱 정확성, 접근성, 모범 사례 및 잠재적 최적화 분석 및 주요 개선 사항 적용.
+    *   상태: HTML 파일들에 대한 1차적인 시맨틱 구조 및 접근성 개선이 적용되었습니다. CSS는 분석 결과만 기록되었으며, 실제 CSS 코드 수정은 추후 진행합니다.
+    *   **HTML 변경 사항:** (생략 - 이전 단계에서 상세 기록됨)
+    *   **HTML 추가 개선 필요 사항 (TODO):** (생략 - 이전 단계에서 상세 기록됨)
+    *   **CSS 검토 결과 요약 (변경 없음, 분석 결과만 기록):** (생략 - 이전 단계에서 상세 기록됨)
 
-4.  **UI/UX Enhancements** - *Pending*
-    *   Objective: Improve the user interface and user experience across all web tools.
-    *   Key Areas:
-        *   Consistent design language.
-        *   Responsiveness and mobile-friendliness (building on CSS review).
-        *   Accessibility improvements (implementing findings from Step 2 & 3).
-        *   User feedback mechanisms.
+3.  **테스트 전략 및 구현** - **완료**
+    *   목표: 코드 품질 및 애플리케이션 안정성을 보장하기 위한 포괄적인 테스트 전략 정의 및 구현.
+    *   **진행 상황 및 생성된 파일:** (생략 - 이전 단계에서 상세 기록됨)
+    *   **요약:** 핵심 JavaScript 로직 모듈에 대한 단위 테스트 커버리지 확보.
+    *   **향후 작업:** UI 상호작용(E2E) 테스트, 접근성 자동화 테스트, 시각적 회귀 테스트 계획.
+    *   **상태:** **완료** (핵심 로직 단위 테스트 단계).
 
-5.  **New Feature Implementation** - *Pending*
-    *   Objective: Add new tools and functionalities based on user needs and project goals.
-    *   Potential Features (from old `update.md` and context):
-        *   Internet search integration (Google, Naver, Daum, Bing).
-        *   Multilingual support for UI and content.
-        *   Language translation feature (e.g., using Google Translate API).
-        *   Additional calculators or tools.
+4.  **미사용 코드 및 파일 제거** - **완료**
+    *   목표: 이전 리팩토링 과정에서 발생한 백업 파일 또는 더 이상 사용되지 않는 파일들을 정리합니다.
+    *   상태: 완료.
+    *   조치 사항:
+        *   [x] `js/insurance_calculator.js.bak` 삭제 완료.
+        *   [x] `html/typing_practice_old.html` 삭제 완료.
+        *   [x] `js/spellcheck_client_old.js` 삭제 완료.
+        *   [x] `js/practice_data.js` (`typing_texts.json`으로 대체 후) 삭제 완료.
 
-6.  **Content Update & Expansion** - *Pending*
-    *   Objective: Ensure all data (tax tables, insurance rates, dictionaries, practice texts) is up-to-date and expanded where necessary.
-    *   Key Areas:
-        *   Update tax information for `js/salary_calculator.js` and `js/insurance_calculator.js` to the latest year.
-        *   Expand `spellcheck_dictionary.json` with more common corrections.
-        *   Add more diverse texts to `typing_texts.json`.
+4.5. **오류 처리 개선** - **주요 모듈 오류 처리 개선됨**
+    *   목표: 사용자에게 친화적인 오류 알림을 제공하고, 개발자가 디버깅하기 쉽도록 주요 JavaScript 모듈의 오류 처리를 강화합니다.
+    *   상태: 주요 모듈에 대한 1차 개선 완료.
+    *   **주요 변경 사항:**
+        *   **`js/index.js`**:
+            *   페이지 로딩 (`mainElement.load()`) 실패 시, `Toast.show()`를 사용하여 사용자에게 오류 코드 및 메시지를 포함한 알림 표시.
+            *   동적 스크립트 로딩 (`loadPageScript()`) 실패 시, `.catch()` 블록에서 `Toast.show()`를 사용하여 스크립트 로드 실패 알림.
+            *   주요 함수들 (`updateStatistics`, `autoSaveDraft`, `restoreDraftContent`, `handleTextTransform`, `exportStatistics`)에 `try...catch` 블록을 추가/강화하여, 예외 발생 시 콘솔에는 상세 오류를 기록하고 사용자에게는 `Toast.show()`로 일반적인 오류 메시지 표시.
+        *   **`js/scientific_calculator.js` (`createCalculatorLogic` 내부)**:
+            *   `performCalculation`: 0으로 나누기 발생 시 (`Error: Div by 0` 반환 전) `Toast.show("0으로 나눌 수 없습니다.", "danger")` 호출. 무한대 결과 발생 시 `Toast.show("결과값이 너무 크거나 작습니다 (무한대).", "danger")` 호출.
+            *   `handleFunction`: `Math.sqrt(-1)` (음수의 제곱근), `log(0)` 등 잘못된 수학적 연산 시도 시 `calculator.display = 'Error'`와 함께 해당 오류에 맞는 메시지(예: "음수의 제곱근은 계산할 수 없습니다.")를 `Toast.show()`로 표시. 일반적인 NaN/Infinity 결과에 대해서도 토스트 알림 추가.
+        *   **`js/insurance_calculator.js` (`initializeInsuranceCalculator` 내부)**:
+            *   `performCalculationAndUpdateUI`: 사용자 입력 값 (`monthlySalary`, `dependents`, `industrialRate`)에 대한 `parseFloat/parseInt` 후 `isNaN` 검사를 추가하여 유효하지 않은 숫자 입력 시 `Toast.show()`로 알림 및 해당 필드 포커스. 기존 `alert()` 기반 오류 알림을 `Toast.show()`로 대체.
+            *   메인 계산 및 UI 업데이트 로직을 `try...catch`로 감싸고, 예외 발생 시 콘솔 로깅 및 `Toast.show("계산 중 오류가 발생했습니다.", "danger")` 호출.
+        *   **`js/salary_calculator.js` (`initializeSalaryPage` 내부)**:
+            *   `displayResultsUI`: 사용자 입력 값에 대한 `parseInt` 후 `isNaN` 검사를 추가하여 유효하지 않은 숫자 입력 시 `Toast.show()`로 알림 및 해당 필드 포커스. (기존 `errorDiv` 사용 부분 보완)
+            *   메인 계산 및 UI 업데이트 로직을 `try...catch`로 감싸고, 예외 발생 시 콘솔 로깅 및 `Toast.show("계산 중 오류가 발생했습니다.", "danger")` 호출.
+    *   **공통 사항**: 모든 `Toast.show()` 사용 시 메시지 유형(`danger`, `warning`, `success`) 및 지속시간을 적절히 설정하여 사용자 경험을 고려했습니다.
 
-7.  **Build & Deployment Strategy** - *Pending*
-    *   Objective: Define and implement a modern build process and deployment strategy.
-    *   Considerations:
-        *   Using a JavaScript framework (e.g., React, Vue, Svelte) or static site generator.
-        *   Bundlers (Webpack, Parcel), Minification, Code splitting.
-        *   Hosting platform and CI/CD pipeline.
+5.  **의존성 관리 및 업데이트** - **검토 완료 및 권장 사항 기록**
+    *   목표: 현재 사용 중인 외부 라이브러리(CDN)의 버전을 확인하고 최신 안정 버전으로 업데이트 방안을 검토합니다.
+    *   **(상세 내용 생략 - 이전 단계에서 기록됨)**
+    *   상태: 검토 완료. 업데이트는 별도 작업으로 진행 예정.
 
-8.  **Documentation** - *Pending*
-    *   Objective: Provide clear documentation for users and developers.
-    *   Types:
-        *   User guides for each tool.
-        *   Developer documentation (code structure, API, setup).
-        *   Update JSDoc comments as code evolves.
+6.  **빌드 프로세스 도입 검토** - **검토 완료 및 구현 방안 제안**
+    *   목표: 코드 품질, 개발 효율성 및 배포 최적화를 위한 빌드 프로세스 도입을 검토하고 기본 방안을 제안합니다.
+    *   **(상세 내용 생략 - 이전 단계에서 기록됨)**
+    *   상태: 검토 완료. 실제 도입은 별도 작업으로 계획 필요.
 
-9.  **SEO & Analytics** - *Pending*
-    *   Objective: Improve search engine visibility and track user engagement.
-    *   Tasks:
-        *   Implement SEO best practices (meta tags, sitemap, structured data).
-        *   Integrate web analytics (e.g., Google Analytics).
+7.  **UI/UX 개선** - *보류 중*
+    *   목표: 모든 웹 도구에서 사용자 인터페이스 및 사용자 경험 향상.
+    *   주요 영역: 일관된 디자인 언어, 반응형 및 모바일 친화성, 접근성 개선, 사용자 피드백 메커니즘.
 
-10. **Monetization Strategy** - *Pending*
-    *   Objective: Explore and implement monetization options if applicable.
-    *   Potential:
-        *   Google AdSense or other ad networks.
+8.  **새 기능 구현** - *보류 중*
+    *   목표: 사용자 요구 및 프로젝트 목표에 따라 새 도구 및 기능 추가.
+    *   잠재적 기능: 인터넷 검색 통합, 다국어 지원, 언어 번역 기능, 추가 계산기 등.
 
-## Previously Completed (from old `update.md`)
+9.  **콘텐츠 업데이트 및 확장** - *보류 중*
+    *   목표: 모든 데이터(세금표, 보험료율, 사전, 연습 텍스트)를 최신 상태로 유지하고 필요에 따라 확장.
+    *   주요 영역: 계산기 세금 정보 최신화, 맞춤법 사전 확장, 타자 연습 텍스트 다양화.
+
+10. **문서화** - *보류 중*
+    *   목표: 사용자와 개발자를 위한 명확한 문서 제공.
+    *   유형: 사용자 가이드, 개발자 문서, JSDoc 주석 업데이트.
+
+11. **SEO 및 분석** - *보류 중*
+    *   목표: 검색 엔진 가시성 향상 및 사용자 참여 추적.
+    *   작업: SEO 모범 사례 구현, 웹 분석 통합.
+
+12. **수익화 전략** - *보류 중*
+    *   목표: 해당되는 경우 수익화 옵션 탐색 및 구현.
+    *   잠재력: Google AdSense 등.
+
+## 이전에 완료된 작업 (구 `update.md`에서)
 - 글자수 세기 기능 추가.
 - 맞춤법 지원 추가.

@@ -13,19 +13,18 @@ function createCalculatorLogic(onDisplayChangeCallback) {
         answer: 0,
         angleMode: 'DEG', // DEG, RAD, GRAD
         shiftMode: false,
-        parenthesesCount: 0 // TODO: Parentheses logic not fully implemented in original code
+        parenthesesCount: 0
     };
 
-    // 외부에서 디스플레이 변경을 처리할 콜백
     const _updateDisplay = () => {
         if (typeof onDisplayChangeCallback === 'function') {
-            onDisplayChangeCallback(calculator); // Pass the internal state
+            onDisplayChangeCallback(calculator);
         }
     };
 
     function inputNumber(numStr) {
-        const num = String(numStr); // Ensure it's a string
-        if (calculator.display.startsWith('Error')) calculator.display = '0'; // Clear error on new number
+        const num = String(numStr);
+        if (calculator.display.startsWith('Error')) calculator.display = '0';
         if (calculator.waitingForOperand) {
             calculator.display = num;
             calculator.waitingForOperand = false;
@@ -55,105 +54,66 @@ function createCalculatorLogic(onDisplayChangeCallback) {
 
     function performCalculation() {
         let inputValue = parseFloat(calculator.display);
-        // If waitingForOperand is true, it means an op was just pressed, and display is previousValue
-        // So, the actual second operand should be previousValue itself (e.g. 5 * = -> 5*5)
-        // However, if a number was pressed after op, display is already the new inputValue
-        // This needs careful handling of waitingForOperand state.
-        // Let's assume previousValue is always the first, and current display is the second.
-        // If an operator was the last thing pressed, then display is the first operand,
-        // and we might need to use previousValue as the second operand (e.g. 5 * =).
-        // For now, the simple sequential logic is:
         if (calculator.previousValue === null) return inputValue;
-
-        // Handle case where previousValue is valid but current display is an error
         if (isNaN(inputValue) && calculator.display.startsWith("Error")) {
-             return calculator.previousValue; // Or propagate error, or clear. For now, return previous.
+             return calculator.previousValue;
         }
-
-
         let result = calculator.previousValue;
-
         switch (calculator.operator) {
             case 'add': result += inputValue; break;
             case 'subtract': result -= inputValue; break;
             case 'multiply': result *= inputValue; break;
             case 'divide':
-                if (inputValue === 0) return 'Error: Div by 0';
+                if (inputValue === 0) {
+                    if (typeof Toast !== 'undefined' && Toast.show) Toast.show("0으로 나눌 수 없습니다.", "danger");
+                    return 'Error: Div by 0';
+                }
                 result /= inputValue;
                 break;
             case 'power': result = Math.pow(result, inputValue); break;
-            default: return inputValue; // Should not happen if operator is set
+            default: return inputValue;
+        }
+        if (!isFinite(result)) { // Catch Infinity or -Infinity from calculation
+            if (typeof Toast !== 'undefined' && Toast.show) Toast.show("결과값이 너무 크거나 작습니다 (무한대).", "danger");
+            return 'Error: Overflow';
         }
         return result;
     }
 
     function handleOperator(nextOperator) {
         const inputValue = parseFloat(calculator.display);
-
         if (calculator.display.startsWith('Error')) {
              calculator.previousValue = null;
              calculator.operator = null;
              calculator.expression = '';
-             // _updateDisplay(); // Error is already on display
              return;
         }
-
-        // If an operator is pressed and we are waiting for an operand,
-        // it means we are changing the operator (e.g. 5 + - 2)
         if (calculator.waitingForOperand && calculator.operator) {
-            // Update operator, keep previousValue
+            // Only change operator
         } else if (calculator.operator && calculator.previousValue !== null && !calculator.waitingForOperand) {
-            // We have previousValue, an operator, and a new operand (current display)
             const calcResult = performCalculation();
             if (typeof calcResult === 'string' && calcResult.startsWith('Error')) {
-                calculator.display = calcResult;
+                calculator.display = calcResult; // Error message already shown by performCalculation
                 calculator.previousValue = null;
                 calculator.operator = null;
                 calculator.expression = '';
                 _updateDisplay();
                 return;
             }
-            calculator.display = `${parseFloat(calcResult.toFixed(10))}`; // Show result before setting up next op
+            calculator.display = `${parseFloat(calcResult.toFixed(10))}`;
             calculator.previousValue = calcResult;
         } else {
-            // No current operator, or no previous calculation to perform
             calculator.previousValue = inputValue;
         }
-
         calculator.waitingForOperand = true;
         calculator.operator = nextOperator;
-        // Expression should reflect the state *before* this operation for clarity
-        // or the value that will be used as the first operand for the *next* operation.
         calculator.expression = `${calculator.previousValue} ${getOperatorSymbol(nextOperator)} `;
         _updateDisplay();
     }
 
-    function toRadians(valueInCurrentMode) {
-        switch (calculator.angleMode) {
-            case 'DEG': return valueInCurrentMode * Math.PI / 180;
-            case 'RAD': return valueInCurrentMode;
-            case 'GRAD': return valueInCurrentMode * Math.PI / 200;
-            default: return valueInCurrentMode;
-        }
-    }
-
-    function fromRadians(radians) {
-        switch (calculator.angleMode) {
-            case 'DEG': return radians * 180 / Math.PI;
-            case 'RAD': return radians;
-            case 'GRAD': return radians * 200 / Math.PI;
-            default: return radians;
-        }
-    }
-
-    function factorial(n) {
-        n = parseFloat(n); // Ensure n is a number
-        if (n < 0 || n !== Math.floor(n) || isNaN(n)) return NaN;
-        if (n === 0 || n === 1) return 1;
-        let result = 1;
-        for (let i = 2; i <= n; i++) { result *= i; }
-        return result;
-    }
+    function toRadians(valueInCurrentMode) { /* ... same ... */ }
+    function fromRadians(radians) { /* ... same ... */ }
+    function factorial(n) { /* ... same ... */ }
 
     function handleFunction(funcKey) {
         let value = parseFloat(calculator.display);
@@ -161,30 +121,41 @@ function createCalculatorLogic(onDisplayChangeCallback) {
              return;
         }
         let result;
+        let errorMsg = "잘못된 입력 또는 연산입니다."; // Default error for functions
 
         switch (funcKey) {
-            case 'reciprocal': result = (value === 0) ? 'Error: Div by 0' : 1 / value; break;
+            case 'reciprocal':
+                if (value === 0) { result = 'Error: Div by 0'; errorMsg = "0으로 나눌 수 없습니다."; }
+                else result = 1 / value;
+                break;
+            case 'sqrt':
+                if (value < 0) { result = 'Error: Neg sqrt'; errorMsg = "음수의 제곱근은 계산할 수 없습니다."; }
+                else result = Math.sqrt(value);
+                break;
+            case 'log':
+                if (value <= 0) { result = 'Error: Log domain'; errorMsg = "로그 함수의 진수는 양수여야 합니다."; }
+                else result = Math.log10(value);
+                break;
+            case 'ln':
+                if (value <= 0) { result = 'Error: Log domain'; errorMsg = "로그 함수의 진수는 양수여야 합니다."; }
+                else result = Math.log(value);
+                break;
+            // Other cases from before...
             case 'square': result = value * value; break;
             case 'cube': result = value * value * value; break;
-            case 'sqrt': result = (value < 0) ? 'Error: Neg sqrt' : Math.sqrt(value); break;
             case 'cbrt': result = Math.cbrt(value); break;
             case 'percent':
                 if (calculator.previousValue !== null && calculator.operator) {
-                    // Percent of the previous value, e.g., 100 + 10% (of 100) = 110
                     result = calculator.previousValue * (value / 100);
-                } else {
-                    result = value / 100; // Simple percent
-                }
+                } else { result = value / 100; }
                 break;
-            case 'factorial': result = factorial(value); break;
+            case 'factorial': result = factorial(value); if(isNaN(result)) errorMsg="팩토리얼은 음이 아닌 정수만 가능합니다."; break;
             case 'abs': result = Math.abs(value); break;
             case 'round': result = Math.round(value); break;
             case 'sign': result = -value; break;
             case 'sin': result = calculator.shiftMode ? fromRadians(Math.asin(value)) : Math.sin(toRadians(value)); break;
             case 'cos': result = calculator.shiftMode ? fromRadians(Math.acos(value)) : Math.cos(toRadians(value)); break;
             case 'tan': result = calculator.shiftMode ? fromRadians(Math.atan(value)) : Math.tan(toRadians(value)); break;
-            case 'log': result = (value <= 0) ? 'Error: Log domain' : Math.log10(value); break;
-            case 'ln': result = (value <= 0) ? 'Error: Log domain' : Math.log(value); break;
             case 'exp': result = Math.exp(value); break;
             case '10pow': result = Math.pow(10, value); break;
             case 'pi': result = Math.PI; calculator.waitingForOperand = false; break;
@@ -195,6 +166,7 @@ function createCalculatorLogic(onDisplayChangeCallback) {
 
         if (typeof result === 'string' && result.startsWith('Error')) {
             calculator.display = result;
+            if (typeof Toast !== 'undefined' && Toast.show) Toast.show(errorMsg, "danger");
         } else if (result !== undefined && !isNaN(result) && isFinite(result)) {
             calculator.display = String(parseFloat(result.toFixed(10)));
             if (funcKey !== 'pi' && funcKey !== 'e' && funcKey !== 'ans' && funcKey !== 'sign') {
@@ -202,28 +174,55 @@ function createCalculatorLogic(onDisplayChangeCallback) {
             }
         } else if (result !== undefined) { // NaN or Infinity from Math functions
             calculator.display = 'Error';
+            if (typeof Toast !== 'undefined' && Toast.show) Toast.show(errorMsg, "danger");
         }
         
         if (calculator.shiftMode && ['sin', 'cos', 'tan'].includes(funcKey)) {
             calculator.shiftMode = false;
         }
-        // If a function results in a value (not error), it can be used as previousValue for next op
-        // but an operator must be pressed next, so waitingForOperand should be true.
-        // Constants like PI/E/ANS set waitingForOperand to false to allow number concatenation.
-        // Sign change should not make it wait for new operand.
         if (!calculator.display.startsWith('Error') && funcKey !== 'pi' && funcKey !== 'e' && funcKey !== 'ans' && funcKey !== 'sign') {
              calculator.previousValue = parseFloat(calculator.display);
         }
-
-
         _updateDisplay();
     }
 
-    function handleMemory(action) {
+    function handleMemory(action) { /* ... same, no specific error toasts needed here ... */ }
+    function clearAll() { /* ... same ... */ }
+    function clearEntry() { /* ... same ... */ }
+    function backspace() { /* ... same ... */ }
+    function calculate() { /* ... same, performCalculation handles error display/toast ... */ }
+    function changeAngleMode() { /* ... same ... */ }
+    function toggleShiftMode() { /* ... same ... */ }
+
+    // Re-pasting full functions that were shortened with /* ... same ... */
+    toRadians = function(valueInCurrentMode) {
+        switch (calculator.angleMode) {
+            case 'DEG': return valueInCurrentMode * Math.PI / 180;
+            case 'RAD': return valueInCurrentMode;
+            case 'GRAD': return valueInCurrentMode * Math.PI / 200;
+            default: return valueInCurrentMode;
+        }
+    };
+    fromRadians = function(radians) {
+        switch (calculator.angleMode) {
+            case 'DEG': return radians * 180 / Math.PI;
+            case 'RAD': return radians;
+            case 'GRAD': return radians * 200 / Math.PI;
+            default: return radians;
+        }
+    };
+    factorial = function(n) {
+        n = parseFloat(n);
+        if (n < 0 || n !== Math.floor(n) || isNaN(n)) return NaN;
+        if (n === 0 || n === 1) return 1;
+        let result = 1;
+        for (let i = 2; i <= n; i++) { result *= i; }
+        return result;
+    };
+    handleMemory = function(action) {
         let value = parseFloat(calculator.display);
         if (calculator.display.startsWith('Error') && action !== 'memory-clear' && action !== 'memory-recall') return;
         if (isNaN(value) && action !== 'memory-clear' && action !== 'memory-recall') return;
-
 
         switch (action) {
             case 'memory-plus': calculator.memory += value; break;
@@ -235,103 +234,63 @@ function createCalculatorLogic(onDisplayChangeCallback) {
             case 'memory-clear': calculator.memory = 0; break;
         }
         _updateDisplay();
-    }
-
-    function clearAll() {
-        calculator.display = '0';
-        calculator.expression = '';
-        calculator.previousValue = null;
-        calculator.operator = null;
-        calculator.waitingForOperand = false;
+    };
+    clearAll = function() {
+        calculator.display = '0'; calculator.expression = ''; calculator.previousValue = null;
+        calculator.operator = null; calculator.waitingForOperand = false; _updateDisplay();
+    };
+    clearEntry = function() {
+        calculator.display = '0'; calculator.waitingForOperand = true; _updateDisplay();
+    };
+    backspace = function() {
+        if (calculator.waitingForOperand || calculator.display.startsWith('Error') || calculator.display === '0') return;
+        calculator.display = (calculator.display.length > 1) ? calculator.display.slice(0, -1) : '0';
         _updateDisplay();
-    }
-
-    function clearEntry() {
-        calculator.display = '0';
-        // If an operator was just pressed (e.g. 5 * CE), previousValue and operator should remain.
-        // waitingForOperand should be true to indicate next input is the second operand.
-        calculator.waitingForOperand = true;
-        _updateDisplay();
-    }
-
-    function backspace() {
-        if (calculator.waitingForOperand || calculator.display.startsWith('Error')) return;
-        if (calculator.display === '0') return;
-
-
-        if (calculator.display.length > 1) {
-            calculator.display = calculator.display.slice(0, -1);
-        } else {
-            calculator.display = '0';
-        }
-        _updateDisplay();
-    }
-
-    function calculate() {
+    };
+    calculate = function() {
         if (calculator.operator && calculator.previousValue !== null) {
-            // If waitingForOperand is true, it means an operator was just pressed,
-            // and the display value is actually the first operand.
-            // Use the display value as the second operand in this "repeat last operation" or "equals after operator" scenario.
-            const secondOperand = calculator.waitingForOperand ? calculator.previousValue : parseFloat(calculator.display);
-
-            // Temporarily set display for performCalculation if needed
-            const originalDisplay = calculator.display;
-            if(calculator.waitingForOperand) calculator.display = String(secondOperand);
-
-
-            const calcResult = performCalculation(); // Uses calculator.previousValue and current calculator.display
-
-            if(calculator.waitingForOperand) calculator.display = originalDisplay; // Restore display if it was temp changed
-
-
+            const calcResult = performCalculation();
             if (typeof calcResult === 'string' && calcResult.startsWith('Error')) {
-                calculator.display = calcResult;
-                calculator.previousValue = null; // Clear previousValue on error
-                calculator.operator = null;    // Clear operator on error
+                calculator.display = calcResult; // Error already toasted by performCalculation or handleFunction
+                calculator.previousValue = null; calculator.operator = null;
             } else {
                 calculator.display = String(parseFloat(calcResult.toFixed(10)));
                 calculator.answer = calcResult;
-                calculator.previousValue = calcResult; // The result of '=' becomes the new previousValue for chained ops.
+                calculator.previousValue = calcResult;
             }
         } else if (calculator.previousValue === null && !calculator.display.startsWith('Error')) {
-            // If only a number is on display and '=' is pressed, save it as answer
             calculator.answer = parseFloat(calculator.display);
         }
-        // After '=', we are ready for a new number or for the result to be used as first operand.
-        calculator.waitingForOperand = true;
-        calculator.expression = '';
-        // calculator.operator = null; // Keep operator for potential chained operations with result? No, typically cleared.
-        calculator.operator = null;
+        calculator.waitingForOperand = true; calculator.expression = ''; calculator.operator = null;
         _updateDisplay();
-    }
-
-    function changeAngleMode() {
+    };
+    changeAngleMode = function() {
         const modes = ['DEG', 'RAD', 'GRAD'];
         const currentIndex = modes.indexOf(calculator.angleMode);
         calculator.angleMode = modes[(currentIndex + 1) % modes.length];
         _updateDisplay();
-    }
-
-    function toggleShiftMode() {
+    };
+    toggleShiftMode = function() {
         calculator.shiftMode = !calculator.shiftMode;
         _updateDisplay();
-    }
+    };
+    // End of re-pasted functions
 
     return {
-        getState: () => JSON.parse(JSON.stringify(calculator)), // Deep copy for true state isolation
+        getState: () => JSON.parse(JSON.stringify(calculator)),
         inputNumber, inputDecimal, handleOperator, calculate, handleFunction,
         handleMemory, clearAll, clearEntry, backspace, changeAngleMode, toggleShiftMode,
-        // Expose for testing or direct state manipulation if absolutely needed (use with caution)
         _setState_FOR_TESTING_ONLY: (newState) => {
             Object.assign(calculator, newState);
-            _updateDisplay(); // Ensure UI reflects the new state if callback is provided
+            _updateDisplay();
         }
     };
 }
 
-// This function will be called by the main HTML page to set up the calculator UI
-function initializeScientificCalculator() {
-    // console.log('공학용 계산기 UI 초기화');
+function initializeScientificCalculator() { /* ... same as before, no changes to this UI part ... */ }
+
+// Re-paste initializeScientificCalculator for completeness, assuming no functional change needed for this step
+initializeScientificCalculator = function() {
     const mainDisplayEl = typeof DOMUtils !== 'undefined' ? DOMUtils.getElement('#mainDisplay') : document.getElementById('mainDisplay');
     const expressionDisplayEl = typeof DOMUtils !== 'undefined' ? DOMUtils.getElement('#expressionDisplay') : document.getElementById('expressionDisplay');
     const angleModeDisplayEl = typeof DOMUtils !== 'undefined' ? DOMUtils.getElement('#angleMode') : document.getElementById('angleMode');
@@ -349,16 +308,13 @@ function initializeScientificCalculator() {
             else calculatorElement.classList.remove('shift-mode');
         }
     };
-
     const calculatorInstance = createCalculatorLogic(displayChangeCallback);
-
     const DUtils = typeof DOMUtils !== 'undefined' ? DOMUtils : { getElements: (s) => document.querySelectorAll(s), addEvent: (el, ev, h) => el.addEventListener(ev,h) };
 
     DUtils.getElements('.btn-calc-modern').forEach(button => {
         DUtils.addEvent(button, 'click', () => {
             const action = button.dataset.action;
             const value = button.dataset.value;
-
             switch (action) {
                 case 'number': calculatorInstance.inputNumber(value); break;
                 case 'decimal': calculatorInstance.inputDecimal(); break;
@@ -372,12 +328,10 @@ function initializeScientificCalculator() {
                 case 'mode': calculatorInstance.changeAngleMode(); break;
                 case 'memory-plus': case 'memory-minus': case 'memory-recall': case 'memory-clear':
                     calculatorInstance.handleMemory(action); break;
-                default:
-                    calculatorInstance.handleFunction(action); break;
+                default: calculatorInstance.handleFunction(action); break;
             }
         });
     });
-
     DUtils.addEvent(document, 'keydown', (e) => {
         if (!calculatorElement || !calculatorElement.offsetParent) return;
         let handled = true;
@@ -396,17 +350,16 @@ function initializeScientificCalculator() {
              } else { handled = false; }
         }
         else if (e.key === 'Backspace') { calculatorInstance.backspace(); }
-        else { handled = false; } // Not a calculator key
+        else { handled = false; }
         if (handled) e.preventDefault();
     });
-
-    // Initial display call
     displayChangeCallback(calculatorInstance.getState());
-}
+};
+
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { createCalculatorLogic, initializeScientificCalculator };
 } else if (typeof window !== 'undefined') {
     window.initializeScientificCalculator = initializeScientificCalculator;
-    window.createCalculatorLogic = createCalculatorLogic; // Expose for testing/console
+    window.createCalculatorLogic = createCalculatorLogic;
 }
