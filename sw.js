@@ -187,8 +187,8 @@ self.addEventListener('push', (event) => {
         
         const options = {
             body: data.body || '새로운 업데이트가 있습니다.',
-            icon: '/icon-192x192.png',
-            badge: '/icon-72x72.png',
+            icon: '/img/logo.webp',
+            badge: '/img/logo.webp',
             tag: 'letter-counter-notification',
             requireInteraction: false,
             actions: [
