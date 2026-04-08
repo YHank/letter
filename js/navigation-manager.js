@@ -93,17 +93,14 @@ class NavigationManager {
         if (offcanvasEl) {
             this.offcanvasInstance = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
 
-            // 모바일: offcanvas를 body로 이동하여 navbar stacking context 탈출
+            // 모바일: offcanvas 열릴 때 navbar z-index 해제하여 stacking context 제거
             // (position:sticky + z-index가 만드는 stacking context에 offcanvas가 갇히는 문제 해결)
-            const originalParent = offcanvasEl.parentElement;
-            const originalNextSibling = offcanvasEl.nextSibling;
-
+            const navbarEl = document.querySelector('.navbar');
             offcanvasEl.addEventListener('show.bs.offcanvas', () => {
-                document.body.appendChild(offcanvasEl);
+                if (navbarEl) navbarEl.style.zIndex = 'auto';
             });
-
             offcanvasEl.addEventListener('hidden.bs.offcanvas', () => {
-                originalParent.insertBefore(offcanvasEl, originalNextSibling);
+                if (navbarEl) navbarEl.style.zIndex = '';
             });
         }
 
