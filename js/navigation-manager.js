@@ -92,6 +92,19 @@ class NavigationManager {
         // offcanvas 명시적 초기화 (모바일 자동 초기화 실패 방지)
         if (offcanvasEl) {
             this.offcanvasInstance = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
+
+            // 모바일: offcanvas를 body로 이동하여 navbar stacking context 탈출
+            // (position:sticky + z-index가 만드는 stacking context에 offcanvas가 갇히는 문제 해결)
+            const originalParent = offcanvasEl.parentElement;
+            const originalNextSibling = offcanvasEl.nextSibling;
+
+            offcanvasEl.addEventListener('show.bs.offcanvas', () => {
+                document.body.appendChild(offcanvasEl);
+            });
+
+            offcanvasEl.addEventListener('hidden.bs.offcanvas', () => {
+                originalParent.insertBefore(offcanvasEl, originalNextSibling);
+            });
         }
 
         // 네비게이션 링크 클릭 이벤트
