@@ -551,28 +551,6 @@ function googleTranslateElementInit() {
     }, 'google_translate_element');
 }
 
-// 동적 스크립트 로딩 함수
-const loadedScripts = new Set();
-
-function loadScript(src) {
-    return new Promise((resolve, reject) => {
-        // 이미 로드된 스크립트는 스킵
-        if (loadedScripts.has(src)) {
-            resolve();
-            return;
-        }
-        
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = () => {
-            loadedScripts.add(src);
-            resolve();
-        };
-        script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
-        document.body.appendChild(script);
-    });
-}
-
 // 네비게이션 관리는 NavigationManager 모듈에서 처리
 
 // 통계 내보내기 함수

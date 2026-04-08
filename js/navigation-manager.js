@@ -8,6 +8,7 @@ class NavigationManager {
         this.loadedScripts = new Set();
         this.pageCache = new Map();
         this.homeContent = null; // 홈 콘텐츠 캐시
+        this.sessionTs = Date.now(); // 세션별 캐시 버스터
         
         // 페이지별 스크립트 매핑
         this.scriptMap = {
@@ -225,7 +226,7 @@ class NavigationManager {
         }
 
         try {
-            const response = await fetch(`/html/${page}.html`);
+            const response = await fetch(`/html/${page}.html?_t=${this.sessionTs}`);
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
@@ -390,7 +391,7 @@ class NavigationManager {
             container.innerHTML = `
                 <div class="alert alert-danger" role="alert">
                     <h4 class="alert-heading">페이지 로드 오류</h4>
-                    <p>요청하신 페이지(${page})를 불러오는데 실패했습니다.</p>
+                    <p>요청하신 페이지를 불러오는데 실패했습니다.</p>
                     <hr>
                     <p class="mb-0">
                         <button class="btn btn-outline-danger" onclick="window.navigationManager.navigateToHome()">
