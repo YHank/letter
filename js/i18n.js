@@ -122,6 +122,12 @@ class I18nManager {
         `;
 
         navbar.appendChild(languageDropdown);
+
+        // Bootstrap 드롭다운 수동 초기화 (초기화 타이밍 문제 방지, 중복 인스턴스 방지)
+        const dropdownToggle = languageDropdown.querySelector('.dropdown-toggle');
+        if (dropdownToggle && typeof bootstrap !== 'undefined' && !bootstrap.Dropdown.getInstance(dropdownToggle)) {
+            new bootstrap.Dropdown(dropdownToggle);
+        }
     }
 
     /**

@@ -76,6 +76,8 @@ class NavigationManager {
      * 이벤트 리스너 설정
      */
     setupEventListeners() {
+        const offcanvasEl = document.getElementById('offcanvasNavbar');
+
         // 네비게이션 링크 클릭 이벤트
         document.addEventListener('click', (e) => {
             const moveElement = e.target.closest('[data-move]');
@@ -83,7 +85,7 @@ class NavigationManager {
                 e.preventDefault();
                 const page = moveElement.dataset.move;
                 this.navigateToPage(page);
-                
+
                 // 드롭다운 메뉴 닫기
                 const dropdown = moveElement.closest('.dropdown');
                 if (dropdown) {
@@ -95,15 +97,10 @@ class NavigationManager {
                         dropdownToggle.setAttribute('aria-expanded', 'false');
                     }
                 }
-                
-                // 모바일 메뉴 닫기
-                const navbarCollapse = document.querySelector('.navbar-collapse');
-                if (navbarCollapse && navbarCollapse.classList.contains('show')) {
-                    const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
-                    if (bsCollapse) {
-                        bsCollapse.hide();
-                    }
-                }
+
+                // 모바일 오프캔버스 메뉴 닫기
+                const bsOffcanvas = offcanvasEl && bootstrap.Offcanvas.getInstance(offcanvasEl);
+                if (bsOffcanvas) bsOffcanvas.hide();
             }
         });
 
@@ -299,7 +296,7 @@ class NavigationManager {
      */
     updateNavigationState(currentPage = 'home') {
         // 모든 네비게이션 링크에서 active 클래스 제거
-        document.querySelectorAll('.navbar-nav .nav-link, .dropdown-item').forEach(link => {
+        document.querySelectorAll('.navbar-nav .nav-link, .dropdown-item:not([data-language])').forEach(link => {
             link.classList.remove('active');
             link.removeAttribute('aria-current');
         });

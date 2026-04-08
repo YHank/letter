@@ -18,16 +18,16 @@
             <div class="row g-3 align-items-end">
                 <div class="col-md-4">
                     <label for="annual_salary" class="form-label">연봉 (원)</label>
-                    <input type="number" class="form-control" id="annual_salary" placeholder="예: 50000000" value="50000000">
+                    <input type="number" class="form-control" id="annual_salary" placeholder="예: 50000000" value="50000000" inputmode="numeric">
                 </div>
                 <div class="col-md-3">
                     <label for="non_taxable_monthly" class="form-label">월 비과세액 (원)</label>
                     <span class="form-text">월 20만원까지 식대 비과세 (2023년 기준)</span>
-                    <input type="number" class="form-control" id="non_taxable_monthly" value="200000" title="예: 식대 20만원">
+                    <input type="number" class="form-control" id="non_taxable_monthly" value="200000" title="예: 식대 20만원" inputmode="numeric">
                 </div>
                 <div class="col-md-3">
                     <label for="dependents_count" class="form-label">부양가족 수 (본인 포함)</label>
-                    <input type="number" class="form-control" id="dependents_count" value="1" min="1">
+                    <input type="number" class="form-control" id="dependents_count" value="1" min="1" inputmode="numeric">
                 </div>
                 <div class="col-md-2">
                     <button type="button" class="btn btn-primary w-100" id="calculate_salary_button" aria-label="연봉 실수령액 계산 실행">

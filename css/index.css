@@ -1197,3 +1197,46 @@ html, body,
         scroll-behavior: auto !important;
     }
 }
+
+/* ===== 모바일 오프캔버스 네비게이션 ===== */
+
+/* 오프캔버스 다크모드 */
+.dark .offcanvas {
+    background-color: var(--navbar-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.dark .offcanvas-header {
+    border-bottom-color: var(--border-color);
+}
+
+/* 모바일: 오프캔버스 내 nav-link 터치 친화적 스타일 */
+@media (max-width: 991.98px) {
+    .offcanvas .nav-link {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin: 0.1rem 0;
+        font-size: 1.05rem;
+    }
+
+    .offcanvas .nav-link:hover,
+    .offcanvas .nav-link:focus {
+        background-color: var(--hover-bg);
+    }
+
+    .offcanvas .dropdown-menu {
+        position: static;
+        border: none;
+        box-shadow: none;
+        padding-left: 1rem;
+        background-color: transparent;
+    }
+
+    /* 계산기 결과 카드: 모바일에서 2컬럼 border 제거 */
+    #salary_results_container .border-end,
+    #resultSection .border-end {
+        border-right: none !important;
+        padding-right: 0 !important;
+    }
+}
