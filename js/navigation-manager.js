@@ -52,6 +52,17 @@ class NavigationManager {
             'severancepay': '근로기준법 기준 퇴직금 계산기. 근무기간과 월 평균임금으로 예상 퇴직금을 계산하세요.',
             'scientific_calculator': '공학용 계산기. 삼각함수, 로그, 지수 등 고급 수학 계산을 지원합니다.'
         };
+
+        // SEO 메타 태그 DOM 요소 캐싱 (페이지 이동마다 반복 쿼리 방지)
+        this.metaTags = {
+            canonical: document.querySelector('link[rel="canonical"]'),
+            ogUrl: document.querySelector('meta[property="og:url"]'),
+            ogTitle: document.querySelector('meta[property="og:title"]'),
+            ogDescription: document.querySelector('meta[property="og:description"]'),
+            twitterTitle: document.querySelector('meta[name="twitter:title"]'),
+            twitterDescription: document.querySelector('meta[name="twitter:description"]'),
+            description: document.querySelector('meta[name="description"]')
+        };
     }
 
     /**
@@ -324,7 +335,12 @@ class NavigationManager {
      */
     updatePageTitle(page) {
         const title = this.pageTitleMap[page] || this.pageTitleMap['home'];
+        const url = window.location.href;
         document.title = title;
+        if (this.metaTags.canonical) this.metaTags.canonical.setAttribute('href', url);
+        if (this.metaTags.ogUrl) this.metaTags.ogUrl.setAttribute('content', url);
+        if (this.metaTags.ogTitle) this.metaTags.ogTitle.setAttribute('content', title);
+        if (this.metaTags.twitterTitle) this.metaTags.twitterTitle.setAttribute('content', title);
     }
 
     /**
@@ -333,8 +349,9 @@ class NavigationManager {
      */
     updatePageDescription(page) {
         const description = this.pageDescriptionMap[page] || this.pageDescriptionMap['home'];
-        const metaDesc = document.querySelector('meta[name="description"]');
-        if (metaDesc) metaDesc.setAttribute('content', description);
+        if (this.metaTags.description) this.metaTags.description.setAttribute('content', description);
+        if (this.metaTags.ogDescription) this.metaTags.ogDescription.setAttribute('content', description);
+        if (this.metaTags.twitterDescription) this.metaTags.twitterDescription.setAttribute('content', description);
     }
 
     /**
