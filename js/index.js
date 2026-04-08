@@ -893,7 +893,8 @@ function setupAdvancedAnalysis() {
     // 텍스트 입력 시 고급 분석 버튼 활성화
     DOMUtils.addEvent('#letter_count', 'input', debounce(function() {
         const button = DOMUtils.getElement('#perform-advanced-analysis');
-        const text = this.innerText.trim();
+        const letterCountEl = DOMUtils.getElement('#letter_count');
+        const text = letterCountEl ? letterCountEl.innerText.trim() : '';
         
         if (button) {
             button.disabled = text.length < 10; // 최소 10글자 이상

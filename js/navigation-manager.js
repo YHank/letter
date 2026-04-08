@@ -12,7 +12,7 @@ class NavigationManager {
         // 페이지별 스크립트 매핑
         this.scriptMap = {
             'spellcheck_simple': ['/js/spellcheck_simple.js?4'],
-            'typing_practice': ['/js/practice_data.js?1', '/js/typing_practice.js?14'],
+            'typing_practice': ['/js/practice_data.js?2', '/js/typing_practice.js?15'],
             'salary': ['/js/salary_calculator.js?4'],
             'insurance_calculator': ['/js/insurance_calculator.js?3'],
             'scientific_calculator': ['/js/scientific_calculator.js?3'],
@@ -57,6 +57,10 @@ class NavigationManager {
      * NavigationManager 초기화
      */
     init() {
+        // 이중 초기화 방지
+        if (this.initialized) return this;
+        this.initialized = true;
+
         // 홈 콘텐츠를 초기화 시점에 캐시
         const container = document.querySelector('main.container');
         if (container) {

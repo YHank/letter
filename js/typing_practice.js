@@ -1,8 +1,8 @@
 // 전역 변수를 함수 외부로 이동하여 중복 초기화 방지
-let typingPracticeState = null;
+var typingPracticeState = typingPracticeState || null;
 
 // 타자 연습 설정
-const typingConfig = {
+var typingConfig = typingConfig || {
     defaultDuration: 5 * 60 * 1000, // 5분 (밀리초)
     showTimer: true,
     

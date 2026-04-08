@@ -1,7 +1,7 @@
 // 타자 연습 데이터 관리
 // 한글/영어 타자 연습을 위한 모든 연습 텍스트 데이터
 
-const practiceTexts = {
+var practiceTexts = practiceTexts || {
     korean: {
         free: [
             '안녕하세요',
