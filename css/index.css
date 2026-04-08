@@ -393,11 +393,17 @@ html, body,
 /* 네비게이션 바 개선 */
 .navbar {
     box-shadow: var(--shadow-sm);
-    backdrop-filter: blur(10px);
     background-color: rgba(248, 249, 250, 0.95) !important;
-    z-index: 9999;
+    z-index: 1050;
     position: sticky;
     top: 0;
+}
+
+/* 데스크탑에서만 backdrop-filter 적용 (모바일에서는 offcanvas position:fixed와 충돌) */
+@media (min-width: 992px) {
+    .navbar {
+        backdrop-filter: blur(10px);
+    }
 }
 
 .dark .navbar {
