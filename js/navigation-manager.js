@@ -12,9 +12,9 @@ class NavigationManager {
         
         // 페이지별 스크립트 매핑
         this.scriptMap = {
-            'spellcheck_simple': ['/js/spellcheck_client.js?1', '/js/spellcheck_simple.js?4'],
+            'spellcheck_simple': ['/js/spellcheck_client.js?2', '/js/spellcheck_simple.js?4'],
             'typing_practice': ['/js/practice_data.js?2', '/js/typing_practice.js?15'],
-            'salary': ['/js/salary_calculator.js?4'],
+            'salary': ['/js/salary_calculator.js?5'],
             'insurance_calculator': ['/js/insurance_calculator.js?3'],
             'scientific_calculator': ['/js/scientific_calculator.js?3'],
             'severancepay': ['/js/severancepay.js?1']
@@ -46,7 +46,7 @@ class NavigationManager {
         this.pageDescriptionMap = {
             'home': '무료 온라인 글자수 세기 도구. 한글과 영어의 글자수, 단어수, 문장수, 읽기 시간을 실시간으로 계산합니다.',
             'spellcheck_simple': '무료 한글 맞춤법 검사기. 다음 맞춤법 검사기로 정확한 맞춤법을 확인하세요.',
-            'salary': '2025년 기준 연봉 실수령액 계산기. 세금, 4대보험 공제 후 실수령액을 정확하게 계산합니다.',
+            'salary': '2026년 기준 연봉 실수령액 계산기. 세금, 4대보험 공제 후 실수령액을 정확하게 계산합니다.',
             'typing_practice': '한글/영어 타자 연습. WPM 속도 측정, 정확도 분석, 레벨 시스템으로 타자 실력을 향상하세요.',
             'insurance_calculator': '2025년 기준 4대보험료 계산기. 국민연금, 건강보험, 고용보험, 장기요양보험을 계산합니다.',
             'severancepay': '근로기준법 기준 퇴직금 계산기. 근무기간과 월 평균임금으로 예상 퇴직금을 계산하세요.',

@@ -1,14 +1,15 @@
 // salary_calculator.js
 
-// 2025년 기준 국민연금 요율: 9% (근로자 4.5%, 사업주 4.5%)
-// 근로자 부담분: 4.5%
-// 월 소득액 하한: 390,000원 (이하일 경우 390,000원으로 계산) -> 개인부담 월 17,550원
-// 월 소득액 상한: 6,170,000원 (이상일 경우 6,170,000원으로 계산) -> 개인부담 월 277,650원
+// 2026년 기준 국민연금 요율: 9.5% (근로자 4.75%, 사업주 4.75%)
+// 근로자 부담분: 4.75%
+// 월 소득액 하한: 400,000원 (이하일 경우 400,000원으로 계산) -> 개인부담 월 19,000원
+// 월 소득액 상한: 6,370,000원 (이상일 경우 6,370,000원으로 계산) -> 개인부담 월 302,575원
+// (2026년 상반기 기준, 하반기(7월~)에는 상한 659만원, 하한 41만원으로 변경)
 function calculateNationalPension(annualSalary) {
     const monthlySalary = annualSalary / 12;
-    const rate = 0.045;
-    const minMonthlyIncome = 390000;
-    const maxMonthlyIncome = 6170000; // 2025년 기준
+    const rate = 0.0475;
+    const minMonthlyIncome = 400000;
+    const maxMonthlyIncome = 6370000; // 2026년 상반기 기준
 
     let basisMonthlyIncome = monthlySalary;
     if (monthlySalary < minMonthlyIncome) {
@@ -21,7 +22,7 @@ function calculateNationalPension(annualSalary) {
     return Math.floor(monthlyPension / 10) * 10 * 12; // 원단위 절사 후 연간 합계
 }
 
-// 2023년 기준 고용보험 요율: 실업급여 0.9% (근로자 부담)
+// 2026년 기준 고용보험 요율: 실업급여 0.9% (근로자 부담)
 // (고용안정/직업능력개발 보험료는 사업주가 전액 부담)
 function calculateEmploymentInsurance(annualSalary) {
     const monthlySalary = annualSalary / 12;
@@ -32,19 +33,17 @@ function calculateEmploymentInsurance(annualSalary) {
     return Math.floor(monthlyInsurance / 10) * 10 * 12; // 원단위 절사 후 연간 합계
 }
 
-// 2023년 기준 건강보험 요율: 7.09% (근로자 3.545%)
-// 건강보험료 = 보수월액 × 보험료율(3.545%)
-// 월별 보험료 상한액(2023): 7,822,560원 (총액) => 근로자 부담 3,911,280원
-// 월별 보험료 하한액(2023): 19,780원 (총액) => 근로자 부담 9,890원
-// (실제로는 보수월액 상/하한이 있고, 그에 따라 보험료 상/하한이 결정됨)
-// 보수월액 상한: 110,330,000원, 하한: 279,256원 (2023년 1월부터)
+// 2026년 기준 건강보험 요율: 7.19% (근로자 3.595%)
+// 건강보험료 = 보수월액 × 보험료율(3.595%)
+// 월별 보험료 상한액(2026): 9,183,480원 (총액) => 근로자 부담 4,591,740원
+// 월별 보험료 하한액(2026): 20,160원 (총액) => 근로자 부담 10,080원
 function calculateHealthInsurance(annualSalary) {
     const monthlySalary = annualSalary / 12;
-    const rate = 0.03545; // 근로자 부담분 요율
+    const rate = 0.03595; // 근로자 부담분 요율
 
-    // 2023년 기준 보수월액 상/하한에 따른 보험료 상/하한 적용
-    const minMonthlyHealthInsurancePremium = 9890; // 근로자 부담분 하한액
-    const maxMonthlyHealthInsurancePremium = 3911280; // 근로자 부담분 상한액
+    // 2026년 기준 보수월액 상/하한에 따른 보험료 상/하한 적용
+    const minMonthlyHealthInsurancePremium = 10080; // 근로자 부담분 하한액
+    const maxMonthlyHealthInsurancePremium = 4591740; // 근로자 부담분 상한액
 
     let calculatedMonthlyPremium = monthlySalary * rate;
 
@@ -67,19 +66,19 @@ function calculateHealthInsurance(annualSalary) {
     return Math.floor(calculatedMonthlyPremium / 10) * 10 * 12; // 10원 단위 절사 후 연간 합계
 }
 
-// 2025년 기준 장기요양보험 요율: 건강보험료의 12.95%
+// 2026년 기준 장기요양보험 요율: 건강보험료의 13.14% (보수월액 대비 0.9448%)
 function calculateLongTermCareInsurance(annualHealthInsurancePremium) {
     const monthlyHealthInsurancePremium = annualHealthInsurancePremium / 12;
-    const rate = 0.1295;
+    const rate = 0.1314;
     const monthlyLtcPremium = monthlyHealthInsurancePremium * rate;
     return Math.floor(monthlyLtcPremium / 10) * 10 * 12; // 10원 단위 절사 후 연간 합계
 }
 
-// --- 소득세 계산 관련 (2023년 기준, 단순화된 모델 및 예시 값) ---
-// 실제로는 국세청의 복잡한 근로소득공제율, 소득세율표, 세액공제율을 정확히 반영해야 합니다.
+// --- 소득세 계산 관련 (2026년 기준) ---
+// 소득세 기본세율 구간 및 근로소득공제율은 2023년 이후 변동 없음
 // 여기서는 TDD를 위한 기본 구조와 예시 값을 사용합니다.
 
-// 근로소득공제 (2023년 귀속 기준 유사 적용)
+// 근로소득공제 (2026년 귀속 기준 적용 - 2023년 이후 변동 없음)
 function getIncomeDeduction(annualSalary) {
     if (annualSalary <= 0) return 0;
     if (annualSalary <= 5000000) { // 500만원 이하: 총급여액의 70%
@@ -109,7 +108,7 @@ function calculateTaxableIncome(annualSalary, nonTaxableAnnualAmount = 0, annual
     return taxable > 0 ? taxable : 0;
 }
 
-// 소득세 산출 (2023년 귀속 소득세 기본세율 적용)
+// 소득세 산출 (2026년 귀속 소득세 기본세율 적용 - 2023년 이후 변동 없음)
 function calculateIncomeTax(taxableIncome) {
     if (taxableIncome <= 0) return 0;
     let tax = 0;
@@ -133,7 +132,7 @@ function calculateIncomeTax(taxableIncome) {
     return Math.floor(tax / 10) * 10; // 10원 단위 절사 (연간 산출세액)
 }
 
-// 근로소득세액공제 (2023년 귀속 기준 적용)
+// 근로소득세액공제 (2026년 귀속 기준 적용 - 2023년 이후 변동 없음)
 function getIncomeTaxCredit(calculatedTax, annualSalary) {
     if (calculatedTax <= 0) return 0;
     let taxCredit = 0;
