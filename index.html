@@ -21,7 +21,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
             integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
             crossorigin="anonymous" referrerpolicy="no-referrer">
-        <link rel="stylesheet" href="/css/index.css?1">
+        <link rel="stylesheet" href="/css/index.css?2">
         <link rel="dns-prefetch" href="//translate.google.com">
 
         <!-- PWA Manifest -->
@@ -180,41 +180,41 @@
                     </button>
                 </div>
 
+                <!-- 오프캔버스 네비게이션 (모바일: 슬라이드 패널, 데스크탑: 인라인) -->
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">메뉴</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="닫기"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="/">글자수 / 단어수</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-move="spellcheck_simple" href="#">맞춤법 검사</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-move="salary" href="#">연봉실수령</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-move="typing_practice" href="#">타자연습</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">계산기 모음</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" data-move="insurance_calculator" href="#">4대보험료 계산기</a></li>
+                                    <li><a class="dropdown-item" data-move="severancepay" href="#">퇴직금 계산기</a></li>
+                                    <li><a class="dropdown-item" data-move="scientific_calculator" href="#">공학용 계산기</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item disabled" href="#">더 많은 계산기 준비중...</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </nav>
-        <!-- 오프캔버스 네비게이션 (모바일: 슬라이드 패널, 데스크탑: 인라인) -->
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasNavbarLabel">메뉴</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="닫기"></button>
-            </div>
-            <div class="offcanvas-body">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/">글자수 / 단어수</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-move="spellcheck_simple" href="#">맞춤법 검사</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-move="salary" href="#">연봉실수령</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-move="typing_practice" href="#">타자연습</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">계산기 모음</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" data-move="insurance_calculator" href="#">4대보험료 계산기</a></li>
-                            <li><a class="dropdown-item" data-move="severancepay" href="#">퇴직금 계산기</a></li>
-                            <li><a class="dropdown-item" data-move="scientific_calculator" href="#">공학용 계산기</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item disabled" href="#">더 많은 계산기 준비중...</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
         <div class="container">
             <div class="row px-0 mx-0 justify-content-center mt-4 d-none d-lg-flex">
                 <ins class="adsbygoogle"

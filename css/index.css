@@ -394,14 +394,21 @@ html, body,
 .navbar {
     box-shadow: var(--shadow-sm);
     background-color: rgba(248, 249, 250, 0.95) !important;
-    z-index: 1050;
     position: sticky;
     top: 0;
 }
 
-/* 데스크탑에서만 backdrop-filter 적용 (모바일에서는 offcanvas position:fixed와 충돌) */
+/* 모바일: z-index auto로 stacking context 생성 방지 (offcanvas position:fixed 정상 동작) */
+/* 데스크탑: z-index 설정 + backdrop-filter 적용 */
+@media (max-width: 991.98px) {
+    .navbar {
+        z-index: auto;
+    }
+}
+
 @media (min-width: 992px) {
     .navbar {
+        z-index: 1050;
         backdrop-filter: blur(10px);
     }
 }
