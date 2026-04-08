@@ -395,8 +395,9 @@ html, body,
     box-shadow: var(--shadow-sm);
     backdrop-filter: blur(10px);
     background-color: rgba(248, 249, 250, 0.95) !important;
-    z-index: 1050;
-    position: relative;
+    z-index: 9999;
+    position: sticky;
+    top: 0;
 }
 
 .dark .navbar {
