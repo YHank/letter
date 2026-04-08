@@ -62,54 +62,6 @@ const DOMUtils = {
     }
 };
 
-// 저장소 유틸리티
-const StorageUtils = {
-    /**
-     * localStorage에 데이터 저장
-     * @param {string} key - 저장할 키
-     * @param {*} value - 저장할 값
-     */
-    save(key, value) {
-        try {
-            localStorage.setItem(key, JSON.stringify(value));
-            return true;
-        } catch (error) {
-            console.error('저장 실패:', error);
-            return false;
-        }
-    },
-
-    /**
-     * localStorage에서 데이터 로드
-     * @param {string} key - 로드할 키
-     * @param {*} defaultValue - 기본값
-     * @returns {*}
-     */
-    load(key, defaultValue = null) {
-        try {
-            const item = localStorage.getItem(key);
-            return item ? JSON.parse(item) : defaultValue;
-        } catch (error) {
-            console.error('로드 실패:', error);
-            return defaultValue;
-        }
-    },
-
-    /**
-     * localStorage에서 데이터 삭제
-     * @param {string} key - 삭제할 키
-     */
-    remove(key) {
-        try {
-            localStorage.removeItem(key);
-            return true;
-        } catch (error) {
-            console.error('삭제 실패:', error);
-            return false;
-        }
-    }
-};
-
 // 숫자 포맷 유틸리티
 const NumberUtils = {
     /**
@@ -241,7 +193,6 @@ const ValidationUtils = {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         DOMUtils,
-        StorageUtils,
         NumberUtils,
         TimeUtils,
         AnimationUtils,

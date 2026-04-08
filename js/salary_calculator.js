@@ -1,15 +1,14 @@
 // salary_calculator.js
 
-// 2023년 기준 국민연금 요율: 9% (근로자 4.5%, 사업주 4.5%)
+// 2025년 기준 국민연금 요율: 9% (근로자 4.5%, 사업주 4.5%)
 // 근로자 부담분: 4.5%
-// 월 소득액 하한: 370,000원 (이하일 경우 370,000원으로 계산) -> 개인부담 월 16,650원
-// 월 소득액 상한: 5,900,000원 (이상일 경우 5,900,000원으로 계산) -> 개인부담 월 265,500원
-// (2024년 7월부터 상한액 6,170,000원으로 변경 예정)
+// 월 소득액 하한: 390,000원 (이하일 경우 390,000원으로 계산) -> 개인부담 월 17,550원
+// 월 소득액 상한: 6,170,000원 (이상일 경우 6,170,000원으로 계산) -> 개인부담 월 277,650원
 function calculateNationalPension(annualSalary) {
     const monthlySalary = annualSalary / 12;
     const rate = 0.045;
-    const minMonthlyIncome = 370000;
-    const maxMonthlyIncome = 5900000; // 2023년 기준
+    const minMonthlyIncome = 390000;
+    const maxMonthlyIncome = 6170000; // 2025년 기준
 
     let basisMonthlyIncome = monthlySalary;
     if (monthlySalary < minMonthlyIncome) {
@@ -68,10 +67,10 @@ function calculateHealthInsurance(annualSalary) {
     return Math.floor(calculatedMonthlyPremium / 10) * 10 * 12; // 10원 단위 절사 후 연간 합계
 }
 
-// 2023년 기준 장기요양보험 요율: 건강보험료의 12.81%
+// 2025년 기준 장기요양보험 요율: 건강보험료의 12.95%
 function calculateLongTermCareInsurance(annualHealthInsurancePremium) {
     const monthlyHealthInsurancePremium = annualHealthInsurancePremium / 12;
-    const rate = 0.1281;
+    const rate = 0.1295;
     const monthlyLtcPremium = monthlyHealthInsurancePremium * rate;
     return Math.floor(monthlyLtcPremium / 10) * 10 * 12; // 10원 단위 절사 후 연간 합계
 }

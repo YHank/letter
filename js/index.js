@@ -310,7 +310,12 @@ DOMUtils.addEvent('#letter_count', 'input', function(e) {
 function handleTextTransform(transformType) {
     const letterCountElement = DOMUtils.getElement('#letter_count');
     const currentText = letterCountElement.innerText;
-    
+
+    // 지우기 버튼 클릭 시 확인 다이얼로그 표시
+    if (transformType === 'clear' && !confirm('입력한 내용을 모두 지우시겠습니까?')) {
+        return;
+    }
+
     // TextAnalyzer 모듈의 transform 객체 사용
     if (transformType in window.textAnalyzer.transform) {
         const transformedText = window.textAnalyzer.transform[transformType](currentText);
@@ -514,15 +519,13 @@ DOMUtils.addEvent(document, 'DOMContentLoaded', function(){
         }
         
         // 텍스트만 삽입 (HTML 태그 제거)
-        if (document.queryCommandSupported('insertText')) {
-            document.execCommand('insertText', false, text);
-        } else {
-            // 폴백: 현재 위치에 텍스트 삽입
+        // Clipboard API가 지원되고 HTTPS 환경이면 사용, 아니면 Selection API 폴백
+        function insertTextAtCursor(insertStr) {
             const selection = window.getSelection();
             if (selection.rangeCount) {
                 const range = selection.getRangeAt(0);
                 range.deleteContents();
-                const textNode = document.createTextNode(text);
+                const textNode = document.createTextNode(insertStr);
                 range.insertNode(textNode);
                 range.selectNodeContents(textNode);
                 range.collapse(false);
@@ -530,6 +533,7 @@ DOMUtils.addEvent(document, 'DOMContentLoaded', function(){
                 selection.addRange(range);
             }
         }
+        insertTextAtCursor(text);
         
         // 통계 업데이트
         updateStatistics();

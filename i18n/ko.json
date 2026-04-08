@@ -81,5 +81,50 @@
     "page_not_found": "요청한 페이지를 찾을 수 없습니다",
     "server_error": "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요",
     "storage_full": "저장소 용량이 부족합니다. 오래된 데이터를 정리합니다"
+  },
+  "calculator": {
+    "calculate": "계산하기",
+    "reset": "초기화",
+    "result": "계산 결과",
+    "input_info": "정보 입력",
+    "notice": "안내",
+    "annual_salary": "연봉 (원)",
+    "monthly_salary": "월급 (원)",
+    "dependents": "부양가족 수 (본인 포함)",
+    "net_monthly": "월 실수령액",
+    "net_annual": "연 실수령액",
+    "total_deduction": "총 공제액",
+    "national_pension": "국민연금",
+    "health_insurance": "건강보험",
+    "long_term_care": "장기요양보험",
+    "employment_insurance": "고용보험",
+    "income_tax": "소득세",
+    "local_tax": "지방소득세"
+  },
+  "severance": {
+    "title": "퇴직금 계산기",
+    "subtitle": "근로기준법 기준 퇴직금을 계산합니다 (1년 이상 근무 시 지급)",
+    "work_years": "근무 기간 (년)",
+    "work_months": "근무 기간 (개월)",
+    "work_days": "근무 기간 (일)",
+    "avg_monthly_wage": "최근 3개월 월 평균임금 (원)",
+    "estimated_severance": "예상 퇴직금",
+    "total_days": "총 근무일수",
+    "daily_wage": "1일 평균임금"
+  },
+  "spellcheck": {
+    "title": "맞춤법 검사",
+    "subtitle": "다음 맞춤법 검사기로 정확한 맞춤법을 확인하세요"
+  },
+  "typing": {
+    "title": "타자 연습",
+    "start": "시작",
+    "stop": "중지",
+    "restart": "다시 시작",
+    "wpm": "타수 (WPM)",
+    "accuracy": "정확도",
+    "time_left": "남은 시간",
+    "best_record": "최고 기록",
+    "level": "레벨"
   }
 }

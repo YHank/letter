@@ -84,10 +84,10 @@
                         </div>
                         
                         <div class="text-center mt-3">
-                            <button type="button" class="btn btn-primary btn-lg" id="calculateBtn">
+                            <button type="button" class="btn btn-primary btn-lg" id="calculateBtn" aria-label="4대보험료 계산 실행">
                                 <i class="fas fa-calculator"></i> 보험료 계산하기
                             </button>
-                            <button type="button" class="btn btn-secondary btn-lg ms-2" id="resetBtn">
+                            <button type="button" class="btn btn-secondary btn-lg ms-2" id="resetBtn" aria-label="입력 초기화">
                                 <i class="fas fa-redo"></i> 초기화
                             </button>
                         </div>
@@ -95,7 +95,7 @@
                 </div>
 
                 <!-- 결과 영역 -->
-                <div id="resultSection" class="d-none">
+                <div id="resultSection" class="d-none" aria-live="polite" aria-label="4대보험료 계산 결과">
                     <!-- 요약 정보 -->
                     <div class="card mb-4 border-0 shadow-lg">
                         <div class="card-header bg-gradient text-white" style="background: var(--primary-gradient);">

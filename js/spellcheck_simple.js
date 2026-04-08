@@ -19,18 +19,20 @@ function initializeSimpleSpellchecker() {
     DOMUtils.addEvent(checkBtn, 'click', function() {
         const text = inputArea.value.trim();
         if (!text) {
-            alert('검사할 텍스트를 입력해주세요.');
+            if (window.Toast) {
+                Toast.show('검사할 텍스트를 입력해주세요.', 'warning', 3000);
+            }
             return;
         }
-        
+
         // 검사 실행
         if (typeof SpellCheckClient !== 'undefined') {
             lastResults = SpellCheckClient.check(text);
-            
+
             // 결과 표시
             resultsDiv.innerHTML = SpellCheckClient.formatResults(lastResults);
             resultsDiv.style.display = 'block';
-            
+
             // 교정 버튼 표시/숨김
             if (lastResults.errorCount > 0 && lastResults.corrected !== lastResults.original) {
                 applyBtn.style.display = 'inline-block';
@@ -39,7 +41,9 @@ function initializeSimpleSpellchecker() {
             }
         } else {
             console.error('SpellCheckClient가 로드되지 않았습니다.');
-            alert('맞춤법 검사 모듈을 로드하는 중 오류가 발생했습니다.');
+            if (window.Toast) {
+                Toast.show('맞춤법 검사 모듈을 로드하는 중 오류가 발생했습니다.', 'danger', 4000);
+            }
         }
     });
     

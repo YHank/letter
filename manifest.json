@@ -12,51 +12,15 @@
   "categories": ["productivity", "utilities", "education"],
   "icons": [
     {
-      "src": "/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-96x96.png",
-      "sizes": "96x96", 
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png", 
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-192x192.png",
+      "src": "/img/logo.webp",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/webp",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-384x384.png", 
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-512x512.png",
-      "sizes": "512x512", 
-      "type": "image/png",
+      "src": "/img/logo.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
       "purpose": "any maskable"
     }
   ],
@@ -65,70 +29,30 @@
       "name": "글자수 세기",
       "short_name": "글자수",
       "description": "텍스트의 글자수를 세어보세요",
-      "url": "/",
-      "icons": [
-        {
-          "src": "/icon-96x96.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/"
     },
     {
       "name": "맞춤법 검사",
       "short_name": "맞춤법",
       "description": "한글 맞춤법을 검사해보세요",
-      "url": "/?page=spellcheck_simple",
-      "icons": [
-        {
-          "src": "/icon-96x96.png", 
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/?page=spellcheck_simple"
     },
     {
       "name": "타자 연습",
       "short_name": "타자연습",
       "description": "한글/영어 타자 연습을 해보세요",
-      "url": "/?page=typing_practice",
-      "icons": [
-        {
-          "src": "/icon-96x96.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/?page=typing_practice"
     },
     {
       "name": "연봉 계산기",
       "short_name": "연봉계산",
       "description": "실수령액을 계산해보세요",
-      "url": "/?page=salary",
-      "icons": [
-        {
-          "src": "/icon-96x96.png",
-          "sizes": "96x96"
-        }
-      ]
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshot-wide.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "글자수 세기 메인 화면"
-    },
-    {
-      "src": "/screenshot-narrow.png", 
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "모바일 글자수 세기 화면"
+      "url": "/?page=salary"
     }
   ],
   "features": [
     "실시간 글자수 계산",
-    "공백 포함/제외 옵션", 
+    "공백 포함/제외 옵션",
     "단어수 및 문장수 계산",
     "예상 읽기 시간 표시",
     "자동 저장 기능",

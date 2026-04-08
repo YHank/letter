@@ -7,14 +7,16 @@ class NavigationManager {
         this.currentPage = 'home';
         this.loadedScripts = new Set();
         this.pageCache = new Map();
+        this.homeContent = null; // 홈 콘텐츠 캐시
         
         // 페이지별 스크립트 매핑
         this.scriptMap = {
-            'spellcheck_simple': ['/js/spellcheck_simple.js?3'],
-            'typing_practice': ['/js/practice_data.js', '/js/typing_practice.js?13'],
-            'salary': ['/js/salary_calculator.js?3'],
-            'insurance_calculator': ['/js/insurance_calculator.js?2'],
-            'scientific_calculator': ['/js/scientific_calculator.js?3']
+            'spellcheck_simple': ['/js/spellcheck_simple.js?4'],
+            'typing_practice': ['/js/practice_data.js?1', '/js/typing_practice.js?14'],
+            'salary': ['/js/salary_calculator.js?4'],
+            'insurance_calculator': ['/js/insurance_calculator.js?3'],
+            'scientific_calculator': ['/js/scientific_calculator.js?3'],
+            'severancepay': ['/js/severancepay.js?1']
         };
         
         // 페이지별 메뉴 매핑
@@ -38,12 +40,28 @@ class NavigationManager {
             'severancepay': '퇴직금 계산기 - 통상임금 기준 퇴직금',
             'scientific_calculator': '공학용 계산기 - 고급 수학 계산기'
         };
+
+        // 페이지별 meta description 매핑
+        this.pageDescriptionMap = {
+            'home': '무료 온라인 글자수 세기 도구. 한글과 영어의 글자수, 단어수, 문장수, 읽기 시간을 실시간으로 계산합니다.',
+            'spellcheck_simple': '무료 한글 맞춤법 검사기. 다음 맞춤법 검사기로 정확한 맞춤법을 확인하세요.',
+            'salary': '2025년 기준 연봉 실수령액 계산기. 세금, 4대보험 공제 후 실수령액을 정확하게 계산합니다.',
+            'typing_practice': '한글/영어 타자 연습. WPM 속도 측정, 정확도 분석, 레벨 시스템으로 타자 실력을 향상하세요.',
+            'insurance_calculator': '2025년 기준 4대보험료 계산기. 국민연금, 건강보험, 고용보험, 장기요양보험을 계산합니다.',
+            'severancepay': '근로기준법 기준 퇴직금 계산기. 근무기간과 월 평균임금으로 예상 퇴직금을 계산하세요.',
+            'scientific_calculator': '공학용 계산기. 삼각함수, 로그, 지수 등 고급 수학 계산을 지원합니다.'
+        };
     }
 
     /**
      * NavigationManager 초기화
      */
     init() {
+        // 홈 콘텐츠를 초기화 시점에 캐시
+        const container = document.querySelector('main.container');
+        if (container) {
+            this.homeContent = container.innerHTML;
+        }
         this.setupEventListeners();
         this.handleInitialRoute();
         return this;
@@ -144,6 +162,7 @@ class NavigationManager {
         this.showMainContent();
         this.updateNavigationState('home');
         this.updatePageTitle('home');
+        this.updatePageDescription('home');
         this.currentPage = 'home';
     }
 
@@ -169,7 +188,8 @@ class NavigationManager {
             // 네비게이션 상태 및 타이틀 업데이트
             this.updateNavigationState(page);
             this.updatePageTitle(page);
-            
+            this.updatePageDescription(page);
+
             // 페이지별 초기화 함수 호출
             this.initializePageScript(page);
             
@@ -306,16 +326,27 @@ class NavigationManager {
     }
 
     /**
+     * meta description 동적 업데이트 (SEO 및 접근성 개선)
+     * @param {string} page - 페이지 이름
+     */
+    updatePageDescription(page) {
+        const description = this.pageDescriptionMap[page] || this.pageDescriptionMap['home'];
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) metaDesc.setAttribute('content', description);
+    }
+
+    /**
      * 페이지별 초기화 함수 호출
      * @param {string} page - 페이지 이름
      */
     initializePageScript(page) {
         const initFunctions = {
-            'spellcheck_simple': 'initializeSpellchecker',
+            'spellcheck_simple': 'initializeSimpleSpellchecker',
             'typing_practice': 'initializeTypingPractice',
             'salary': 'initializeSalaryPage',
             'insurance_calculator': 'initializeInsuranceCalculator',
-            'scientific_calculator': 'initializeScientificCalculator'
+            'scientific_calculator': 'initializeScientificCalculator',
+            'severancepay': 'initializeSeverancePay'
         };
 
         const initFunctionName = initFunctions[page];
@@ -371,9 +402,10 @@ class NavigationManager {
      * 메인 콘텐츠 표시
      */
     showMainContent() {
-        // 원래 메인 콘텐츠로 복원하는 로직
-        // 이 부분은 실제 HTML 구조에 맞게 조정 필요
-        window.location.reload(); // 임시방편
+        const container = document.querySelector('main.container');
+        if (container && this.homeContent) {
+            container.innerHTML = this.homeContent;
+        }
     }
 
     /**

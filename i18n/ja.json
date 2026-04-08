@@ -81,5 +81,50 @@
     "page_not_found": "リクエストされたページが見つかりません",
     "server_error": "サーバーエラーが発生しました。しばらく後に再試行してください",
     "storage_full": "ストレージがいっぱいです。古いデータを整理します"
+  },
+  "calculator": {
+    "calculate": "計算する",
+    "reset": "リセット",
+    "result": "計算結果",
+    "input_info": "情報入力",
+    "notice": "案内",
+    "annual_salary": "年俸（ウォン）",
+    "monthly_salary": "月給（ウォン）",
+    "dependents": "扶養家族数（本人含む）",
+    "net_monthly": "月手取り額",
+    "net_annual": "年手取り額",
+    "total_deduction": "控除合計",
+    "national_pension": "国民年金",
+    "health_insurance": "健康保険",
+    "long_term_care": "介護保険",
+    "employment_insurance": "雇用保険",
+    "income_tax": "所得税",
+    "local_tax": "地方所得税"
+  },
+  "severance": {
+    "title": "退職金計算機",
+    "subtitle": "勤労基準法に基づく退職金を計算します",
+    "work_years": "勤務期間（年）",
+    "work_months": "勤務期間（ヶ月）",
+    "work_days": "勤務期間（日）",
+    "avg_monthly_wage": "直近3ヶ月の月平均賃金（ウォン）",
+    "estimated_severance": "退職金予想額",
+    "total_days": "総勤務日数",
+    "daily_wage": "1日平均賃金"
+  },
+  "spellcheck": {
+    "title": "スペルチェック",
+    "subtitle": "Daumスペルチェッカーで正確な綴りを確認"
+  },
+  "typing": {
+    "title": "タイピング練習",
+    "start": "スタート",
+    "stop": "停止",
+    "restart": "再スタート",
+    "wpm": "WPM",
+    "accuracy": "正確度",
+    "time_left": "残り時間",
+    "best_record": "ベスト記録",
+    "level": "レベル"
   }
 }

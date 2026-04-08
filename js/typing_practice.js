@@ -42,11 +42,11 @@ const practiceRecords = {
         if (records.length > 100) {
             records.shift();
         }
-        StorageUtils.save('typingPracticeRecords', records);
+        window.storageManager.save('typingPracticeRecords', records, false);
     },
-    
+
     load: function() {
-        return StorageUtils.load('typingPracticeRecords', []);
+        return window.storageManager.load('typingPracticeRecords', [], false);
     },
     
     getBestWPM: function(mode) {
@@ -72,14 +72,14 @@ const practiceRecords = {
 // 업적 시스템
 const achievementSystem = {
     getUnlocked: function() {
-        return StorageUtils.load('typingAchievements', []);
+        return window.storageManager.load('typingAchievements', [], false);
     },
-    
+
     unlock: function(achievementId) {
         const unlocked = this.getUnlocked();
         if (!unlocked.includes(achievementId)) {
             unlocked.push(achievementId);
-            StorageUtils.save('typingAchievements', unlocked);
+            window.storageManager.save('typingAchievements', unlocked, false);
             
             // 업적 획득 알림
             const achievement = typingConfig.achievements.find(a => a.id === achievementId);

@@ -1,23 +1,103 @@
-<!-- 퇴직금 계산기 -->
-<h1>퇴직금 계산기</h1>
-<label for="years">근무 기간(년): </label>
-<input type="number" id="years">
-<label for="avg-salary">1년간 평균 임금(원): </label>
-<input type="number" id="avg-salary">
-<button onclick="calculateSeverance()">계산하기</button>
-<p id="severance-result"></p>
+<div class="container mt-5 mb-5">
+    <div class="text-center mb-5">
+        <h1 class="h2 mb-3">
+            <span class="d-inline-block p-3 rounded-circle bg-warning bg-opacity-10 mb-3">
+                <i class="fas fa-hand-holding-usd text-warning"></i>
+            </span>
+            <br>
+            <span data-i18n="severance.title">퇴직금 계산기</span>
+        </h1>
+        <p class="text-muted" data-i18n="severance.subtitle">근로기준법 기준 퇴직금을 계산합니다 (1년 이상 근무 시 지급)</p>
+    </div>
 
-<script>
-function calculateSeverance() {
-    const years = document.getElementById('years').value;
-    const avgSalary = document.getElementById('avg-salary').value;
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-edit me-2"></i>근무 정보 입력</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="sv_years" class="form-label" data-i18n="severance.work_years">근무 기간 (년)</label>
+                            <input type="number" class="form-control" id="sv_years" min="0" max="50" placeholder="예: 3">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="sv_months" class="form-label" data-i18n="severance.work_months">근무 기간 (개월)</label>
+                            <input type="number" class="form-control" id="sv_months" min="0" max="11" placeholder="예: 6">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="sv_days" class="form-label" data-i18n="severance.work_days">근무 기간 (일)</label>
+                            <input type="number" class="form-control" id="sv_days" min="0" max="30" placeholder="예: 15">
+                        </div>
+                        <div class="col-12">
+                            <label for="sv_monthly_salary" class="form-label">
+                                <span data-i18n="severance.avg_monthly_wage">최근 3개월 월 평균임금 (원)</span>
+                                <span class="text-muted small">— 기본급 + 수당 포함</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="sv_monthly_salary" placeholder="예: 3,000,000">
+                                <span class="input-group-text">원</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-4">
+                        <button class="btn btn-warning flex-grow-1" onclick="calculateSeverance()" aria-label="퇴직금 계산 실행">
+                            <i class="fas fa-calculator me-1"></i><span data-i18n="calculator.calculate">계산하기</span>
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="resetSeverance()" aria-label="입력 초기화">
+                            <i class="fas fa-redo me-1"></i><span data-i18n="calculator.reset">초기화</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-    if (!years || !avgSalary) {
-        document.getElementById('severance-result').textContent = "모든 필드를 입력해주세요.";
-        return;
-    }
+            <div class="card mb-4 d-none" id="sv_result_card" aria-live="polite" aria-label="퇴직금 계산 결과">
+                <div class="card-header bg-warning bg-opacity-10">
+                    <h5 class="mb-0"><i class="fas fa-receipt me-2 text-warning"></i>계산 결과</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center py-3 mb-4">
+                        <div class="text-muted small mb-1" data-i18n="severance.estimated_severance">예상 퇴직금</div>
+                        <div class="fs-2 fw-bold text-warning" id="sv_result_amount">0원</div>
+                        <div class="text-muted small mt-1" id="sv_result_period"></div>
+                    </div>
+                    <hr>
+                    <div class="row g-2 text-center">
+                        <div class="col-6 col-md-3">
+                            <div class="small text-muted" data-i18n="severance.total_days">총 근무일수</div>
+                            <div class="fw-semibold" id="sv_total_days">-</div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="small text-muted" data-i18n="severance.daily_wage">1일 평균임금</div>
+                            <div class="fw-semibold" id="sv_daily_wage">-</div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="small text-muted">월 평균임금</div>
+                            <div class="fw-semibold" id="sv_monthly_display">-</div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="small text-muted">계산식</div>
+                            <div class="fw-semibold small" id="sv_formula">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    const severance = years * avgSalary;
-    document.getElementById('severance-result').textContent = `퇴직금: ${severance.toLocaleString()}원`;
-}
-</script>
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>계산 기준 안내</h6>
+                </div>
+                <div class="card-body small text-muted">
+                    <ul class="mb-0 ps-3">
+                        <li>퇴직금 = <strong>1일 평균임금 × 30일 × (총 재직일수 ÷ 365)</strong></li>
+                        <li>1일 평균임금 = 최근 3개월 임금 합계 ÷ 해당 기간 역일 수 (≈ 월평균임금 ÷ 30.4)</li>
+                        <li>계속근로기간 1년 미만은 퇴직금 지급 의무 없음</li>
+                        <li>주 15시간 이상 근무한 근로자에게만 적용됩니다</li>
+                        <li>본 계산기는 참고용이며, 실제 금액은 임금명세서 기준으로 달라질 수 있습니다</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

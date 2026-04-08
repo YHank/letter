@@ -27,101 +27,101 @@
                 <div class="calculator-container">
                     <div class="calculator-modern">
                         <!-- 디스플레이 -->
-                        <div class="display-modern">
+                        <div class="display-modern" role="region" aria-label="계산기 디스플레이">
                             <div class="display-mode">
                                 <span class="angle-mode" id="angleMode">DEG</span>
                                 <span class="memory-indicator" id="memoryIndicator" style="display: none;">M</span>
                             </div>
-                            <div class="display-expression" id="expressionDisplay"></div>
-                            <div class="display-main" id="mainDisplay">0</div>
+                            <div class="display-expression" id="expressionDisplay" aria-live="polite" aria-label="수식 표시"></div>
+                            <div class="display-main" id="mainDisplay" aria-live="polite" aria-label="계산 결과" aria-atomic="true">0</div>
                         </div>
 
                         <!-- 버튼 섹션 -->
                         <div class="button-section">
                             <!-- 1행: 모드 및 메모리 -->
                             <div class="button-row">
-                                <button class="btn-calc-modern mode" data-action="shift">SHIFT</button>
-                                <button class="btn-calc-modern mode" data-action="mode">MODE</button>
-                                <button class="btn-calc-modern memory" data-action="memory-clear">MC</button>
-                                <button class="btn-calc-modern memory" data-action="memory-recall">MR</button>
-                                <button class="btn-calc-modern memory" data-action="memory-minus">M-</button>
-                                <button class="btn-calc-modern memory" data-action="memory-plus">M+</button>
+                                <button class="btn-calc-modern mode" data-action="shift" aria-label="시프트 모드">SHIFT</button>
+                                <button class="btn-calc-modern mode" data-action="mode" aria-label="모드 변경">MODE</button>
+                                <button class="btn-calc-modern memory" data-action="memory-clear" aria-label="메모리 초기화">MC</button>
+                                <button class="btn-calc-modern memory" data-action="memory-recall" aria-label="메모리 불러오기">MR</button>
+                                <button class="btn-calc-modern memory" data-action="memory-minus" aria-label="메모리에서 빼기">M-</button>
+                                <button class="btn-calc-modern memory" data-action="memory-plus" aria-label="메모리에 더하기">M+</button>
                             </div>
 
                             <!-- 2행: 공학 함수 1 -->
                             <div class="button-row">
-                                <button class="btn-calc-modern function" data-action="reciprocal">1/x</button>
-                                <button class="btn-calc-modern function" data-action="square">x²</button>
-                                <button class="btn-calc-modern function" data-action="sqrt">√x</button>
-                                <button class="btn-calc-modern function" data-action="power">x^y</button>
-                                <button class="btn-calc-modern function" data-action="factorial">n!</button>
-                                <button class="btn-calc-modern function" data-action="percent">%</button>
+                                <button class="btn-calc-modern function" data-action="reciprocal" aria-label="역수 (1/x)">1/x</button>
+                                <button class="btn-calc-modern function" data-action="square" aria-label="제곱 (x²)">x²</button>
+                                <button class="btn-calc-modern function" data-action="sqrt" aria-label="제곱근 (√x)">√x</button>
+                                <button class="btn-calc-modern function" data-action="power" aria-label="거듭제곱 (x^y)">x^y</button>
+                                <button class="btn-calc-modern function" data-action="factorial" aria-label="팩토리얼 (n!)">n!</button>
+                                <button class="btn-calc-modern function" data-action="percent" aria-label="퍼센트">%</button>
                             </div>
 
                             <!-- 3행: 삼각함수 -->
                             <div class="button-row">
-                                <button class="btn-calc-modern function" data-action="sin">sin</button>
-                                <button class="btn-calc-modern function" data-action="cos">cos</button>
-                                <button class="btn-calc-modern function" data-action="tan">tan</button>
-                                <button class="btn-calc-modern function" data-action="asin">sin⁻¹</button>
-                                <button class="btn-calc-modern function" data-action="acos">cos⁻¹</button>
-                                <button class="btn-calc-modern function" data-action="atan">tan⁻¹</button>
+                                <button class="btn-calc-modern function" data-action="sin" aria-label="사인">sin</button>
+                                <button class="btn-calc-modern function" data-action="cos" aria-label="코사인">cos</button>
+                                <button class="btn-calc-modern function" data-action="tan" aria-label="탄젠트">tan</button>
+                                <button class="btn-calc-modern function" data-action="asin" aria-label="역사인 (sin⁻¹)">sin⁻¹</button>
+                                <button class="btn-calc-modern function" data-action="acos" aria-label="역코사인 (cos⁻¹)">cos⁻¹</button>
+                                <button class="btn-calc-modern function" data-action="atan" aria-label="역탄젠트 (tan⁻¹)">tan⁻¹</button>
                             </div>
 
                             <!-- 4행: 로그 및 지수 -->
                             <div class="button-row">
-                                <button class="btn-calc-modern function" data-action="log">log</button>
-                                <button class="btn-calc-modern function" data-action="ln">ln</button>
-                                <button class="btn-calc-modern function" data-action="exp">e^x</button>
-                                <button class="btn-calc-modern function" data-action="10pow">10^x</button>
-                                <button class="btn-calc-modern function" data-action="pi">π</button>
-                                <button class="btn-calc-modern function" data-action="e">e</button>
+                                <button class="btn-calc-modern function" data-action="log" aria-label="상용로그 (log)">log</button>
+                                <button class="btn-calc-modern function" data-action="ln" aria-label="자연로그 (ln)">ln</button>
+                                <button class="btn-calc-modern function" data-action="exp" aria-label="e의 거듭제곱 (e^x)">e^x</button>
+                                <button class="btn-calc-modern function" data-action="10pow" aria-label="10의 거듭제곱 (10^x)">10^x</button>
+                                <button class="btn-calc-modern function" data-action="pi" aria-label="원주율 파이 (π)">π</button>
+                                <button class="btn-calc-modern function" data-action="e" aria-label="자연상수 e">e</button>
                             </div>
 
                             <!-- 5행: 괄호 및 Clear -->
                             <div class="button-row">
-                                <button class="btn-calc-modern operation" data-action="open-paren">(</button>
-                                <button class="btn-calc-modern operation" data-action="close-paren">)</button>
-                                <button class="btn-calc-modern clear" data-action="clear-entry">CE</button>
-                                <button class="btn-calc-modern clear" data-action="clear">C</button>
-                                <button class="btn-calc-modern clear" data-action="backspace">←</button>
-                                <button class="btn-calc-modern operation" data-action="divide">÷</button>
+                                <button class="btn-calc-modern operation" data-action="open-paren" aria-label="여는 괄호">(</button>
+                                <button class="btn-calc-modern operation" data-action="close-paren" aria-label="닫는 괄호">)</button>
+                                <button class="btn-calc-modern clear" data-action="clear-entry" aria-label="현재 입력 취소">CE</button>
+                                <button class="btn-calc-modern clear" data-action="clear" aria-label="초기화">C</button>
+                                <button class="btn-calc-modern clear" data-action="backspace" aria-label="지우기">←</button>
+                                <button class="btn-calc-modern operation" data-action="divide" aria-label="나누기">÷</button>
                             </div>
 
                             <!-- 6-8행: 숫자 및 기본 연산 -->
                             <div class="button-row">
-                                <button class="btn-calc-modern number" data-action="number" data-value="7">7</button>
-                                <button class="btn-calc-modern number" data-action="number" data-value="8">8</button>
-                                <button class="btn-calc-modern number" data-action="number" data-value="9">9</button>
-                                <button class="btn-calc-modern operation" data-action="multiply">×</button>
-                                <button class="btn-calc-modern function" data-action="ans">ANS</button>
-                                <button class="btn-calc-modern function" data-action="sign">±</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="7" aria-label="7">7</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="8" aria-label="8">8</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="9" aria-label="9">9</button>
+                                <button class="btn-calc-modern operation" data-action="multiply" aria-label="곱하기">×</button>
+                                <button class="btn-calc-modern function" data-action="ans" aria-label="이전 답 불러오기">ANS</button>
+                                <button class="btn-calc-modern function" data-action="sign" aria-label="부호 변경 (±)">±</button>
                             </div>
 
                             <div class="button-row">
-                                <button class="btn-calc-modern number" data-action="number" data-value="4">4</button>
-                                <button class="btn-calc-modern number" data-action="number" data-value="5">5</button>
-                                <button class="btn-calc-modern number" data-action="number" data-value="6">6</button>
-                                <button class="btn-calc-modern operation" data-action="subtract">−</button>
-                                <button class="btn-calc-modern function" data-action="cube">x³</button>
-                                <button class="btn-calc-modern function" data-action="cbrt">∛x</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="4" aria-label="4">4</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="5" aria-label="5">5</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="6" aria-label="6">6</button>
+                                <button class="btn-calc-modern operation" data-action="subtract" aria-label="빼기">−</button>
+                                <button class="btn-calc-modern function" data-action="cube" aria-label="세제곱 (x³)">x³</button>
+                                <button class="btn-calc-modern function" data-action="cbrt" aria-label="세제곱근 (∛x)">∛x</button>
                             </div>
 
                             <div class="button-row">
-                                <button class="btn-calc-modern number" data-action="number" data-value="1">1</button>
-                                <button class="btn-calc-modern number" data-action="number" data-value="2">2</button>
-                                <button class="btn-calc-modern number" data-action="number" data-value="3">3</button>
-                                <button class="btn-calc-modern operation" data-action="add">+</button>
-                                <button class="btn-calc-modern function" data-action="abs">|x|</button>
-                                <button class="btn-calc-modern function" data-action="round">RND</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="1" aria-label="1">1</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="2" aria-label="2">2</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="3" aria-label="3">3</button>
+                                <button class="btn-calc-modern operation" data-action="add" aria-label="더하기">+</button>
+                                <button class="btn-calc-modern function" data-action="abs" aria-label="절댓값 (|x|)">|x|</button>
+                                <button class="btn-calc-modern function" data-action="round" aria-label="반올림">RND</button>
                             </div>
 
                             <!-- 9행: 0, 소수점, 등호 -->
                             <div class="button-row">
-                                <button class="btn-calc-modern number btn-zero" data-action="number" data-value="0">0</button>
-                                <button class="btn-calc-modern number" data-action="decimal">.</button>
-                                <button class="btn-calc-modern function" data-action="exp-notation">EXP</button>
-                                <button class="btn-calc-modern equals" data-action="equals">=</button>
+                                <button class="btn-calc-modern number btn-zero" data-action="number" data-value="0" aria-label="0">0</button>
+                                <button class="btn-calc-modern number" data-action="decimal" aria-label="소수점">.</button>
+                                <button class="btn-calc-modern function" data-action="exp-notation" aria-label="지수 표기 (EXP)">EXP</button>
+                                <button class="btn-calc-modern equals" data-action="equals" aria-label="계산 실행">=</button>
                             </div>
                         </div>
                     </div>

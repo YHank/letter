@@ -81,5 +81,50 @@
     "page_not_found": "未找到请求的页面",
     "server_error": "服务器错误。请稍后重试",
     "storage_full": "存储空间已满。正在清理旧数据"
+  },
+  "calculator": {
+    "calculate": "计算",
+    "reset": "重置",
+    "result": "计算结果",
+    "input_info": "信息输入",
+    "notice": "说明",
+    "annual_salary": "年薪（韩元）",
+    "monthly_salary": "月薪（韩元）",
+    "dependents": "扶养家属数（含本人）",
+    "net_monthly": "月实得金额",
+    "net_annual": "年实得金额",
+    "total_deduction": "合计扣除",
+    "national_pension": "国民年金",
+    "health_insurance": "健康保险",
+    "long_term_care": "长期护理保险",
+    "employment_insurance": "就业保险",
+    "income_tax": "所得税",
+    "local_tax": "地方所得税"
+  },
+  "severance": {
+    "title": "退休金计算器",
+    "subtitle": "依据劳动基准法计算退休金（满1年以上）",
+    "work_years": "工作期间（年）",
+    "work_months": "工作期间（月）",
+    "work_days": "工作期间（日）",
+    "avg_monthly_wage": "近3个月月均工资（韩元）",
+    "estimated_severance": "预计退休金",
+    "total_days": "总工作天数",
+    "daily_wage": "日均工资"
+  },
+  "spellcheck": {
+    "title": "拼写检查",
+    "subtitle": "使用Daum拼写检查器检查韩语拼写"
+  },
+  "typing": {
+    "title": "打字练习",
+    "start": "开始",
+    "stop": "停止",
+    "restart": "重新开始",
+    "wpm": "WPM",
+    "accuracy": "准确率",
+    "time_left": "剩余时间",
+    "best_record": "最佳记录",
+    "level": "级别"
   }
 }

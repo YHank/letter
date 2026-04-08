@@ -8,12 +8,64 @@ class AdvancedTextAnalyzer {
         // 감정 분석용 키워드 데이터베이스
         this.sentimentKeywords = {
             positive: {
-                ko: ['좋다', '훌륭하다', '멋지다', '완벽하다', '행복하다', '기쁘다', '사랑', '감사', '성공', '우수하다', '뛰어나다', '만족', '즐겁다', '편안하다', '안전하다'],
-                en: ['good', 'great', 'excellent', 'perfect', 'happy', 'love', 'amazing', 'wonderful', 'fantastic', 'awesome', 'brilliant', 'outstanding', 'magnificent', 'marvelous', 'superb']
+                ko: [
+                    // 기본 긍정 형용사
+                    '좋다', '훌륭하다', '멋지다', '완벽하다', '행복하다', '기쁘다', '사랑', '감사', '성공', '우수하다',
+                    '뛰어나다', '만족', '즐겁다', '편안하다', '안전하다',
+                    // 감정/상태
+                    '설레다', '신나다', '뿌듯하다', '자랑스럽다', '보람차다', '희망차다', '따뜻하다', '포근하다', '넉넉하다', '여유롭다',
+                    '평화롭다', '행복', '기쁨', '웃음', '미소', '활기차다', '생기있다', '활발하다', '명랑하다', '유쾌하다',
+                    // 품질/평가
+                    '최고', '으뜸', '탁월하다', '훌륭', '매력적이다', '인상적이다', '놀랍다', '대단하다', '굉장하다', '엄청나다',
+                    '강력하다', '효과적이다', '유익하다', '도움이되다', '가치있다', '소중하다', '귀하다', '특별하다', '독특하다', '신선하다',
+                    // SNS/일상 표현
+                    '최애', '꿀', '짱', '굿', '럭키', '성공적', '완벽', '대박', '소확행', '힐링',
+                    '감동', '칭찬', '응원', '화이팅', '파이팅', '해냈다', '잘됐다', '다행이다', '반갑다', '친절하다'
+                ],
+                en: [
+                    // 기본 긍정
+                    'good', 'great', 'excellent', 'perfect', 'happy', 'love', 'amazing', 'wonderful', 'fantastic', 'awesome',
+                    'brilliant', 'outstanding', 'magnificent', 'marvelous', 'superb',
+                    // 감정/상태
+                    'joyful', 'cheerful', 'delightful', 'grateful', 'thankful', 'blessed', 'excited', 'thrilled', 'elated', 'content',
+                    'pleased', 'satisfied', 'glad', 'proud', 'hopeful', 'optimistic', 'peaceful', 'calm', 'relaxed', 'comfortable',
+                    // 품질/평가
+                    'beautiful', 'stunning', 'impressive', 'remarkable', 'extraordinary', 'exceptional', 'splendid', 'glorious', 'fabulous', 'terrific',
+                    'helpful', 'useful', 'valuable', 'effective', 'efficient', 'powerful', 'innovative', 'creative', 'inspiring', 'motivating',
+                    // 일상/SNS 표현
+                    'nice', 'cool', 'sweet', 'kind', 'friendly', 'warm', 'caring', 'supportive', 'positive', 'succeed',
+                    'win', 'victory', 'achievement', 'progress', 'improve', 'grow', 'thrive', 'enjoy', 'celebrate', 'recommend'
+                ]
             },
             negative: {
-                ko: ['나쁘다', '싫다', '슬프다', '화나다', '짜증', '실망', '걱정', '무서워', '힘들다', '어렵다', '문제', '실패', '끔찍하다', '최악', '고통'],
-                en: ['bad', 'terrible', 'awful', 'horrible', 'sad', 'angry', 'hate', 'worst', 'fail', 'problem', 'difficult', 'pain', 'worry', 'fear', 'disappoint']
+                ko: [
+                    // 기본 부정 형용사
+                    '나쁘다', '싫다', '슬프다', '화나다', '짜증', '실망', '걱정', '무서워', '힘들다', '어렵다',
+                    '문제', '실패', '끔찍하다', '최악', '고통',
+                    // 감정/상태
+                    '우울하다', '불안하다', '두렵다', '외롭다', '지치다', '피곤하다', '괴롭다', '답답하다', '억울하다', '서럽다',
+                    '후회하다', '부끄럽다', '창피하다', '수치스럽다', '당황스럽다', '혼란스럽다', '황당하다', '어이없다', '황망하다', '허탈하다',
+                    // 품질/평가
+                    '형편없다', '최저', '엉터리', '엉망', '망하다', '부족하다', '모자라다', '낙제', '불합격', '탈락',
+                    '손해', '피해', '위험하다', '불안전하다', '불편하다', '불쾌하다', '역겹다', '구역질', '지저분하다', '더럽다',
+                    // SNS/일상 표현
+                    '최악', '쓰레기', '별로', '구리다', '실망', '당황', '황당', '기가막히다', '어처구니없다', '막막하다',
+                    '속상하다', '화가나다', '짜증나다', '귀찮다', '싫증', '질리다', '포기', '절망', '비참하다', '처참하다'
+                ],
+                en: [
+                    // 기본 부정
+                    'bad', 'terrible', 'awful', 'horrible', 'sad', 'angry', 'hate', 'worst', 'fail', 'problem',
+                    'difficult', 'pain', 'worry', 'fear', 'disappoint',
+                    // 감정/상태
+                    'depressed', 'anxious', 'stressed', 'frustrated', 'annoyed', 'irritated', 'upset', 'miserable', 'unhappy', 'lonely',
+                    'tired', 'exhausted', 'overwhelmed', 'desperate', 'hopeless', 'helpless', 'regret', 'ashamed', 'embarrassed', 'confused',
+                    // 품질/평가
+                    'poor', 'weak', 'useless', 'worthless', 'broken', 'damaged', 'wrong', 'incorrect', 'mistake', 'error',
+                    'dangerous', 'harmful', 'toxic', 'corrupt', 'fake', 'false', 'misleading', 'unfair', 'unjust', 'unacceptable',
+                    // 일상/SNS 표현
+                    'hate', 'dislike', 'boring', 'dull', 'ugly', 'disgusting', 'offensive', 'annoying', 'pathetic', 'ridiculous',
+                    'stupid', 'nonsense', 'waste', 'loss', 'defeat', 'failure', 'disaster', 'crisis', 'threat', 'risk'
+                ]
             }
         };
 

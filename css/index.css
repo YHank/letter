@@ -260,8 +260,16 @@ body {
     border-color: var(--border-color);
 }
 
-/* 페이지 전환 시 부드러운 전환 효과 */
-* {
+/* 다크모드 전환 시 부드러운 효과 - 전역 대신 특정 요소에만 적용 */
+html, body,
+.navbar, .navbar *,
+.card, .card-header, .card-body, .card-footer,
+.modal-content,
+.btn, .form-control, .form-select, .input-group-text,
+.list-group-item,
+.dropdown-menu, .dropdown-item,
+.badge, .alert,
+.table, .table td, .table th {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -1178,4 +1186,14 @@ body {
 .dark .btn-outline-danger {
     color: #ff6b6b;
     border-color: #ff6b6b;
+}
+
+/* 애니메이션 감소 접근성: 사용자가 움직임 감소를 선호할 때 모든 애니메이션/전환 비활성화 */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }

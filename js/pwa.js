@@ -42,9 +42,10 @@ class PWAManager {
                     this.handleServiceWorkerUpdate();
                 });
                 
-                // 토스트 알림 표시
-                if (window.Toast) {
+                // 토스트 알림 최초 방문 시에만 표시
+                if (window.Toast && !localStorage.getItem('sw_notified')) {
                     Toast.show('오프라인 지원이 활성화되었습니다', 'success', 3000);
+                    localStorage.setItem('sw_notified', '1');
                 }
                 
             } catch (error) {

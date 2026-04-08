@@ -81,5 +81,50 @@
     "page_not_found": "The requested page was not found",
     "server_error": "Server error occurred. Please try again later",
     "storage_full": "Storage is full. Cleaning up old data"
+  },
+  "calculator": {
+    "calculate": "Calculate",
+    "reset": "Reset",
+    "result": "Result",
+    "input_info": "Input",
+    "notice": "Notice",
+    "annual_salary": "Annual Salary (KRW)",
+    "monthly_salary": "Monthly Salary (KRW)",
+    "dependents": "Dependents (incl. self)",
+    "net_monthly": "Net Monthly Pay",
+    "net_annual": "Net Annual Pay",
+    "total_deduction": "Total Deductions",
+    "national_pension": "National Pension",
+    "health_insurance": "Health Insurance",
+    "long_term_care": "Long-term Care",
+    "employment_insurance": "Employment Insurance",
+    "income_tax": "Income Tax",
+    "local_tax": "Local Income Tax"
+  },
+  "severance": {
+    "title": "Severance Pay Calculator",
+    "subtitle": "Calculate severance pay based on Korean Labor Standards Act",
+    "work_years": "Work Period (years)",
+    "work_months": "Work Period (months)",
+    "work_days": "Work Period (days)",
+    "avg_monthly_wage": "Avg. Monthly Wage (KRW, last 3 months)",
+    "estimated_severance": "Estimated Severance Pay",
+    "total_days": "Total Working Days",
+    "daily_wage": "Daily Average Wage"
+  },
+  "spellcheck": {
+    "title": "Spell Check",
+    "subtitle": "Check Korean spelling with Daum spell checker"
+  },
+  "typing": {
+    "title": "Typing Practice",
+    "start": "Start",
+    "stop": "Stop",
+    "restart": "Restart",
+    "wpm": "WPM",
+    "accuracy": "Accuracy",
+    "time_left": "Time Left",
+    "best_record": "Best Record",
+    "level": "Level"
   }
 }

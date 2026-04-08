@@ -186,10 +186,10 @@ function initializeInsuranceCalculator() {
         };
         
         try {
-            let history = StorageUtils.load('insuranceCalculationHistory', []);
+            let history = window.storageManager.load('insuranceCalculationHistory', [], false);
             history.unshift(calculationHistory);
             history = history.slice(0, 10); // 최근 10개만 저장
-            StorageUtils.save('insuranceCalculationHistory', history);
+            window.storageManager.save('insuranceCalculationHistory', history, false);
         } catch (e) {
             console.error('계산 이력 저장 실패:', e);
         }
@@ -232,9 +232,9 @@ function initializeInsuranceCalculator() {
     }, 500);
     
     // 이벤트 리스너 등록
-    const calculateBtn = DOMUtils.getElement('#'calculateBtn');
-    const resetBtn = DOMUtils.getElement('#'resetBtn');
-    const salaryInput = DOMUtils.getElement('#'monthlySalary');
+    const calculateBtn = DOMUtils.getElement('#calculateBtn');
+    const resetBtn = DOMUtils.getElement('#resetBtn');
+    const salaryInput = DOMUtils.getElement('#monthlySalary');
     
     if (calculateBtn) {
         DOMUtils.addEvent(calculateBtn, 'click', calculateInsurance);
