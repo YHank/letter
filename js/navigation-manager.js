@@ -89,6 +89,11 @@ class NavigationManager {
     setupEventListeners() {
         const offcanvasEl = document.getElementById('offcanvasNavbar');
 
+        // offcanvas 명시적 초기화 (모바일 자동 초기화 실패 방지)
+        if (offcanvasEl) {
+            this.offcanvasInstance = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
+        }
+
         // 네비게이션 링크 클릭 이벤트
         document.addEventListener('click', (e) => {
             const moveElement = e.target.closest('[data-move]');
@@ -110,8 +115,7 @@ class NavigationManager {
                 }
 
                 // 모바일 오프캔버스 메뉴 닫기
-                const bsOffcanvas = offcanvasEl && bootstrap.Offcanvas.getInstance(offcanvasEl);
-                if (bsOffcanvas) bsOffcanvas.hide();
+                if (this.offcanvasInstance) this.offcanvasInstance.hide();
             }
         });
 
