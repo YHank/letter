@@ -12,7 +12,7 @@ class NavigationManager {
         
         // 페이지별 스크립트 매핑
         this.scriptMap = {
-            'spellcheck_simple': ['/js/spellcheck_simple.js?4'],
+            'spellcheck_simple': ['/js/spellcheck_client.js?1', '/js/spellcheck_simple.js?4'],
             'typing_practice': ['/js/practice_data.js?2', '/js/typing_practice.js?15'],
             'salary': ['/js/salary_calculator.js?4'],
             'insurance_calculator': ['/js/insurance_calculator.js?3'],

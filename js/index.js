@@ -12,29 +12,30 @@ class ErrorHandler {
     static init() {
         // JavaScript 에러 처리
         window.addEventListener('error', (event) => {
+            const thirdPartyDomains = [
+                'googlesyndication', 'adsbygoogle', 'pagead',
+                'translate.googleapis.com', 'translate_http', 'extension://'
+            ];
+
+            // 외부 서비스·크로스 오리진 에러는 로깅 없이 무시
+            if (!event.error && !event.message) {
+                event.preventDefault();
+                return;
+            }
+            if (event.filename && thirdPartyDomains.some(d => event.filename.includes(d))) {
+                event.preventDefault();
+                return;
+            }
+
             console.error('JavaScript 에러:', event.error);
             console.error('에러 파일:', event.filename);
             console.error('에러 라인:', event.lineno);
             console.error('에러 열:', event.colno);
             
-            // 광고 관련 에러는 무시
-            if (event.filename && (event.filename.includes('googlesyndication') || 
-                                  event.filename.includes('adsbygoogle') ||
-                                  event.filename.includes('pagead'))) {
-                event.preventDefault();
-                return;
-            }
-            
             // 개발 모드 console 메서드는 무시
             if (event.message && (event.message.includes('console.log') ||
                                  event.message.includes('console.warn') ||
                                  event.message.includes('console.info'))) {
-                event.preventDefault();
-                return;
-            }
-            
-            // 확장 프로그램 오류 무시
-            if (event.filename && event.filename.includes('extension://')) {
                 event.preventDefault();
                 return;
             }
