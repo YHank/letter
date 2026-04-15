@@ -1,0 +1,8 @@
+**/.DS_Store
+.eslintrc.json
+.omc/
+.vscode/
+**/AGENTS.md
+cursorstep.md
+html/test_runner.html
+**/test/**
