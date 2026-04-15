@@ -59,6 +59,42 @@ const DOMUtils = {
         this.getElements(selector).forEach(el => {
             el.addEventListener(event, handler);
         });
+    },
+
+    /**
+     * 입력 요소의 값을 가져옵니다.
+     * @param {HTMLElement|string} element - 요소 또는 선택자
+     * @param {*} defaultValue - 요소가 없을 때 반환할 기본값
+     * @returns {*}
+     */
+    getValue(element, defaultValue = '') {
+        const el = typeof element === 'string' ? this.getElement(element) : element;
+        return el ? el.value : defaultValue;
+    },
+
+    /**
+     * 요소의 textContent를 설정합니다.
+     * @param {HTMLElement|string} element - 요소 또는 선택자
+     * @param {string} value - 설정할 값
+     * @returns {boolean}
+     */
+    setText(element, value) {
+        const el = typeof element === 'string' ? this.getElement(element) : element;
+        if (!el) {
+            return false;
+        }
+        el.textContent = value;
+        return true;
+    },
+
+    /**
+     * 여러 요소의 textContent를 한 번에 설정합니다.
+     * @param {Object<string, string>} values - 선택자와 값 매핑
+     */
+    setTexts(values) {
+        Object.entries(values).forEach(([selector, value]) => {
+            this.setText(selector, value);
+        });
     }
 };
 
@@ -83,6 +119,88 @@ const NumberUtils = {
     calculatePercent(value, total, decimals = 1) {
         if (total === 0) return '0';
         return ((value / total) * 100).toFixed(decimals);
+    },
+
+    /**
+     * 숫자에서 구분자와 공백을 제거해 숫자 문자열로 변환
+     * @param {number|string} value - 변환할 값
+     * @returns {string}
+     */
+    toPlainNumberString(value) {
+        if (value === null || value === undefined) {
+            return '';
+        }
+        return String(value).replace(/[\s,]/g, '');
+    },
+
+    /**
+     * 숫자 또는 문자열을 안전하게 파싱
+     * @param {number|string} value - 파싱할 값
+     * @param {number} defaultValue - 기본값
+     * @returns {number}
+     */
+    parseNumber(value, defaultValue = 0) {
+        const normalizedValue = this.toPlainNumberString(value);
+        if (normalizedValue === '') {
+            return defaultValue;
+        }
+        const parsed = Number(normalizedValue);
+        return Number.isFinite(parsed) ? parsed : defaultValue;
+    },
+
+    /**
+     * 숫자를 반올림 후 천 단위 콤마 형식으로 반환
+     * @param {number|string} value - 포맷할 값
+     * @returns {string}
+     */
+    formatRounded(value) {
+        return this.addCommas(Math.round(this.parseNumber(value, 0)));
+    },
+
+    /**
+     * 원화 텍스트 형식으로 반환
+     * @param {number|string} value - 포맷할 값
+     * @returns {string}
+     */
+    formatCurrency(value) {
+        return `${this.formatRounded(value)}원`;
+    },
+
+    /**
+     * 숫자 입력 요소를 한국어 로케일 형식으로 포맷
+     * @param {HTMLInputElement|string} element - 입력 요소 또는 선택자
+     * @param {Object} options - 포맷 옵션
+     * @returns {string}
+     */
+    formatInputValue(element, options = {}) {
+        const el = typeof element === 'string' ? DOMUtils.getElement(element) : element;
+        if (!el) {
+            return '';
+        }
+
+        const {
+            stripOnEmpty = true,
+            useRounded = true
+        } = options;
+
+        const plainValue = this.toPlainNumberString(el.value);
+        if (plainValue === '') {
+            if (stripOnEmpty) {
+                el.value = '';
+            }
+            return '';
+        }
+
+        const numericValue = this.parseNumber(plainValue, NaN);
+        if (!Number.isFinite(numericValue)) {
+            return el.value;
+        }
+
+        const formattedValue = useRounded
+            ? this.formatRounded(numericValue)
+            : this.addCommas(numericValue);
+        el.value = formattedValue;
+        return formattedValue;
     }
 };
 
