@@ -2,19 +2,248 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salary Calculator Tests</title>
     <style>
-        body { font-family: sans-serif; margin: 20px; }
-        .test-results { border: 1px solid #ccc; padding: 10px; }
-        .test-case { margin-bottom: 5px; padding: 5px; border-bottom: 1px solid #eee; }
-        .pass { background-color: #e6ffe6; color: #006400; }
-        .fail { background-color: #ffe6e6; color: #c80000; }
-        pre { background-color: #f0f0f0; padding: 5px; white-space: pre-wrap; }
+        body { font-family: sans-serif; margin: 20px; background: #f8f9fa; color: #212529; }
+        h1 { color: #333; }
+        .summary { padding: 16px; border-radius: 8px; margin-bottom: 24px; font-size: 1.05em; }
+        .summary.loading { color: #888; background: #fff; border: 1px solid #dee2e6; }
+        .summary.all-pass { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+        .summary.has-fail { background: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+        .test-suite { background: #fff; border: 1px solid #dee2e6; border-radius: 6px; margin-bottom: 20px; overflow: hidden; }
+        .suite-header { padding: 10px 16px; background: #e9ecef; font-weight: bold; }
+        .suite-header.all-pass { background: #d1e7dd; color: #0f5132; }
+        .suite-header.has-fail { background: #f8d7da; color: #842029; }
+        .test-case {
+            padding: 6px 12px;
+            margin: 8px 16px;
+            border-radius: 4px;
+            font-size: 0.92em;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .pass { background: #e6ffe6; color: #006400; }
+        .fail { background: #ffe6e6; color: #c80000; }
+        .badge { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 0.8em; font-weight: bold; color: #fff; }
+        .badge-pass { background: #198754; }
+        .badge-fail { background: #dc3545; }
+        .detail { font-family: monospace; font-size: 0.85em; color: #666; margin-left: 4px; white-space: pre-wrap; }
     </style>
 </head>
 <body>
     <h1>연봉 계산기 테스트 결과</h1>
+    <div id="overall-summary" class="summary loading">테스트 실행 중...</div>
     <div id="test-results" class="test-results"></div>
 
+    <script src="../js/utils.js"></script>
+    <script src="../js/salary_calculator.js"></script>
+    <script>
+        const TestRunner = {
+            suites: [],
+            currentSuite: null,
+            totalPass: 0,
+            totalFail: 0,
+
+            describe(name, fn) {
+                this.currentSuite = { name, cases: [], pass: 0, fail: 0 };
+                this.suites.push(this.currentSuite);
+                fn();
+                this.currentSuite = null;
+            },
+
+            record(pass, message, actual, expected) {
+                const testCase = { pass, message, actual, expected };
+                if (this.currentSuite) {
+                    this.currentSuite.cases.push(testCase);
+                    pass ? this.currentSuite.pass++ : this.currentSuite.fail++;
+                }
+                pass ? this.totalPass++ : this.totalFail++;
+            },
+
+            assertEquals(actual, expected, message) {
+                this.record(actual === expected, message, actual, expected);
+            },
+
+            assertAlmostEquals(actual, expected, tolerance, message) {
+                this.record(Math.abs(actual - expected) <= tolerance, message, actual, `${expected} (±${tolerance})`);
+            },
+
+            assertRange(actual, min, max, message) {
+                this.record(actual >= min && actual <= max, message, actual, `${min}~${max}`);
+            },
+
+            render() {
+                const output = document.getElementById('test-results');
+                const summary = document.getElementById('overall-summary');
+                output.innerHTML = '';
+
+                this.suites.forEach((suite) => {
+                    const suiteEl = document.createElement('section');
+                    suiteEl.className = 'test-suite';
+
+                    const header = document.createElement('div');
+                    header.className = `suite-header ${suite.fail === 0 ? 'all-pass' : 'has-fail'}`;
+                    header.textContent = `${suite.name} — ${suite.pass} 통과${suite.fail > 0 ? ` / ${suite.fail} 실패` : ''}`;
+                    suiteEl.appendChild(header);
+
+                    suite.cases.forEach((testCase) => {
+                        const caseEl = document.createElement('div');
+                        caseEl.className = `test-case ${testCase.pass ? 'pass' : 'fail'}`;
+                        caseEl.innerHTML = `<span class="badge ${testCase.pass ? 'badge-pass' : 'badge-fail'}">${testCase.pass ? 'PASS' : 'FAIL'}</span><span>${testCase.message}</span>` +
+                            (!testCase.pass ? `<span class="detail">(기대: ${JSON.stringify(testCase.expected)}, 실제: ${JSON.stringify(testCase.actual)})</span>` : '');
+                        suiteEl.appendChild(caseEl);
+                    });
+
+                    output.appendChild(suiteEl);
+                });
+
+                summary.className = `summary ${this.totalFail === 0 ? 'all-pass' : 'has-fail'}`;
+                summary.innerHTML = `전체: <strong>${this.totalPass + this.totalFail}개</strong> 테스트 | <strong>통과 ${this.totalPass}</strong> | <strong>실패 ${this.totalFail}</strong>${this.totalFail === 0 ? ' | 모든 테스트를 통과했습니다.' : ''}`;
+            }
+        };
+
+        function is10WonUnit(value, message) {
+            TestRunner.assertEquals(value % 10, 0, `${message} → 10원 단위 절사`);
+        }
+
+        function runSalaryCalculatorTests() {
+            const T = TestRunner;
+
+            T.describe('calculateNationalPension - 국민연금 (2026년 기준 4.5%)', () => {
+                const result3900 = calculateNationalPension(46800000);
+                T.assertAlmostEquals(result3900, 2106000, 10, '연봉 4680만원 → 연 국민연금 2,106,000원');
+                is10WonUnit(result3900, '연봉 4680만원 국민연금');
+                const resultLow = calculateNationalPension(2400000);
+                T.assertEquals(resultLow, 216000, '월급 하한(400,000원) 적용 → 연 216,000원');
+                const resultHigh = calculateNationalPension(200000000);
+                T.assertEquals(resultHigh, 3439800, '월급 상한(6,370,000원) 적용 → 연 3,439,800원');
+                const resultExactMax = calculateNationalPension(76440000);
+                T.assertEquals(resultExactMax, 3439800, '상한 정확히 일치 → 연 3,439,800원');
+                is10WonUnit(calculateNationalPension(50000000), '연봉 5000만원 국민연금');
+            });
+
+            T.describe('calculateEmploymentInsurance - 고용보험 (0.9%)', () => {
+                const result = calculateEmploymentInsurance(36000000);
+                T.assertEquals(result, 323880, '연봉 3600만원 → 연 고용보험 323,880원');
+                is10WonUnit(result, '연봉 3600만원 고용보험');
+                const result5k = calculateEmploymentInsurance(60000000);
+                T.assertEquals(result5k, 540000, '연봉 6000만원 → 연 고용보험 540,000원');
+                is10WonUnit(calculateEmploymentInsurance(50000000), '연봉 5000만원 고용보험');
+            });
+
+            T.describe('calculateHealthInsurance - 건강보험 (3.595%)', () => {
+                const result = calculateHealthInsurance(36000000);
+                T.assertEquals(result, 1294200, '연봉 3600만원 → 연 건강보험 1,294,200원');
+                is10WonUnit(result, '연봉 3600만원 건강보험');
+                const resultLow = calculateHealthInsurance(1200000);
+                T.assertEquals(resultLow, 120960, '건강보험 하한(10,080원/월) 적용 → 연 120,960원');
+                is10WonUnit(calculateHealthInsurance(50000000), '연봉 5000만원 건강보험');
+            });
+
+            T.describe('calculateLongTermCareInsurance - 장기요양보험 (건강보험의 13.14%)', () => {
+                const hi = calculateHealthInsurance(36000000);
+                const ltc = calculateLongTermCareInsurance(hi);
+                is10WonUnit(ltc, '장기요양보험 10원 단위 절사');
+                T.assertRange(ltc, 165000, 175000, '연봉 3600만원 장기요양보험 범위');
+            });
+
+            T.describe('getIncomeDeduction - 근로소득공제', () => {
+                T.assertEquals(getIncomeDeduction(0), 0, '0원 → 0');
+                T.assertEquals(getIncomeDeduction(3000000), 2100000, '300만원 × 70% = 210만원');
+                T.assertEquals(getIncomeDeduction(5000000), 3500000, '500만원 × 70% = 350만원');
+                T.assertEquals(getIncomeDeduction(10000000), 5500000, '1000만원 → 350 + 500*0.4 = 550만원');
+                T.assertEquals(getIncomeDeduction(15000000), 7500000, '1500만원 → 350 + 1000*0.4 = 750만원');
+                T.assertEquals(getIncomeDeduction(30000000), 9750000, '3000만원 → 750 + 1500*0.15 = 975만원');
+                T.assertEquals(getIncomeDeduction(50000000), 12250000, '5000만원 → 1200 + 500*0.05 = 1225만원');
+                T.assertEquals(getIncomeDeduction(110000000), 14950000, '1.1억 → 1475 + 1000*0.02 = 1495만원');
+            });
+
+            T.describe('getHumanDeduction - 인적공제 (1인당 150만원)', () => {
+                T.assertEquals(getHumanDeduction(1), 1500000, '1명 → 150만원');
+                T.assertEquals(getHumanDeduction(2), 3000000, '2명 → 300만원');
+                T.assertEquals(getHumanDeduction(4), 6000000, '4명 → 600만원');
+                T.assertEquals(getHumanDeduction(0), 1500000, '0명 → 1명 처리 → 150만원');
+            });
+
+            T.describe('calculateTaxableIncome - 과세표준', () => {
+                const annualSalary = 36000000;
+                const np = calculateNationalPension(annualSalary);
+                const hi = calculateHealthInsurance(annualSalary);
+                const ei = calculateEmploymentInsurance(annualSalary);
+                const id = getIncomeDeduction(annualSalary);
+                const hd = getHumanDeduction(1);
+                const taxable = calculateTaxableIncome(annualSalary, 0, np, hi, ei, id, hd);
+                T.assertRange(taxable, 0, annualSalary, '과세표준은 0 이상 연봉 이하');
+                const zeroTaxable = calculateTaxableIncome(1000000, 0, 500000, 500000, 500000, 500000, 500000);
+                T.assertEquals(zeroTaxable, 0, '공제 합계 > 연봉 → 과세표준 0');
+            });
+
+            T.describe('calculateIncomeTax - 소득세 구간별 계산', () => {
+                T.assertEquals(calculateIncomeTax(0), 0, '과세표준 0 → 세금 0');
+                T.assertEquals(calculateIncomeTax(-1), 0, '음수 과세표준 → 세금 0');
+                T.assertEquals(calculateIncomeTax(10000000), 600000, '1000만원 × 6% = 60만원');
+                T.assertAlmostEquals(calculateIncomeTax(20000000), 1740000, 10, '2000만원 세금 ~1,740,000원');
+                const tax6k = calculateIncomeTax(60000000);
+                T.assertRange(tax6k, 5000000, 10000000, '6000만원 소득세 범위 내');
+                is10WonUnit(tax6k, '6000만원 소득세 10원 단위');
+                is10WonUnit(calculateIncomeTax(30000000), '3000만원 소득세 10원 단위');
+                is10WonUnit(calculateIncomeTax(100000000), '1억 소득세 10원 단위');
+                is10WonUnit(calculateIncomeTax(400000000), '4억 소득세 10원 단위');
+                is10WonUnit(calculateIncomeTax(600000000), '6억 소득세 10원 단위');
+                is10WonUnit(calculateIncomeTax(2000000000), '20억 소득세 10원 단위');
+            });
+
+            T.describe('getIncomeTaxCredit - 근로소득세액공제', () => {
+                T.assertEquals(getIncomeTaxCredit(0, 36000000), 0, '산출세액 0 → 공제 0');
+                T.assertEquals(getIncomeTaxCredit(-1, 36000000), 0, '음수 산출세액 → 공제 0');
+                const credit100 = getIncomeTaxCredit(1000000, 36000000);
+                T.assertAlmostEquals(credit100, 550000, 10, '산출세액 100만원 → 55% = 55만원');
+                const credit200 = getIncomeTaxCredit(2000000, 36000000);
+                T.assertAlmostEquals(credit200, 716000, 10, '산출세액 200만원, 연봉 3600만원 → 한도 적용 716,000원');
+                is10WonUnit(credit100, '세액공제 10원 단위');
+            });
+
+            T.describe('calculateFinalIncomeTax - 결정세액', () => {
+                T.assertEquals(calculateFinalIncomeTax(0, 0), 0, '산출세액 0, 공제 0 → 결정세액 0');
+                T.assertEquals(calculateFinalIncomeTax(500000, 700000), 0, '공제 > 산출세액 → 0');
+                T.assertEquals(calculateFinalIncomeTax(1000000, 300000), 700000, '100만 - 30만 = 70만원');
+                is10WonUnit(calculateFinalIncomeTax(1500000, 400000), '결정세액 10원 단위');
+            });
+
+            T.describe('calculateLocalIncomeTax - 지방소득세 (결정세액의 10%)', () => {
+                T.assertEquals(calculateLocalIncomeTax(0), 0, '결정세액 0 → 지방소득세 0');
+                T.assertEquals(calculateLocalIncomeTax(1000000), 100000, '100만원 × 10% = 10만원');
+                is10WonUnit(calculateLocalIncomeTax(1234560), '지방소득세 10원 단위');
+            });
+
+            T.describe('calculateTotalAnnualDeductions - 연간 총 공제액', () => {
+                const total = calculateTotalAnnualDeductions(40000000, 0, 1);
+                T.assertRange(total, 1000000, 40000000, '총 공제액은 합리적 범위 내');
+                T.assertEquals(total < 40000000, true, '총 공제액 < 연봉');
+                const net1 = calculateNetMonthlyPay(40000000, 0, 1);
+                const net4 = calculateNetMonthlyPay(40000000, 0, 4);
+                T.assertEquals(net4 > net1, true, '부양가족 4명 → 1명보다 실수령액 더 높음');
+            });
+
+            T.describe('calculateNetMonthlyPay - 월 실수령액', () => {
+                const net36 = calculateNetMonthlyPay(36000000, 0, 1);
+                T.assertRange(net36, 2000000, 3000000, '연봉 3600만원 실수령 2~300만원 범위');
+                const net60 = calculateNetMonthlyPay(60000000, 0, 1);
+                T.assertRange(net60, 3500000, 5000000, '연봉 6000만원 실수령 350~500만원 범위');
+                T.assertEquals(net60 > net36, true, '연봉 6000만원 실수령 > 3600만원 실수령');
+                const netWithNonTaxable = calculateNetMonthlyPay(36000000, 200000, 1);
+                T.assertEquals(netWithNonTaxable >= net36, true, '비과세 있을 때 실수령 >= 비과세 없을 때');
+            });
+        }
+
+        try {
+            runSalaryCalculatorTests();
+        } catch (error) {
+            TestRunner.record(false, '테스트 실행 중 예외 발생', error.message, '예외 없이 실행');
+        }
+        TestRunner.render();
+    </script>
 </body>
 </html>

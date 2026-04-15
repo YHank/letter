@@ -1,13 +1,13 @@
 // salary_calculator.js
 
-// 2026년 기준 국민연금 요율: 9.5% (근로자 4.75%, 사업주 4.75%)
-// 근로자 부담분: 4.75%
-// 월 소득액 하한: 400,000원 (이하일 경우 400,000원으로 계산) -> 개인부담 월 19,000원
-// 월 소득액 상한: 6,370,000원 (이상일 경우 6,370,000원으로 계산) -> 개인부담 월 302,575원
+// 2026년 기준 국민연금 요율: 9.0% (근로자 4.5%, 사업주 4.5%)
+// 근로자 부담분: 4.5%
+// 월 소득액 하한: 400,000원 (이하일 경우 400,000원으로 계산) -> 개인부담 월 18,000원
+// 월 소득액 상한: 6,370,000원 (이상일 경우 6,370,000원으로 계산) -> 개인부담 월 286,650원
 // (2026년 상반기 기준, 하반기(7월~)에는 상한 659만원, 하한 41만원으로 변경)
 function calculateNationalPension(annualSalary) {
     const monthlySalary = annualSalary / 12;
-    const rate = 0.0475;
+    const rate = 0.045;
     const minMonthlyIncome = 400000;
     const maxMonthlyIncome = 6370000; // 2026년 상반기 기준
 
@@ -54,12 +54,12 @@ function calculateHealthInsurance(annualSalary) {
     // 여기서는 문제에 제시된 보험료 상/하한을 직접 사용하겠습니다.
 
     if (calculatedMonthlyPremium < minMonthlyHealthInsurancePremium) {
-        // 실제로는 보수월액이 279,256원 미만이면, 279,256원을 기준으로 보험료(9,890원)를 계산.
-        // 현재 로직은 계산된 보험료가 9,890원 미만이면 9,890원으로 설정. 이는 동일한 결과를 줌.
+        // 실제로는 계산된 보험료가 월 근로자 부담분 하한액 10,080원보다 작으면 10,080원을 적용합니다.
+        // 현재 로직은 계산된 보험료가 하한액 미만이면 하한액으로 설정합니다.
         calculatedMonthlyPremium = minMonthlyHealthInsurancePremium;
     } else if (calculatedMonthlyPremium > maxMonthlyHealthInsurancePremium) {
-        // 실제로는 보수월액이 110,330,000원 초과이면, 110,330,000원을 기준으로 보험료(3,911,280원)를 계산.
-        // 현재 로직은 계산된 보험료가 3,911,280원 초과이면 3,911,280원으로 설정. 이는 동일한 결과를 줌.
+        // 실제로는 계산된 보험료가 월 근로자 부담분 상한액 4,591,740원을 초과하면 4,591,740원을 적용합니다.
+        // 현재 로직은 계산된 보험료가 상한액을 초과하면 상한액으로 설정합니다.
         calculatedMonthlyPremium = maxMonthlyHealthInsurancePremium;
     }
 
@@ -205,7 +205,7 @@ function calculateNetMonthlyPay(annualSalary, nonTaxableMonthlyAmount, dependent
     const nonTaxableAnnualAmount = nonTaxableMonthlyAmount * 12;
     const totalAnnualDeductions = calculateTotalAnnualDeductions(annualSalary, nonTaxableAnnualAmount, dependentsCount);
     const netAnnualPay = annualSalary - totalAnnualDeductions;
-    return Math.round(netAnnualPay / 12); // 월 실수령액은 반올림
+    return Math.floor((netAnnualPay / 12) / 10) * 10; // 월 실수령액 10원 단위 절사
 }
 
 // UI 업데이트 함수 (결과 표시)
@@ -253,24 +253,24 @@ function displaySalaryCalculationResults(annualSalary, nonTaxableMonthly, depend
     const finalIncomeTax = calculateFinalIncomeTax(calculatedTax, taxCredit);
     const localIncomeTax = calculateLocalIncomeTax(finalIncomeTax);
 
-    const totalMonthlyDeduction = Math.round((anp + ahi + altc + aei + finalIncomeTax + localIncomeTax) / 12);
-    const netMonthlyPay = Math.round((annualSalary - (anp + ahi + altc + aei + finalIncomeTax + localIncomeTax)) / 12);
+    const totalMonthlyDeduction = Math.floor(((anp + ahi + altc + aei + finalIncomeTax + localIncomeTax) / 12) / 10) * 10;
+    const netMonthlyPay = Math.floor(((annualSalary - (anp + ahi + altc + aei + finalIncomeTax + localIncomeTax)) / 12) / 10) * 10;
 
-    DOMUtils.getElement('#result_annual_salary').textContent = NumberUtils.addCommas(annualSalary) + '원';
-    DOMUtils.getElement('#result_non_taxable_monthly').textContent = NumberUtils.addCommas(nonTaxableMonthly) + '원';
-    DOMUtils.getElement('#result_non_taxable_annual').textContent = NumberUtils.addCommas(nonTaxableAnnual) + '원';
-    DOMUtils.getElement('#result_dependents_count').textContent = dependentsCount + '명';
-
-    DOMUtils.getElement('#result_net_monthly_pay').textContent = NumberUtils.addCommas(netMonthlyPay) + '원';
-    DOMUtils.getElement('#result_gross_monthly_pay').textContent = NumberUtils.addCommas(Math.round(annualSalary / 12)) + '원';
-    DOMUtils.getElement('#result_total_monthly_deduction').textContent = NumberUtils.addCommas(totalMonthlyDeduction) + '원';
-
-    DOMUtils.getElement('#deduction_national_pension').textContent = NumberUtils.addCommas(Math.round(anp / 12));
-    DOMUtils.getElement('#deduction_health_insurance').textContent = NumberUtils.addCommas(Math.round(ahi / 12));
-    DOMUtils.getElement('#deduction_long_term_care').textContent = NumberUtils.addCommas(Math.round(altc / 12));
-    DOMUtils.getElement('#deduction_employment_insurance').textContent = NumberUtils.addCommas(Math.round(aei / 12));
-    DOMUtils.getElement('#deduction_income_tax').textContent = NumberUtils.addCommas(Math.round(finalIncomeTax / 12));
-    DOMUtils.getElement('#deduction_local_income_tax').textContent = NumberUtils.addCommas(Math.round(localIncomeTax / 12));
+    DOMUtils.setTexts({
+        '#result_annual_salary': NumberUtils.formatCurrency(annualSalary),
+        '#result_non_taxable_monthly': NumberUtils.formatCurrency(nonTaxableMonthly),
+        '#result_non_taxable_annual': NumberUtils.formatCurrency(nonTaxableAnnual),
+        '#result_dependents_count': `${dependentsCount}명`,
+        '#result_net_monthly_pay': NumberUtils.formatCurrency(netMonthlyPay),
+        '#result_gross_monthly_pay': NumberUtils.formatCurrency(Math.floor((annualSalary / 12) / 10) * 10),
+        '#result_total_monthly_deduction': NumberUtils.formatCurrency(totalMonthlyDeduction),
+        '#deduction_national_pension': NumberUtils.formatRounded(anp / 12),
+        '#deduction_health_insurance': NumberUtils.formatRounded(ahi / 12),
+        '#deduction_long_term_care': NumberUtils.formatRounded(altc / 12),
+        '#deduction_employment_insurance': NumberUtils.formatRounded(aei / 12),
+        '#deduction_income_tax': NumberUtils.formatCurrency(Math.floor((finalIncomeTax / 12) / 10) * 10),
+        '#deduction_local_income_tax': NumberUtils.formatCurrency(Math.floor((localIncomeTax / 12) / 10) * 10)
+    });
 
     resultsContainer.style.display = 'block';
 }

@@ -2,10 +2,10 @@
 function initializeInsuranceCalculator() {
     // console.log('4대보험료 계산기 초기화');
     
-    // 상수 정의 (2025년 기준)
+    // 상수 정의 (2026년 기준)
     const INSURANCE_RATES = {
-        health: 0.03545,      // 건강보험 근로자 부담률 3.545%
-        longTermCare: 0.1295, // 장기요양보험 12.95%
+        health: 0.03595,      // 건강보험 근로자 부담률 3.595%
+        longTermCare: 0.1314, // 장기요양보험 13.14%
         pension: 0.045,       // 국민연금 근로자 부담률 4.5%
         unemployment: 0.009,  // 고용보험 실업급여 0.9%
         stabilitySmall: 0.0025, // 고용안정 우선지원 0.25%
@@ -13,20 +13,19 @@ function initializeInsuranceCalculator() {
     };
     
     const LIMITS = {
-        pensionMin: 390000,   // 국민연금 하한
-        pensionMax: 6170000,  // 국민연금 상한
+        pensionMin: 400000,   // 국민연금 하한
+        pensionMax: 6370000,  // 국민연금 상한
         salaryMin: 100000,    // 최소 급여
         salaryMax: 100000000  // 최대 급여
     };
-    
-    // 숫자 포맷팅 함수
-    function formatNumber(num) {
-        return NumberUtils.addCommas(Math.round(num));
+
+    function floorToTen(value) {
+        return Math.floor(value / 10) * 10;
     }
     
     // 소득세 계산 함수 (간이세액표 기준)
     function calculateIncomeTax(monthlyIncome, dependents) {
-        // 간이세액표 기준 (2025년 기준, 근사치)
+        // 간이세액표 기준 (근사치)
         const taxBase = monthlyIncome;
         let tax = 0;
         
@@ -50,17 +49,16 @@ function initializeInsuranceCalculator() {
         const deduction = (dependents - 1) * 12500;
         tax = Math.max(0, tax - deduction);
         
-        return Math.round(tax);
+        return floorToTen(tax);
     }
     
     // 계산 함수
     function calculateInsurance() {
         try {
-            const salaryValue = DOMUtils.getElement('#monthlySalary').value.replace(/,/g, '');
-            const monthlySalary = parseFloat(salaryValue) || 0;
-        const dependents = parseInt(DOMUtils.getElement('#dependents').value) || 1;
-        const businessType = DOMUtils.getElement('#businessType').value;
-        const industrialRate = parseFloat(DOMUtils.getElement('#industrialCode').value) || 1.53;
+            const monthlySalary = NumberUtils.parseNumber(DOMUtils.getValue('#monthlySalary'));
+            const dependents = parseInt(DOMUtils.getValue('#dependents'), 10) || 1;
+            const businessType = DOMUtils.getValue('#businessType');
+            const industrialRate = NumberUtils.parseNumber(DOMUtils.getValue('#industrialCode'), 1.53);
         
         if (monthlySalary <= 0) {
             alert('월 급여액을 입력해주세요.');
@@ -81,40 +79,40 @@ function initializeInsuranceCalculator() {
             return;
         }
         
-        // 상한선 적용 (2025년 기준)
-        const pensionBase = Math.min(Math.max(monthlySalary, LIMITS.pensionMin), LIMITS.pensionMax); // 국민연금 상한: 617만원, 하한: 39만원
+        // 상한선 적용 (2026년 기준)
+        const pensionBase = Math.min(Math.max(monthlySalary, LIMITS.pensionMin), LIMITS.pensionMax); // 국민연금 상한: 637만원, 하한: 40만원
         const healthBase = monthlySalary; // 건강보험은 상한 없음
         
-        // 1. 건강보험료 계산 (7.09%)
-        const healthEmployee = Math.round(healthBase * INSURANCE_RATES.health); // 근로자 3.545%
-        const healthEmployer = Math.round(healthBase * INSURANCE_RATES.health); // 사업주 3.545%
+        // 1. 건강보험료 계산 (7.19%)
+        const healthEmployee = floorToTen(healthBase * INSURANCE_RATES.health); // 근로자 3.595%
+        const healthEmployer = floorToTen(healthBase * INSURANCE_RATES.health); // 사업주 3.595%
         const healthTotal = healthEmployee + healthEmployer;
         
-        // 2. 장기요양보험료 계산 (건강보험료의 12.95% - 2025년 기준)
-        const careEmployee = Math.round(healthEmployee * INSURANCE_RATES.longTermCare);
-        const careEmployer = Math.round(healthEmployer * INSURANCE_RATES.longTermCare);
+        // 2. 장기요양보험료 계산 (건강보험료의 13.14% - 2026년 기준)
+        const careEmployee = floorToTen(healthEmployee * INSURANCE_RATES.longTermCare);
+        const careEmployer = floorToTen(healthEmployer * INSURANCE_RATES.longTermCare);
         const careTotal = careEmployee + careEmployer;
         
         // 3. 국민연금 계산 (9%)
-        const pensionEmployee = Math.round(pensionBase * INSURANCE_RATES.pension); // 근로자 4.5%
-        const pensionEmployer = Math.round(pensionBase * INSURANCE_RATES.pension); // 사업주 4.5%
+        const pensionEmployee = floorToTen(pensionBase * INSURANCE_RATES.pension); // 근로자 4.5%
+        const pensionEmployer = floorToTen(pensionBase * INSURANCE_RATES.pension); // 사업주 4.5%
         const pensionTotal = pensionEmployee + pensionEmployer;
         
         // 4. 고용보험 계산
         // 실업급여: 1.8% (근로자 0.9%, 사업주 0.9%)
-        const unemploymentEmployee = Math.round(monthlySalary * INSURANCE_RATES.unemployment);
-        const unemploymentEmployer = Math.round(monthlySalary * INSURANCE_RATES.unemployment);
+        const unemploymentEmployee = floorToTen(monthlySalary * INSURANCE_RATES.unemployment);
+        const unemploymentEmployer = floorToTen(monthlySalary * INSURANCE_RATES.unemployment);
         
         // 고용안정·직업능력개발: 사업주만 부담
         const stabilityRate = businessType === 'small' ? INSURANCE_RATES.stabilitySmall : INSURANCE_RATES.stabilityRegular;
-        const stabilityEmployer = Math.round(monthlySalary * stabilityRate);
+        const stabilityEmployer = floorToTen(monthlySalary * stabilityRate);
         
         const employmentEmployee = unemploymentEmployee;
         const employmentEmployer = unemploymentEmployer + stabilityEmployer;
         const employmentTotal = employmentEmployee + employmentEmployer;
         
         // 5. 산재보험 계산 (사업주 전액 부담)
-        const industrialEmployer = Math.round(monthlySalary * (industrialRate / 100));
+        const industrialEmployer = floorToTen(monthlySalary * (industrialRate / 100));
         const industrialTotal = industrialEmployer;
         
         // 총계 계산
@@ -124,55 +122,46 @@ function initializeInsuranceCalculator() {
         
         // 소득세 계산
         const incomeTax = calculateIncomeTax(monthlySalary, dependents);
-        const localTax = Math.round(incomeTax * 0.1); // 지방소득세는 소득세의 10%
+        const localTax = floorToTen(incomeTax * 0.1); // 지방소득세는 소득세의 10%
         
         // 실수령액 계산
         const totalDeduction = subtotalEmployee + incomeTax + localTax;
-        const netSalary = monthlySalary - totalDeduction;
+        const netSalary = floorToTen(monthlySalary - totalDeduction);
         
         // 결과 표시
         DOMUtils.getElement('#resultSection').classList.remove('d-none');
         
         // 요약 정보
-        DOMUtils.getElement('#employeeTotal').textContent = formatNumber(subtotalEmployee) + '원';
-        DOMUtils.getElement('#employerTotal').textContent = formatNumber(subtotalEmployer) + '원';
-        DOMUtils.getElement('#netSalary').textContent = formatNumber(netSalary) + '원';
-        
-        // 상세 내역 - 건강보험
-        DOMUtils.getElement('#healthEmployee').textContent = formatNumber(healthEmployee) + '원';
-        DOMUtils.getElement('#healthEmployer').textContent = formatNumber(healthEmployer) + '원';
-        DOMUtils.getElement('#healthTotal').textContent = formatNumber(healthTotal) + '원';
-        
-        // 상세 내역 - 장기요양보험
-        DOMUtils.getElement('#careEmployee').textContent = formatNumber(careEmployee) + '원';
-        DOMUtils.getElement('#careEmployer').textContent = formatNumber(careEmployer) + '원';
-        DOMUtils.getElement('#careTotal').textContent = formatNumber(careTotal) + '원';
-        
-        // 상세 내역 - 국민연금
-        DOMUtils.getElement('#pensionEmployee').textContent = formatNumber(pensionEmployee) + '원';
-        DOMUtils.getElement('#pensionEmployer').textContent = formatNumber(pensionEmployer) + '원';
-        DOMUtils.getElement('#pensionTotal').textContent = formatNumber(pensionTotal) + '원';
-        
-        // 상세 내역 - 고용보험
-        const employmentRateText = businessType === 'small' ? '1.8% + 0.25%' : '1.8% + 0.85%';
-        DOMUtils.getElement('#employmentRate').textContent = employmentRateText;
-        DOMUtils.getElement('#employmentEmployee').textContent = formatNumber(employmentEmployee) + '원';
-        DOMUtils.getElement('#employmentEmployer').textContent = formatNumber(employmentEmployer) + '원';
-        DOMUtils.getElement('#employmentTotal').textContent = formatNumber(employmentTotal) + '원';
-        
-        // 상세 내역 - 산재보험
-        DOMUtils.getElement('#industrialRate').textContent = industrialRate + '%';
-        DOMUtils.getElement('#industrialEmployer').textContent = formatNumber(industrialEmployer) + '원';
-        DOMUtils.getElement('#industrialTotal').textContent = formatNumber(industrialTotal) + '원';
-        
-        // 소계
-        DOMUtils.getElement('#subtotalEmployee').textContent = formatNumber(subtotalEmployee) + '원';
-        DOMUtils.getElement('#subtotalEmployer').textContent = formatNumber(subtotalEmployer) + '원';
-        DOMUtils.getElement('#subtotalTotal').textContent = formatNumber(subtotalTotal) + '원';
-        
-        // 소득세
-        DOMUtils.getElement('#incomeTax').textContent = formatNumber(incomeTax) + '원';
-        DOMUtils.getElement('#localTax').textContent = formatNumber(localTax) + '원';
+        const employmentRateText = businessType === 'small' ? '1.8% (0.9% + 0.9%) + 0.25%' : '1.8% (0.9% + 0.9%) + 0.85%';
+        DOMUtils.setTexts({
+            '#employeeTotal': NumberUtils.formatCurrency(subtotalEmployee),
+            '#employerTotal': NumberUtils.formatCurrency(subtotalEmployer),
+            '#netSalary': NumberUtils.formatCurrency(netSalary),
+            '#healthEmployee': NumberUtils.formatCurrency(healthEmployee),
+            '#healthEmployer': NumberUtils.formatCurrency(healthEmployer),
+            '#healthTotal': NumberUtils.formatCurrency(healthTotal),
+            '#careEmployee': NumberUtils.formatCurrency(careEmployee),
+            '#careEmployer': NumberUtils.formatCurrency(careEmployer),
+            '#careTotal': NumberUtils.formatCurrency(careTotal),
+            '#pensionEmployee': NumberUtils.formatCurrency(pensionEmployee),
+            '#pensionEmployer': NumberUtils.formatCurrency(pensionEmployer),
+            '#pensionTotal': NumberUtils.formatCurrency(pensionTotal),
+            '#employmentRate': employmentRateText,
+            '#employmentEmployee': NumberUtils.formatCurrency(employmentEmployee),
+            '#employmentEmployer': NumberUtils.formatCurrency(employmentEmployer),
+            '#employmentTotal': NumberUtils.formatCurrency(employmentTotal),
+            '#industrialRate': industrialRate + '%',
+            '#industrialEmployer': NumberUtils.formatCurrency(industrialEmployer),
+            '#industrialTotal': NumberUtils.formatCurrency(industrialTotal),
+            '#subtotalEmployee': NumberUtils.formatCurrency(subtotalEmployee),
+            '#subtotalEmployer': NumberUtils.formatCurrency(subtotalEmployer),
+            '#subtotalTotal': NumberUtils.formatCurrency(subtotalTotal),
+            '#healthRate': '7.19%',
+            '#careRate': '13.14%',
+            '#pensionRate': '9%',
+            '#incomeTax': NumberUtils.formatCurrency(incomeTax),
+            '#localTax': NumberUtils.formatCurrency(localTax)
+        });
         
         // 스크롤 이동
         DOMUtils.getElement('#resultSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -202,10 +191,15 @@ function initializeInsuranceCalculator() {
     
     // 초기화 함수
     function resetCalculator() {
-        DOMUtils.getElement('#monthlySalary').value = '';
-        DOMUtils.getElement('#dependents').value = '1';
-        DOMUtils.getElement('#businessType').value = 'regular';
-        DOMUtils.getElement('#industrialCode').value = '0.7';
+        const monthlySalaryInput = DOMUtils.getElement('#monthlySalary');
+        const dependentsInput = DOMUtils.getElement('#dependents');
+        const businessTypeInput = DOMUtils.getElement('#businessType');
+        const industrialCodeInput = DOMUtils.getElement('#industrialCode');
+
+        if (monthlySalaryInput) monthlySalaryInput.value = '';
+        if (dependentsInput) dependentsInput.value = '1';
+        if (businessTypeInput) businessTypeInput.value = 'regular';
+        if (industrialCodeInput) industrialCodeInput.value = '0.7';
         DOMUtils.getElement('#resultSection').classList.add('d-none');
     }
     
@@ -225,8 +219,8 @@ function initializeInsuranceCalculator() {
     
     // 실시간 계산 함수
     const autoCalculate = debounce(() => {
-        const salaryValue = DOMUtils.getElement('#monthlySalary').value.replace(/,/g, '');
-        if (salaryValue && parseFloat(salaryValue) >= LIMITS.salaryMin) {
+        const monthlySalary = NumberUtils.parseNumber(DOMUtils.getValue('#monthlySalary'), NaN);
+        if (Number.isFinite(monthlySalary) && monthlySalary >= LIMITS.salaryMin) {
             calculateInsurance();
         }
     }, 500);
@@ -254,32 +248,28 @@ function initializeInsuranceCalculator() {
         
         // 숫자 입력 시 자동으로 콤마 추가
         DOMUtils.addEvent(salaryInput, 'input', function(e) {
-            let value = e.target.value.replace(/,/g, '');
-            if (!isNaN(value) && value !== '') {
-                // 커서 위치 저장
-                const cursorPosition = e.target.selectionStart;
-                const oldLength = e.target.value.length;
-                
-                e.target.value = parseInt(value).toLocaleString('ko-KR');
-                
-                // 커서 위치 복원
-                const newLength = e.target.value.length;
-                const newPosition = cursorPosition + (newLength - oldLength);
-                e.target.setSelectionRange(newPosition, newPosition);
+            const plainValue = NumberUtils.toPlainNumberString(e.target.value);
+            if (!plainValue || !Number.isFinite(Number(plainValue))) {
+                return;
             }
+
+            const cursorPosition = e.target.selectionStart;
+            const oldLength = e.target.value.length;
+            NumberUtils.formatInputValue(e.target);
+
+            const newLength = e.target.value.length;
+            const newPosition = cursorPosition + (newLength - oldLength);
+            e.target.setSelectionRange(newPosition, newPosition);
         });
         
         // 포커스 시 콤마 제거
         DOMUtils.addEvent(salaryInput, 'focus', function(e) {
-            e.target.value = e.target.value.replace(/,/g, '');
+            e.target.value = NumberUtils.toPlainNumberString(e.target.value);
         });
         
         // 포커스 해제 시 콤마 추가
         DOMUtils.addEvent(salaryInput, 'blur', function(e) {
-            let value = e.target.value.replace(/,/g, '');
-            if (!isNaN(value) && value !== '') {
-                e.target.value = parseInt(value).toLocaleString('ko-KR');
-            }
+            NumberUtils.formatInputValue(e.target);
         });
     }
     
