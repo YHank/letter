@@ -208,11 +208,29 @@ body {
     top: 0 !important;
 }
 
-/* 광고 컨테이너 z-index 조정 */
+/* 광고 컨테이너 z-index 조정 및 모바일 오버플로 방지 */
 .container ins.adsbygoogle,
+.container [id^="aswift"],
 .container iframe[id^="aswift"] {
     position: relative;
     z-index: 1;
+    max-width: 100% !important;
+}
+
+.container ins.adsbygoogle {
+    display: block;
+    width: 100% !important;
+    overflow: hidden;
+}
+
+.container [id^="aswift"],
+.container iframe[id^="aswift"] {
+    width: 100% !important;
+}
+
+html,
+body {
+    overflow-x: hidden;
 }
 
 /* Bootstrap 컴포넌트 다크모드 스타일 */

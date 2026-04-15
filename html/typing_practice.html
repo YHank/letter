@@ -79,6 +79,22 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-12 col-md-6 col-lg-3 mb-3">
+                    <div class="card h-100 practice-mode-card" data-practice-mode="custom">
+                        <div class="card-body text-center d-flex flex-column">
+                            <div class="mode-icon-wrapper mb-3">
+                                <div class="mode-icon bg-secondary bg-opacity-10 rounded-circle p-4 d-inline-block">
+                                    <i class="fas fa-file-upload fa-3x text-secondary"></i>
+                                </div>
+                            </div>
+                            <h5 class="card-title fw-bold">사용자 정의</h5>
+                            <p class="card-text flex-grow-1">직접 준비한 TXT 파일을 업로드하고 문장 또는 문단 단위로 연습할 수 있습니다.</p>
+                            <button class="btn btn-secondary select-mode-btn">
+                                <i class="fas fa-play me-2"></i>선택하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- 연습 영역 (처음엔 숨김) -->
@@ -235,6 +251,54 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- 사용자 정의 타자 연습 -->
+                <div id="custom-practice" class="practice-content" style="display: none;">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3">사용자 정의 타자 연습</h4>
+                            <p class="text-muted mb-3">TXT 파일을 업로드하면 문장 또는 문단 단위로 자동 분리하여 연습할 수 있습니다.</p>
+
+                            <div class="row g-3 align-items-end mb-3">
+                                <div class="col-12 col-lg-7">
+                                    <label for="custom-file-input" class="form-label">텍스트 파일 업로드</label>
+                                    <input type="file" id="custom-file-input" class="form-control" accept=".txt,text/plain">
+                                </div>
+                                <div class="col-12 col-sm-6 col-lg-3">
+                                    <label for="custom-segment-type" class="form-label">분할 방식</label>
+                                    <select id="custom-segment-type" class="form-select">
+                                        <option value="sentences">문장 단위</option>
+                                        <option value="paragraphs">문단 단위</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-sm-6 col-lg-2 d-grid">
+                                    <button id="start-custom-practice" class="btn btn-secondary" disabled>
+                                        <i class="fas fa-play me-2"></i>시작
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="custom-upload-feedback" class="alert alert-secondary mb-3" role="status">
+                                업로드할 TXT 파일을 선택해주세요.
+                            </div>
+
+                            <div id="custom-typing-text" class="fs-4 mb-4 p-3 bg-light rounded">
+                                <span id="custom-typed-text" class="text-success"></span><span id="custom-current-char" class="bg-primary text-white"></span><span id="custom-remaining-text">파일을 업로드하면 연습 문장이 여기에 표시됩니다.</span>
+                            </div>
+
+                            <div class="mb-3">
+                                <input type="text" id="custom-typing-input" class="form-control form-control-lg" placeholder="업로드한 텍스트를 입력하세요..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text" disabled>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                                <small id="custom-segment-meta" class="text-muted">업로드 후 연습 구간 수가 표시됩니다.</small>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button id="reset-custom-practice" class="btn btn-secondary">다시하기</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- 공통 통계 영역 -->
                 <div class="row mt-4 g-3" id="stats-area" style="display: none;">
@@ -323,8 +387,35 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- 성장 추이 차트 영역 -->
+                <div class="row mt-3" id="growth-chart-area" style="display: none;">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-3 text-muted">
+                                    <i class="fas fa-chart-line"></i> WPM 성장 추이
+                                </h6>
+                                <div class="btn-group btn-group-sm mb-3" role="group" aria-label="모드 필터">
+                                    <button type="button" class="btn btn-outline-primary active" data-chart-mode="all">전체</button>
+                                    <button type="button" class="btn btn-outline-primary" data-chart-mode="free">자유</button>
+                                    <button type="button" class="btn btn-outline-primary" data-chart-mode="beginner">초보자</button>
+                                    <button type="button" class="btn btn-outline-primary" data-chart-mode="special">특수</button>
+                                    <button type="button" class="btn btn-outline-primary" data-chart-mode="standard">표준</button>
+                                </div>
+                                <div id="chart-no-data" class="text-center text-muted py-4" style="display: none;">
+                                    <i class="fas fa-chart-line fa-2x mb-2 d-block"></i>
+                                    아직 기록이 없습니다. 연습을 시작해보세요!
+                                </div>
+                                <div id="chart-container" style="position: relative; height: 200px;">
+                                    <canvas id="wpm-growth-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
+
             <!-- 결과 모달 -->
             <div class="modal fade" id="resultModal" tabindex="-1">
                 <div class="modal-dialog">
@@ -489,8 +580,11 @@
         padding: 1rem !important;
     }
     
-    .keyboard-container {
+    .keyboard-container,
+    .special-keyboard-container {
+        max-width: 100%;
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
         padding: 10px;
     }
     

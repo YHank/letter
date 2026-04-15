@@ -1,5 +1,6 @@
 // 전역 변수를 함수 외부로 이동하여 중복 초기화 방지
 var typingPracticeState = typingPracticeState || null;
+var wpmGrowthChart = wpmGrowthChart || null;
 
 // 타자 연습 설정
 var typingConfig = typingConfig || {
@@ -197,7 +198,11 @@ function initializeTypingPracticeNew() {
         eventListeners: new Map(), // 이벤트 리스너 추적용
         endTime: null, // 5분 타이머를 위한 종료 시간
         countdownInterval: null, // 카운트다운 인터벌
-        currentLang: 'korean' // 현재 선택된 언어
+        currentLang: 'korean', // 현재 선택된 언어
+        customSegments: [],
+        customSegmentIndex: 0,
+        customRawText: '',
+        customFileName: ''
     };
     
     // DOM 요소들
@@ -344,6 +349,9 @@ function initializeTypingPracticeNew() {
                 break;
             case 'standard':
                 loadStandardPractice();
+                break;
+            case 'custom':
+                initializeCustomPractice();
                 break;
         }
     }
@@ -650,6 +658,223 @@ function initializeTypingPracticeNew() {
         addEventListenerOnce(typingInput, 'input', specialInputHandler, 'special-input');
     }
     
+    function segmentCustomText(text, segmentType) {
+        if (!text) return [];
+
+        const normalizedText = text
+            .replace(/\r\n/g, '\n')
+            .replace(/\r/g, '\n')
+            .trim();
+
+        if (!normalizedText) return [];
+
+        if (segmentType === 'paragraphs') {
+            return normalizedText
+                .split(/\n\s*\n+/)
+                .map(segment => segment.replace(/\s+/g, ' ').trim())
+                .filter(Boolean);
+        }
+
+        return normalizedText
+            .split(/(?<=[.!?。！？…])\s+|\n+/)
+            .map(segment => segment.replace(/\s+/g, ' ').trim())
+            .filter(Boolean);
+    }
+
+    function setCustomFeedback(message, type) {
+        const feedbackEl = document.getElementById('custom-upload-feedback');
+        if (!feedbackEl) return;
+
+        feedbackEl.className = 'alert mb-3';
+        feedbackEl.classList.add(`alert-${type || 'secondary'}`);
+        feedbackEl.textContent = message;
+    }
+
+    function updateCustomSegmentMeta() {
+        const metaEl = document.getElementById('custom-segment-meta');
+        if (!metaEl) return;
+
+        const totalSegments = typingPracticeState.customSegments.length;
+        if (!totalSegments) {
+            metaEl.textContent = '업로드 후 연습 구간 수가 표시됩니다.';
+            return;
+        }
+
+        metaEl.textContent = `${typingPracticeState.customSegmentIndex + 1} / ${totalSegments} 구간 · ${typingPracticeState.customFileName || '사용자 업로드 텍스트'}`;
+    }
+
+    function applyCustomSegment(index) {
+        const segments = typingPracticeState.customSegments;
+        if (!segments.length) {
+            typingPracticeState.currentText = '';
+            typingPracticeState.customSegmentIndex = 0;
+            updateCustomSegmentMeta();
+            return false;
+        }
+
+        const safeIndex = ((index % segments.length) + segments.length) % segments.length;
+        typingPracticeState.customSegmentIndex = safeIndex;
+        typingPracticeState.currentText = segments[safeIndex];
+        typingPracticeState.currentIndex = 0;
+        updateCustomSegmentMeta();
+        return true;
+    }
+
+    // 사용자 정의 타자 연습
+    function initializeCustomPractice() {
+        const fileInput = document.getElementById('custom-file-input');
+        const segmentTypeSelect = document.getElementById('custom-segment-type');
+        const startBtn = document.getElementById('start-custom-practice');
+        const resetBtn = document.getElementById('reset-custom-practice');
+        const typingInput = document.getElementById('custom-typing-input');
+
+        clearAllDisplayTexts();
+        updateCustomSegmentMeta();
+
+        if (!fileInput || !segmentTypeSelect || !startBtn || !resetBtn || !typingInput) {
+            console.error('사용자 정의 타자 연습 요소를 찾을 수 없습니다.');
+            return;
+        }
+
+        const prepareSegments = function(text, fileName) {
+            const segmentType = segmentTypeSelect.value;
+            const segments = segmentCustomText(text, segmentType);
+
+            typingPracticeState.isTyping = false;
+            typingPracticeState.currentIndex = 0;
+            typingPracticeState.errorCount = 0;
+            typingPracticeState.endTime = null;
+            if (typingPracticeState.timerInterval) {
+                clearInterval(typingPracticeState.timerInterval);
+                typingPracticeState.timerInterval = null;
+            }
+
+            typingPracticeState.customRawText = text;
+            typingPracticeState.customFileName = fileName || '';
+            typingPracticeState.customSegments = segments;
+            typingPracticeState.customSegmentIndex = 0;
+
+            if (!segments.length) {
+                typingPracticeState.currentText = '';
+                startBtn.disabled = true;
+                typingInput.disabled = true;
+                clearAllDisplayTexts();
+                document.getElementById('custom-remaining-text').textContent = '연습 가능한 문장이나 문단을 찾지 못했습니다.';
+                setCustomFeedback('빈 파일이거나 분리할 수 있는 텍스트가 없습니다. 다른 TXT 파일을 선택해주세요.', 'warning');
+                updateCustomSegmentMeta();
+                return;
+            }
+
+            applyCustomSegment(0);
+            updateDisplay('custom');
+            startBtn.disabled = false;
+            typingInput.disabled = true;
+            setCustomFeedback(`${segments.length}개의 연습 구간을 준비했습니다. 시작 버튼을 눌러 연습을 시작하세요.`, 'success');
+        };
+
+        const fileChangeHandler = function() {
+            const file = this.files && this.files[0];
+            if (!file) {
+                return;
+            }
+
+            const isTextFile = file.type === 'text/plain' || /\.txt$/i.test(file.name);
+            if (!isTextFile) {
+                this.value = '';
+                prepareSegments('', '');
+                setCustomFeedback('TXT 파일만 업로드할 수 있습니다.', 'danger');
+                return;
+            }
+
+            resetPractice('custom');
+            startBtn.style.display = 'inline-block';
+            statsArea.style.display = 'none';
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                prepareSegments(String(event.target && event.target.result ? event.target.result : ''), file.name);
+            };
+            reader.onerror = function() {
+                prepareSegments('', '');
+                setCustomFeedback('파일을 읽는 중 오류가 발생했습니다. 다시 시도해주세요.', 'danger');
+            };
+            reader.readAsText(file, 'utf-8');
+        };
+
+        const segmentTypeHandler = function() {
+            if (!typingPracticeState.customRawText) {
+                return;
+            }
+            prepareSegments(typingPracticeState.customRawText, typingPracticeState.customFileName);
+        };
+
+        const customStartHandler = function() {
+            if (!typingPracticeState.customSegments.length) {
+                setCustomFeedback('먼저 TXT 파일을 업로드해주세요.', 'warning');
+                return;
+            }
+
+            applyCustomSegment(typingPracticeState.customSegmentIndex);
+            typingPracticeState.errorCount = 0;
+            typingPracticeState.isTyping = true;
+            typingPracticeState.startTime = Date.now();
+            typingPracticeState.endTime = Date.now() + typingConfig.defaultDuration;
+
+            typingInput.value = '';
+            typingInput.disabled = false;
+            typingInput.focus();
+            startBtn.style.display = 'none';
+            statsArea.style.display = 'flex';
+
+            showPersonalRecords('custom');
+
+            if (typingPracticeState.timerInterval) {
+                clearInterval(typingPracticeState.timerInterval);
+            }
+            typingPracticeState.timerInterval = setInterval(function() {
+                updateTimer();
+                updateStats();
+            }, 100);
+        };
+
+        const customResetHandler = function() {
+            resetPractice('custom');
+            startBtn.style.display = 'inline-block';
+            startBtn.disabled = typingPracticeState.customSegments.length === 0;
+            statsArea.style.display = 'none';
+
+            if (typingPracticeState.customSegments.length) {
+                applyCustomSegment(0);
+                updateDisplay('custom');
+                setCustomFeedback('업로드한 텍스트를 다시 시작할 준비가 되었습니다.', 'secondary');
+            } else {
+                clearAllDisplayTexts();
+                document.getElementById('custom-remaining-text').textContent = '파일을 업로드하면 연습 문장이 여기에 표시됩니다.';
+                setCustomFeedback('업로드할 TXT 파일을 선택해주세요.', 'secondary');
+            }
+        };
+
+        const customInputHandler = function() {
+            handleTyping('custom', this.value);
+        };
+
+        addEventListenerOnce(fileInput, 'change', fileChangeHandler, 'custom-file-change');
+        addEventListenerOnce(segmentTypeSelect, 'change', segmentTypeHandler, 'custom-segment-type');
+        addEventListenerOnce(startBtn, 'click', customStartHandler, 'custom-start');
+        addEventListenerOnce(resetBtn, 'click', customResetHandler, 'custom-reset');
+        addEventListenerOnce(typingInput, 'input', customInputHandler, 'custom-input');
+
+        typingInput.disabled = true;
+        startBtn.disabled = typingPracticeState.customSegments.length === 0;
+        if (!typingPracticeState.customSegments.length) {
+            setCustomFeedback('업로드할 TXT 파일을 선택해주세요.', 'secondary');
+            document.getElementById('custom-remaining-text').textContent = '파일을 업로드하면 연습 문장이 여기에 표시됩니다.';
+        } else {
+            applyCustomSegment(typingPracticeState.customSegmentIndex || 0);
+            updateDisplay('custom');
+        }
+    }
+
     // 표준 타자 연습 로드
     function loadStandardPractice() {
         let currentStandardMode = 'words';
@@ -814,6 +1039,13 @@ function initializeTypingPracticeNew() {
                                 nextText = standardTexts;
                             }
                             break;
+                        case 'custom':
+                            if (typingPracticeState.customSegments.length) {
+                                typingPracticeState.customSegmentIndex = (typingPracticeState.customSegmentIndex + 1) % typingPracticeState.customSegments.length;
+                                nextText = typingPracticeState.customSegments[typingPracticeState.customSegmentIndex];
+                                setCustomFeedback('다음 연습 구간으로 자동 이동했습니다.', 'secondary');
+                            }
+                            break;
                     }
                     
                     if (nextText) {
@@ -859,7 +1091,9 @@ function initializeTypingPracticeNew() {
         if (remainingText) remainingText.textContent = typingPracticeState.currentText.substring(typingPracticeState.currentIndex + 1);
         
         // 진행률
-        const progress = Math.round((typingPracticeState.currentIndex / typingPracticeState.currentText.length) * 100);
+        const progress = typingPracticeState.currentText.length > 0
+            ? Math.round((typingPracticeState.currentIndex / typingPracticeState.currentText.length) * 100)
+            : 0;
         const progressEl = document.getElementById('progress');
         if (progressEl) progressEl.textContent = progress + '%';
     }
@@ -968,7 +1202,11 @@ function initializeTypingPracticeNew() {
         
         // 기록 저장
         practiceRecords.save(typingPracticeState.currentMode, finalWpm, finalAccuracy);
-        
+
+        // 차트 갱신 (기록 저장 후)
+        var activeChartBtn = document.querySelector('[data-chart-mode].active');
+        renderGrowthChart(activeChartBtn ? activeChartBtn.dataset.chartMode : 'all');
+
         // 결과 모달 표시
         const finalWpmEl = document.getElementById('final-wpm');
         const finalAccuracyEl = document.getElementById('final-accuracy');
@@ -1079,6 +1317,19 @@ function initializeTypingPracticeNew() {
                     nextBtn.click();
                 }
                 break;
+
+            case 'custom':
+                const customStartBtn = document.getElementById('start-custom-practice');
+                if (customStartBtn) {
+                    resetPractice('custom');
+                    if (typingPracticeState.customSegments.length) {
+                        applyCustomSegment(0);
+                        updateDisplay('custom');
+                    }
+                    customStartBtn.style.display = 'inline-block';
+                    customStartBtn.click();
+                }
+                break;
         }
     }
     
@@ -1100,6 +1351,9 @@ function initializeTypingPracticeNew() {
         }
         
         updateDisplay(mode);
+        if (mode === 'custom') {
+            updateCustomSegmentMeta();
+        }
         resetStats();
     }
     
@@ -1113,6 +1367,111 @@ function initializeTypingPracticeNew() {
         if (remainingEl) remainingEl.textContent = '남은 시간: 5:00';
     }
     
+    // 일자별 평균 WPM 집계
+    function aggregateDailyWPM(filterMode) {
+        var records = practiceRecords.load();
+        var filtered = filterMode === 'all' ? records : records.filter(function(r) { return r.mode === filterMode; });
+        if (filtered.length === 0) return { labels: [], data: [] };
+        var dayMap = {};
+        filtered.forEach(function(r) {
+            var day = r.date.substring(0, 10);
+            if (!dayMap[day]) dayMap[day] = [];
+            dayMap[day].push(r.wpm);
+        });
+        var sorted = Object.keys(dayMap).sort();
+        var labels = sorted.map(function(d) {
+            var parts = d.split('-');
+            return parts[1] + '/' + parts[2];
+        });
+        var data = sorted.map(function(d) {
+            var vals = dayMap[d];
+            return Math.round(vals.reduce(function(a, b) { return a + b; }, 0) / vals.length);
+        });
+        return { labels: labels, data: data };
+    }
+
+    // 차트 테마 색상 반환 (다크모드 지원)
+    function getChartColors() {
+        var isDark = document.documentElement.classList.contains('dark');
+        return {
+            line: '#0d6efd',
+            fill: isDark ? 'rgba(13,110,253,0.15)' : 'rgba(13,110,253,0.08)',
+            text: isDark ? '#adb5bd' : '#6c757d',
+            grid: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'
+        };
+    }
+
+    // WPM 성장 추이 차트 렌더링
+    function renderGrowthChart(filterMode) {
+        filterMode = filterMode || 'all';
+        var noDataEl = document.getElementById('chart-no-data');
+        var chartContainer = document.getElementById('chart-container');
+        var canvas = document.getElementById('wpm-growth-chart');
+        if (!canvas) return;
+        var result = aggregateDailyWPM(filterMode);
+        if (result.labels.length === 0) {
+            if (noDataEl) noDataEl.style.display = 'block';
+            if (chartContainer) chartContainer.style.display = 'none';
+            return;
+        }
+        if (noDataEl) noDataEl.style.display = 'none';
+        if (chartContainer) chartContainer.style.display = 'block';
+        var colors = getChartColors();
+        if (wpmGrowthChart) { wpmGrowthChart.destroy(); wpmGrowthChart = null; }
+        if (typeof Chart === 'undefined') return;
+        wpmGrowthChart = new Chart(canvas, {
+            type: 'line',
+            data: {
+                labels: result.labels,
+                datasets: [{
+                    label: '평균 WPM',
+                    data: result.data,
+                    borderColor: colors.line,
+                    backgroundColor: colors.fill,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: result.data.length === 1 ? 5 : 3,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) { return ctx.parsed.y + ' 타/분'; }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: colors.text, maxTicksLimit: 10 },
+                        grid: { color: colors.grid }
+                    },
+                    y: {
+                        beginAtZero: false,
+                        ticks: { color: colors.text },
+                        grid: { color: colors.grid }
+                    }
+                }
+            }
+        });
+    }
+
+    // 차트 모드 필터 버튼 이벤트 설정 (onclick으로 중복 방지)
+    function setupChartFilterButtons() {
+        var buttons = document.querySelectorAll('[data-chart-mode]');
+        buttons.forEach(function(btn) {
+            btn.onclick = function() {
+                buttons.forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                renderGrowthChart(btn.dataset.chartMode);
+            };
+        });
+    }
+
     // 개인 기록 표시
     function showPersonalRecords(mode) {
         const recordsArea = document.getElementById('personal-records');
@@ -1124,25 +1483,37 @@ function initializeTypingPracticeNew() {
             bestWpmEl.textContent = practiceRecords.getBestWPM(mode);
             avgWpmEl.textContent = practiceRecords.getAverageWPM(mode);
         }
+        // 성장 추이 차트 표시
+        var chartArea = document.getElementById('growth-chart-area');
+        if (chartArea) {
+            chartArea.style.display = 'block';
+            setupChartFilterButtons();
+            renderGrowthChart('all');
+        }
     }
-    
+
     // 모든 연습 리셋
     function resetAllPractices() {
-        ['free', 'beginner', 'special', 'standard'].forEach(mode => {
+        ['free', 'beginner', 'special', 'standard', 'custom'].forEach(mode => {
             resetPractice(mode);
         });
         typingPracticeState.currentMode = null;
+        typingPracticeState.customSegmentIndex = 0;
         resetStats();
         clearAllDisplayTexts();
         
         // 개인 기록 숨기기
         const recordsArea = document.getElementById('personal-records');
         if (recordsArea) recordsArea.style.display = 'none';
+        // 성장 추이 차트 숨기기 및 정리
+        var chartAreaReset = document.getElementById('growth-chart-area');
+        if (chartAreaReset) chartAreaReset.style.display = 'none';
+        if (wpmGrowthChart) { wpmGrowthChart.destroy(); wpmGrowthChart = null; }
     }
     
     // 모든 텍스트 표시 영역 초기화
     function clearAllDisplayTexts() {
-        const modes = ['free', 'beginner', 'special', 'standard'];
+        const modes = ['free', 'beginner', 'special', 'standard', 'custom'];
         modes.forEach(mode => {
             const typedText = document.getElementById(`${mode}-typed-text`);
             const currentChar = document.getElementById(`${mode}-current-char`);

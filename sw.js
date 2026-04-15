@@ -3,9 +3,9 @@
  * 글자수 세기 웹앱의 핵심 기능을 오프라인에서도 사용할 수 있도록 함
  */
 
-const CACHE_NAME = 'letter-counter-v1';
-const STATIC_CACHE_NAME = 'letter-counter-static-v1';
-const DYNAMIC_CACHE_NAME = 'letter-counter-dynamic-v1';
+const CACHE_NAME = 'letter-counter-v5';
+const STATIC_CACHE_NAME = 'letter-counter-static-v5';
+const DYNAMIC_CACHE_NAME = 'letter-counter-dynamic-v5';
 
 // 캐시할 정적 자원들
 const STATIC_ASSETS = [
@@ -15,8 +15,14 @@ const STATIC_ASSETS = [
     '/js/utils.js',
     '/js/darkmode.js',
     '/js/text-analyzer.js',
+    '/js/analysis-ui.js',
     '/js/navigation-manager.js',
     '/js/storage-manager.js',
+    '/js/toast.js',
+    '/js/error-handler.js',
+    '/js/undo-redo.js',
+    '/js/mobile-handler.js',
+    '/js/keyboard-handler.js',
     '/js/index.js',
     '/html/spellcheck_simple.html',
     '/html/typing_practice.html',
