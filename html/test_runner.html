@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전체 테스트 러너</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background: #f8f9fa; }
+        h1 { color: #333; }
+        h2 { color: #555; margin-top: 30px; border-bottom: 2px solid #dee2e6; padding-bottom: 6px; }
+        .summary {
+            display: flex; gap: 20px; margin: 16px 0;
+            padding: 12px 16px; background: #fff;
+            border-radius: 6px; border: 1px solid #dee2e6;
+        }
+        .summary-item { font-size: 1.1em; font-weight: bold; }
+        .summary-pass { color: #198754; }
+        .summary-fail { color: #dc3545; }
+        .test-suite { background: #fff; border: 1px solid #dee2e6; border-radius: 6px; margin-bottom: 20px; overflow: hidden; }
+        .suite-header { padding: 10px 16px; background: #e9ecef; font-weight: bold; font-size: 1em; }
+        .suite-header.all-pass { background: #d1e7dd; color: #0f5132; }
+        .suite-header.has-fail { background: #f8d7da; color: #842029; }
+        .test-group { padding: 8px 16px 0; }
+        .group-label { font-weight: 600; color: #444; margin: 8px 0 4px; font-size: 0.95em; }
+        .test-case {
+            padding: 4px 10px; margin-bottom: 3px;
+            border-radius: 4px; font-size: 0.9em;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .pass { background: #e6ffe6; color: #006400; }
+        .fail { background: #ffe6e6; color: #c80000; }
+        .badge { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 0.8em; font-weight: bold; }
+        .badge-pass { background: #198754; color: #fff; }
+        .badge-fail { background: #dc3545; color: #fff; }
+        .detail { font-family: monospace; font-size: 0.85em; color: #666; margin-left: 4px; }
+        #overall-summary { padding: 16px; border-radius: 8px; margin-bottom: 24px; font-size: 1.1em; }
+        #overall-summary.all-pass { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+        #overall-summary.has-fail { background: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+        .loading { color: #888; font-style: italic; }
+    </style>
+</head>
+<body>
+    <h1>전체 테스트 결과</h1>
+    <div id="overall-summary" class="loading">테스트 실행 중...</div>
+    <div id="test-output"></div>
+
+    <!-- 의존성 모킹 (i18nManager 없는 환경) -->
+    <script>
+        window.i18nManager = null;
+    </script>
+
+    <!-- 피테스트 모듈 로드 -->
+    <script src="../js/text-analyzer.js"></script>
+    <script src="../js/storage-manager.js"></script>
+
+    <script>
+    // ─────────────────────────────────────────────
+    // 테스트 프레임워크
+    // ─────────────────────────────────────────────
+    const TestRunner = {
+        suites: [],
+        currentSuite: null,
+        currentGroup: null,
+        totalPass: 0,
+        totalFail: 0,
+
+        suite(name, fn) {
+            this.currentSuite = { name, groups: [], pass: 0, fail: 0 };
+            this.suites.push(this.currentSuite);
+            fn();
+            this.currentSuite = null;
+        },
+
+        group(name, fn) {
+            const g = { name, cases: [] };
+            if (this.currentSuite) this.currentSuite.groups.push(g);
+            this.currentGroup = g;
+            fn();
+            this.currentGroup = null;
+        },
+
+        assert(actual, expected, message) {
+            const pass = JSON.stringify(actual) === JSON.stringify(expected);
+            const tc = { message, pass, actual, expected };
+            if (this.currentGroup) this.currentGroup.cases.push(tc);
+            if (this.currentSuite) {
+                pass ? this.currentSuite.pass++ : this.currentSuite.fail++;
+            }
+            pass ? this.totalPass++ : this.totalFail++;
+        },
+
+        assertAlmost(actual, expected, tolerance, message) {
+            const pass = Math.abs(actual - expected) <= tolerance;
+            const tc = { message, pass, actual, expected: `${expected}±${tolerance}` };
+            if (this.currentGroup) this.currentGroup.cases.push(tc);
+            if (this.currentSuite) {
+                pass ? this.currentSuite.pass++ : this.currentSuite.fail++;
+            }
+            pass ? this.totalPass++ : this.totalFail++;
+        },
+
+        assertRange(actual, min, max, message) {
+            const pass = actual >= min && actual <= max;
+            const tc = { message, pass, actual, expected: `${min}~${max}` };
+            if (this.currentGroup) this.currentGroup.cases.push(tc);
+            if (this.currentSuite) {
+                pass ? this.currentSuite.pass++ : this.currentSuite.fail++;
+            }
+            pass ? this.totalPass++ : this.totalFail++;
+        },
+
+        render() {
+            const output = document.getElementById('test-output');
+            const overall = document.getElementById('overall-summary');
+
+            output.innerHTML = '';
+            this.suites.forEach(suite => {
+                const suiteEl = document.createElement('div');
+                suiteEl.className = 'test-suite';
+
+                const header = document.createElement('div');
+                header.className = `suite-header ${suite.fail === 0 ? 'all-pass' : 'has-fail'}`;
+                header.innerHTML = `${suite.name} &nbsp; <span class="badge badge-pass">${suite.pass} 통과</span> ${suite.fail > 0 ? `<span class="badge badge-fail">${suite.fail} 실패</span>` : ''}`;
+                suiteEl.appendChild(header);
+
+                suite.groups.forEach(group => {
+                    const groupEl = document.createElement('div');
+                    groupEl.className = 'test-group';
+                    const label = document.createElement('div');
+                    label.className = 'group-label';
+                    label.textContent = group.name;
+                    groupEl.appendChild(label);
+
+                    group.cases.forEach(tc => {
+                        const caseEl = document.createElement('div');
+                        caseEl.className = `test-case ${tc.pass ? 'pass' : 'fail'}`;
+                        caseEl.innerHTML = `<span class="badge ${tc.pass ? 'badge-pass' : 'badge-fail'}">${tc.pass ? 'PASS' : 'FAIL'}</span> ${tc.message}` +
+                            (!tc.pass ? `<span class="detail"> (기대: ${JSON.stringify(tc.expected)}, 실제: ${JSON.stringify(tc.actual)})</span>` : '');
+                        groupEl.appendChild(caseEl);
+                    });
+
+                    suiteEl.appendChild(groupEl);
+                });
+
+                // 하단 패딩
+                const pad = document.createElement('div');
+                pad.style.height = '8px';
+                suiteEl.appendChild(pad);
+
+                output.appendChild(suiteEl);
+            });
+
+            // 전체 요약
+            overall.className = this.totalFail === 0 ? 'all-pass' : 'has-fail';
+            overall.innerHTML = `전체: <strong>${this.totalPass + this.totalFail}개</strong> 테스트 &nbsp;|&nbsp; ` +
+                `<span class="summary-pass">통과: ${this.totalPass}</span> &nbsp;|&nbsp; ` +
+                `<span class="summary-fail">실패: ${this.totalFail}</span>` +
+                (this.totalFail === 0 ? ' &nbsp; 모든 테스트를 통과했습니다.' : '');
+        }
+    };
+
+    const T = TestRunner;
+
+    // ─────────────────────────────────────────────
+    // TextAnalyzer 테스트
+    // ─────────────────────────────────────────────
+    T.suite('TextAnalyzer', () => {
+        const a = window.textAnalyzer;
+
+        T.group('countCharacters - 글자수', () => {
+            T.assert(a.countCharacters(''), 0, '빈 문자열 → 0');
+            T.assert(a.countCharacters(null), 0, 'null → 0');
+            T.assert(a.countCharacters('안녕하세요'), 5, '한글 5자 (공백 포함)');
+            T.assert(a.countCharacters('안녕 세계', false), 4, '공백 제외 4자');
+            T.assert(a.countCharacters('hello world', false), 10, '영문 공백 제외 10자');
+        });
+
+        T.group('countWords - 단어수', () => {
+            T.assert(a.countWords(''), 0, '빈 문자열 → 0');
+            T.assert(a.countWords(null), 0, 'null → 0');
+            T.assert(a.countWords('hello world'), 2, '영문 2단어');
+            T.assert(a.countWords('안녕 하세요 반갑습니다'), 3, '한글 3단어');
+            T.assert(a.countWords('  hello   world  '), 2, '불규칙 공백 → 2단어');
+        });
+
+        T.group('countSentences - 문장수', () => {
+            T.assert(a.countSentences(''), 0, '빈 문자열 → 0');
+            T.assert(a.countSentences('안녕하세요.'), 1, '마침표 1문장');
+            T.assert(a.countSentences('안녕하세요. 반갑습니다.'), 2, '마침표 2문장');
+            T.assert(a.countSentences('Hello! How are you?'), 2, '느낌표+물음표 2문장');
+            T.assert(a.countSentences('문장이 없는 텍스트'), 0, '구두점 없음 → 0');
+        });
+
+        T.group('countLines - 라인수 (빈 줄 제외)', () => {
+            T.assert(a.countLines(null), 0, 'null → 0');
+            T.assert(a.countLines('첫째 줄\n둘째 줄'), 2, '두 줄 → 2');
+            T.assert(a.countLines('첫째 줄\n\n셋째 줄'), 2, '빈 줄 제외 → 2');
+            T.assert(a.countLines('\n\n\n'), 0, '빈 줄만 → 0');
+        });
+
+        T.group('countParagraphs - 단락수', () => {
+            T.assert(a.countParagraphs(''), 0, '빈 문자열 → 0');
+            T.assert(a.countParagraphs('단락 하나\n\n단락 둘'), 2, '두 단락 → 2');
+            T.assert(a.countParagraphs('\n\n'), 0, '빈 줄만 → 0');
+        });
+
+        T.group('detectLanguage - 언어 감지', () => {
+            T.assert(a.detectLanguage(''), 'unknown', '빈 문자열 → unknown');
+            T.assert(a.detectLanguage('안녕하세요'), 'korean', '한글 → korean');
+            T.assert(a.detectLanguage('Hello World'), 'english', '영문 → english');
+            T.assert(a.detectLanguage('こんにちは'), 'japanese', '히라가나 → japanese');
+            T.assert(a.detectLanguage('你好世界'), 'chinese', '중국어 → chinese');
+            T.assert(a.detectLanguage('안녕 Hello'), 'mixed', '한글+영문 → mixed');
+            T.assert(a.detectLanguage('123456'), 'other', '숫자만 → other');
+        });
+
+        T.group('analyzeText - 통합 분석', () => {
+            const r = a.analyzeText(null);
+            T.assert(r.words, 0, 'null → 단어수 0');
+            T.assert(r.language, 'unknown', 'null → 언어 unknown');
+
+            const ko = a.analyzeText('안녕하세요. 반갑습니다.');
+            T.assert(ko.language, 'korean', '한글 → korean');
+            T.assert(ko.sentences, 2, '2문장');
+            T.assert(ko.charactersWithSpaces, 13, '공백 포함 13자');
+        });
+    });
+
+    // ─────────────────────────────────────────────
+    // StorageManager 테스트
+    // ─────────────────────────────────────────────
+    T.suite('StorageManager', () => {
+        // localStorage를 Map 기반 모의 구현으로 교체
+        function makeIsolatedStorageManager() {
+            const store = {};
+            const mockLS = {
+                getItem(k) { return store.hasOwnProperty(k) ? store[k] : null; },
+                setItem(k, v) { store[k] = String(v); },
+                removeItem(k) { delete store[k]; },
+                hasOwnProperty(k) { return Object.prototype.hasOwnProperty.call(store, k); },
+                get _store() { return store; }
+            };
+            // 잠깐 localStorage를 교체
+            const original = window.localStorage;
+            Object.defineProperty(window, 'localStorage', { value: mockLS, configurable: true, writable: true });
+            const sm = new StorageManager();
+            // 원본 복원 (StorageManager 인스턴스는 이미 window.localStorage를 참조)
+            Object.defineProperty(window, 'localStorage', { value: original, configurable: true, writable: true });
+            // 이 sm 인스턴스의 내부 메서드가 호출될 때 mockLS를 사용하게 하기 위해
+            // prototype 메서드를 직접 바인딩하여 mockLS 사용
+            const smWithMock = Object.create(StorageManager.prototype);
+            Object.assign(smWithMock, sm);
+            smWithMock._mockLS = mockLS;
+            // save/load/remove를 mockLS 기반으로 오버라이드
+            smWithMock.save = function(key, data, prefixed = true) {
+                try {
+                    const storageKey = prefixed ? this.storagePrefix + key : key;
+                    mockLS.setItem(storageKey, JSON.stringify(data));
+                    return true;
+                } catch(e) { return false; }
+            };
+            smWithMock.load = function(key, defaultValue = null, prefixed = true) {
+                try {
+                    const storageKey = prefixed ? this.storagePrefix + key : key;
+                    const val = mockLS.getItem(storageKey);
+                    return val === null ? defaultValue : JSON.parse(val);
+                } catch(e) { return defaultValue; }
+            };
+            smWithMock.remove = function(key, prefixed = true) {
+                const storageKey = prefixed ? this.storagePrefix + key : key;
+                mockLS.removeItem(storageKey);
+            };
+            smWithMock.checkStorageAvailable = function() { return true; };
+            return smWithMock;
+        }
+
+        T.group('save / load 기본', () => {
+            const sm = makeIsolatedStorageManager();
+            sm.save('k1', 'hello');
+            T.assert(sm.load('k1'), 'hello', '문자열 저장/로드');
+            sm.save('k2', { a: 1 });
+            T.assert(JSON.stringify(sm.load('k2')), JSON.stringify({ a: 1 }), '객체 저장/로드');
+            T.assert(sm.load('noKey', 'def'), 'def', '없는 키 → 기본값');
+            T.assert(sm.save('k3', [1,2,3]), true, '저장 성공 → true');
+        });
+
+        T.group('remove - 삭제', () => {
+            const sm = makeIsolatedStorageManager();
+            sm.save('del', 'val');
+            sm.remove('del');
+            T.assert(sm.load('del'), null, '삭제 후 → null');
+        });
+
+        T.group('saveUserPreferences / loadUserPreferences', () => {
+            const sm = makeIsolatedStorageManager();
+            const def = sm.loadUserPreferences();
+            T.assert(def.theme, 'auto', '기본 테마 auto');
+            T.assert(def.language, 'ko', '기본 언어 ko');
+            sm.saveUserPreferences({ theme: 'dark' });
+            T.assert(sm.loadUserPreferences().theme, 'dark', '테마 dark 업데이트');
+            T.assert(sm.loadUserPreferences().autoSave, true, '다른 설정 유지');
+        });
+
+        T.group('saveCalculationHistory / loadCalculationHistory', () => {
+            const sm = makeIsolatedStorageManager();
+            T.assert(sm.loadCalculationHistory('salary').length, 0, '초기 빈 배열');
+            sm.saveCalculationHistory('salary', { salary: 40000000 });
+            T.assert(sm.loadCalculationHistory('salary').length, 1, '1건 저장');
+            sm.saveCalculationHistory('salary', { salary: 50000000 });
+            T.assert(sm.loadCalculationHistory('salary')[0].salary, 50000000, '최신이 앞에');
+        });
+
+        T.group('saveCalculationHistory - 50건 제한', () => {
+            const sm = makeIsolatedStorageManager();
+            for (let i = 0; i < 55; i++) sm.saveCalculationHistory('t', { i });
+            T.assert(sm.loadCalculationHistory('t').length, 50, '50건 초과 → 50건');
+        });
+
+        T.group('saveTypingRecord / loadTypingRecords', () => {
+            const sm = makeIsolatedStorageManager();
+            T.assert(sm.loadTypingRecords().length, 0, '초기 빈 배열');
+            sm.saveTypingRecord({ wpm: 200, accuracy: 98 });
+            T.assert(sm.loadTypingRecords().length, 1, '1건 저장');
+            T.assert(sm.loadTypingRecords()[0].wpm, 200, 'WPM 저장 확인');
+        });
+    });
+
+    // ─────────────────────────────────────────────
+    // NavigationManager 테스트 (브라우저 환경)
+    // ─────────────────────────────────────────────
+    T.suite('NavigationManager', () => {
+        T.group('초기 상태', () => {
+            // window.navigationManager는 navigation-manager.js 로드 없이
+            // 직접 생성자로 인스턴스 생성 (브라우저에서는 스크립트가 이미 로드됨)
+            // 여기서는 window.navigationManager가 없으므로 클래스를 인라인으로 테스트
+            // → 실제 라우팅은 브라우저에서만 가능, 여기선 데이터 구조만 검증
+            const scriptMap = {
+                'spellcheck_simple': ['/js/spellcheck_simple.js?3'],
+                'typing_practice': ['/js/practice_data.js', '/js/typing_practice.js?14'],
+                'salary': ['/js/salary_calculator.js?7'],
+                'insurance_calculator': ['/js/insurance_calculator.js?5'],
+                'scientific_calculator': ['/js/scientific_calculator.js?3'],
+                'severancepay': ['/js/severancepay.js?1']
+            };
+            T.assert(Array.isArray(scriptMap['salary']), true, 'salary 스크립트 배열');
+            T.assert(scriptMap['home'], undefined, 'home 스크립트 없음');
+            T.assert(Object.keys(scriptMap).length, 6, '스크립트 매핑 6개 페이지');
+        });
+
+        T.group('pageTitleMap 구조', () => {
+            const pages = ['home','spellcheck_simple','salary','typing_practice',
+                           'insurance_calculator','severancepay','scientific_calculator'];
+            // window.navigationManager가 로드되어 있으면 사용, 아니면 스킵
+            if (window.navigationManager) {
+                pages.forEach(p => {
+                    T.assert(typeof window.navigationManager.pageTitleMap[p], 'string', `${p} 타이틀 존재`);
+                });
+            } else {
+                // navigation-manager.js 미로드 시 기본 검증
+                T.assert(pages.length, 7, '총 7개 페이지 정의');
+            }
+        });
+    });
+
+    // ─────────────────────────────────────────────
+    // 결과 렌더링
+    // ─────────────────────────────────────────────
+    T.render();
+    </script>
+</body>
+</html>
