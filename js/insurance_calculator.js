@@ -229,50 +229,74 @@ function initializeInsuranceCalculator() {
     const calculateBtn = DOMUtils.getElement('#calculateBtn');
     const resetBtn = DOMUtils.getElement('#resetBtn');
     const salaryInput = DOMUtils.getElement('#monthlySalary');
-    
+
+    // 중복 초기화 방지
+    if (salaryInput && salaryInput.dataset.initialized === 'true') {
+        return;
+    }
+    if (salaryInput) {
+        salaryInput.dataset.initialized = 'true';
+    }
+
     if (calculateBtn) {
         DOMUtils.addEvent(calculateBtn, 'click', calculateInsurance);
     }
-    
+
     if (resetBtn) {
         DOMUtils.addEvent(resetBtn, 'click', resetCalculator);
     }
-    
+
     // Enter 키로 계산 실행
     if (salaryInput) {
         DOMUtils.addEvent(salaryInput, 'keypress', function(e) {
-            if (e.key === 'Enter') {
-                calculateInsurance();
+            try {
+                if (e.key === 'Enter') {
+                    calculateInsurance();
+                }
+            } catch (err) {
+                console.error('keypress 처리 오류:', err);
             }
         });
-        
+
         // 숫자 입력 시 자동으로 콤마 추가
         DOMUtils.addEvent(salaryInput, 'input', function(e) {
-            const plainValue = NumberUtils.toPlainNumberString(e.target.value);
-            if (!plainValue || !Number.isFinite(Number(plainValue))) {
-                return;
+            try {
+                const plainValue = NumberUtils.toPlainNumberString(e.target.value);
+                if (!plainValue || !Number.isFinite(Number(plainValue))) {
+                    return;
+                }
+
+                const cursorPosition = e.target.selectionStart;
+                const oldLength = e.target.value.length;
+                NumberUtils.formatInputValue(e.target);
+
+                const newLength = e.target.value.length;
+                const newPosition = Math.max(0, cursorPosition + (newLength - oldLength));
+                e.target.setSelectionRange(newPosition, newPosition);
+            } catch (err) {
+                console.error('input 포맷 처리 오류:', err);
             }
-
-            const cursorPosition = e.target.selectionStart;
-            const oldLength = e.target.value.length;
-            NumberUtils.formatInputValue(e.target);
-
-            const newLength = e.target.value.length;
-            const newPosition = cursorPosition + (newLength - oldLength);
-            e.target.setSelectionRange(newPosition, newPosition);
         });
-        
+
         // 포커스 시 콤마 제거
         DOMUtils.addEvent(salaryInput, 'focus', function(e) {
-            e.target.value = NumberUtils.toPlainNumberString(e.target.value);
+            try {
+                e.target.value = NumberUtils.toPlainNumberString(e.target.value);
+            } catch (err) {
+                console.error('focus 처리 오류:', err);
+            }
         });
-        
+
         // 포커스 해제 시 콤마 추가
         DOMUtils.addEvent(salaryInput, 'blur', function(e) {
-            NumberUtils.formatInputValue(e.target);
+            try {
+                NumberUtils.formatInputValue(e.target);
+            } catch (err) {
+                console.error('blur 처리 오류:', err);
+            }
         });
     }
-    
+
     // 실시간 계산을 위한 change 이벤트 추가
     const allInputs = ['monthlySalary', 'dependents', 'businessType', 'industrialCode'];
     allInputs.forEach(inputId => {

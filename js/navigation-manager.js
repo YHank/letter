@@ -15,7 +15,7 @@ class NavigationManager {
             'spellcheck_simple': ['/js/spellcheck_client.js?2', '/js/spellcheck_simple.js?4'],
             'typing_practice': ['/js/practice_data.js?2', '/js/typing_practice.js?17'],
             'salary': ['/js/salary_calculator.js?7'],
-            'insurance_calculator': ['/js/insurance_calculator.js?5'],
+            'insurance_calculator': ['/js/insurance_calculator.js?6'],
             'scientific_calculator': ['/js/scientific_calculator.js?3'],
             'severancepay': ['/js/severancepay.js?1']
         };
