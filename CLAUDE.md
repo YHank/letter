@@ -182,7 +182,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### 필수 규칙
 - **항상 한글로 대답한다**
 - **js파일을 변경하면 자동으로 버전(?뒤 숫자)를 1증가시킨다**
-- 빌드 프로세스 없음 - 순수 HTML/CSS/JavaScript
+- **캐시 버스터를 올렸으면 `sw.js`의 CACHE 버전(`-vN`)도 함께 올린다**
+  서비스워커가 `ignoreSearch: true`로 매칭하므로, CACHE 이름을 올리지 않으면
+  구버전이 계속 캐시에서 나온다 (activate 단계에서 이름이 다른 캐시만 삭제됨)
+- **`index.html` 셸이나 `html/*.html` 조각을 고쳤으면 `node tools/build-pages.js` 재실행**
+- **작업 후 `node tools/verify-pages.js`로 검증** — 생성 페이지와 원본의 어긋남,
+  캐시 버스터 불일치, 끊어진 참조, sitemap·sw.js 정합성을 한 번에 검사한다
+- 빌드 프로세스 없음 - 순수 HTML/CSS/JavaScript (생성기는 개발 편의 도구, 결과물을 커밋)
 - 쿼리 매개변수로 캐시 버스팅 (예: `js/index.js?1`)
 - Google AdSense 슬롯: 8081181989, 6057653874
 - 네이버 서치 콘솔 인증 파일 존재

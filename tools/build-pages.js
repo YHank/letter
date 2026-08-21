@@ -69,22 +69,41 @@ function parseMaps() {
 }
 
 /**
- * 서브페이지 공통 스크립트 — 홈 전용(index.js, navigation-manager 등)은 제외.
+ * 홈 전용 스크립트 — 서브페이지에서 제외한다.
  *
- * Google 번역 위젯도 제외한다. 콜백 googleTranslateElementInit이 index.js에만 있고
- * 컨테이너 #google_translate_element도 홈에만 있어, 서브페이지에서 로드하면
- * 콜백 미정의 오류만 난다. 다국어는 i18n.js가 4개 언어로 처리한다.
+ * index.js와 navigation-manager.js는 홈 DOM(#letter_count 등)에 의존하고,
+ * 나머지는 홈 에디터 전용 기능이다. Google 번역 위젯도 제외한다 —
+ * 콜백 googleTranslateElementInit이 index.js에만 있고 컨테이너
+ * #google_translate_element도 홈에만 있어 콜백 미정의 오류만 난다.
+ * 다국어는 i18n.js가 4개 언어로 처리한다.
  */
-const COMMON_SCRIPTS = [
-    '/js/utils.js?3',
-    '/js/darkmode.js',
-    '/js/i18n.js?3',
-    '/js/toast.js?2',
-    '/js/error-handler.js?1',
-    '/js/pwa.js',
-    '/js/mobile-handler.js?1',
-    '/js/ads-init.js'
+const HOME_ONLY_SCRIPTS = [
+    'index.js',
+    'navigation-manager.js',
+    'text-analyzer.js',
+    'advanced-analyzer.js',
+    'analysis-ui.js',
+    'storage-manager.js',
+    'undo-redo.js',
+    'keyboard-handler.js'
 ];
+
+/**
+ * 서브페이지 공통 스크립트를 index.html에서 읽어온다.
+ * 하드코딩하면 index.html에서 캐시 버스터 버전이 올라갔을 때 조용히 어긋난다.
+ */
+function readCommonScripts(shell) {
+    const all = (shell.match(/<script\s+src="(\/js\/[^"]+)"/g) || [])
+        .map((tag) => tag.match(/src="([^"]+)"/)[1]);
+
+    const common = all.filter((src) => {
+        const file = src.replace(/^\/js\//, '').replace(/\?.*$/, '');
+        return !HOME_ONLY_SCRIPTS.includes(file);
+    });
+
+    if (common.length === 0) throw new Error('index.html에서 공통 스크립트를 찾지 못했습니다');
+    return common;
+}
 
 /** 조각 이름 → 클린 경로 (nav/footer 링크 치환 및 리다이렉트 shim 생성에 공용) */
 const ROUTE_MAP = PAGES.reduce((acc, p) => {
@@ -245,7 +264,7 @@ function buildPage(page, parts) {
     const fragmentPath = path.join(ROOT, 'html', `${page.fragment}.html`);
     const fragment = stripFragmentScripts(fs.readFileSync(fragmentPath, 'utf8'));
 
-    const scripts = COMMON_SCRIPTS.concat(page.scripts)
+    const scripts = parts.commonScripts.concat(page.scripts)
         .map((src) => `        <script src="${src}" defer></script>`)
         .join('\n');
 
@@ -298,7 +317,8 @@ function main() {
         commonHead: extractCommonHead(shell),
         nav: extractBlock(shell, /<nav class="navbar/, '</nav>', 'nav'),
         topAd: extractBlock(shell, /<div class="container">\s*\r?\n\s*<div class="row px-0 mx-0 justify-content-center mt-4 d-none d-lg-flex">/, '</div>\n        </div>', '상단 광고'),
-        footer: extractBlock(shell, /<footer class="mt-5"/, '</footer>', 'footer')
+        footer: extractBlock(shell, /<footer class="mt-5"/, '</footer>', 'footer'),
+        commonScripts: readCommonScripts(shell)
     };
 
     PAGES.forEach((page) => {
@@ -315,4 +335,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { PAGES, ROUTE_MAP, COMMON_SCRIPTS };
+module.exports = { PAGES, ROUTE_MAP, HOME_ONLY_SCRIPTS, parseMaps, readCommonScripts };
