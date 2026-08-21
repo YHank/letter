@@ -9,6 +9,38 @@ class TextAnalyzer {
         this.japaneseReadingSpeed = 300; // 분당 글자수
         this.chineseReadingSpeed = 350; // 분당 글자수
         this.currentLanguage = 'ko'; // 기본 언어
+        this.hangulInitials = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+        this.hangulMedials = 'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ';
+        this.hangulFinals = ' ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ';
+        this.hangulInitialPairs = {
+            'ㄱㄱ': 'ㄲ',
+            'ㄷㄷ': 'ㄸ',
+            'ㅂㅂ': 'ㅃ',
+            'ㅅㅅ': 'ㅆ',
+            'ㅈㅈ': 'ㅉ'
+        };
+        this.hangulMedialPairs = {
+            'ㅗㅏ': 'ㅘ',
+            'ㅗㅐ': 'ㅙ',
+            'ㅗㅣ': 'ㅚ',
+            'ㅜㅓ': 'ㅝ',
+            'ㅜㅔ': 'ㅞ',
+            'ㅜㅣ': 'ㅟ',
+            'ㅡㅣ': 'ㅢ'
+        };
+        this.hangulFinalPairs = {
+            'ㄱㅅ': 'ㄳ',
+            'ㄴㅈ': 'ㄵ',
+            'ㄴㅎ': 'ㄶ',
+            'ㄹㄱ': 'ㄺ',
+            'ㄹㅁ': 'ㄻ',
+            'ㄹㅂ': 'ㄼ',
+            'ㄹㅅ': 'ㄽ',
+            'ㄹㅌ': 'ㄾ',
+            'ㄹㅍ': 'ㄿ',
+            'ㄹㅎ': 'ㅀ',
+            'ㅂㅅ': 'ㅄ'
+        };
     }
 
     /**
@@ -232,20 +264,124 @@ class TextAnalyzer {
     }
 
     /**
+     * 유니코드 분해형과 호환 자모로 입력된 한글을 완성형 음절로 결합한다.
+     */
+    composeHangul(text) {
+        const characters = Array.from(text.normalize('NFC'));
+        const result = [];
+
+        for (let index = 0; index < characters.length; index++) {
+            let initial = characters[index];
+            let medialPosition = index + 1;
+            const pairedInitial = this.hangulInitialPairs[initial + (characters[index + 1] || '')];
+
+            if (pairedInitial && this.hangulMedials.includes(characters[index + 2])) {
+                initial = pairedInitial;
+                medialPosition = index + 2;
+            }
+
+            const initialIndex = this.hangulInitials.indexOf(initial);
+            let medial = characters[medialPosition];
+            if (initialIndex < 0 || !this.hangulMedials.includes(medial)) {
+                result.push(characters[index]);
+                continue;
+            }
+
+            let consumed = medialPosition - index + 1;
+            const pairedMedial = this.hangulMedialPairs[medial + (characters[medialPosition + 1] || '')];
+            if (pairedMedial) {
+                medial = pairedMedial;
+                consumed++;
+            }
+
+            let finalIndex = 0;
+            const finalPosition = index + consumed;
+            const finalCandidate = characters[finalPosition];
+            const followingCharacter = characters[finalPosition + 1];
+            const candidateStartsNextSyllable = this.hangulMedials.includes(followingCharacter);
+
+            if (this.hangulFinals.indexOf(finalCandidate) > 0 && !candidateStartsNextSyllable) {
+                let final = finalCandidate;
+                consumed++;
+
+                const pairedFinal = this.hangulFinalPairs[finalCandidate + (followingCharacter || '')];
+                const pairStartsNextSyllable = this.hangulMedials.includes(characters[finalPosition + 2]);
+                if (pairedFinal && !pairStartsNextSyllable) {
+                    final = pairedFinal;
+                    consumed++;
+                }
+
+                finalIndex = this.hangulFinals.indexOf(final);
+            }
+
+            const medialIndex = this.hangulMedials.indexOf(medial);
+            result.push(String.fromCharCode(0xAC00 + ((initialIndex * 21) + medialIndex) * 28 + finalIndex));
+            index += consumed - 1;
+        }
+
+        return result.join('').normalize('NFC');
+    }
+
+    /**
+     * 문단 구분을 유지하면서 문단 내부의 강제 줄바꿈을 연결한다.
+     */
+    joinLines(text, preserveLists = false) {
+        return text
+            .replace(/\r\n?/g, '\n')
+            .split(/\n[ \t]*\n+/)
+            .map(paragraph => {
+                const lines = paragraph
+                    .split('\n')
+                    .map(line => line.trim())
+                    .filter(Boolean);
+
+                if (!preserveLists) return lines.join(' ');
+
+                return lines.reduce((joined, line) => {
+                    const isListItem = /^(?:[-*•‣▪◦]|\d+[.)]|[가-힣][.)])\s+/.test(line);
+                    if (joined.length === 0 || isListItem) {
+                        joined.push(line);
+                    } else {
+                        joined[joined.length - 1] += ` ${line}`;
+                    }
+                    return joined;
+                }, []).join('\n');
+            })
+            .join('\n\n');
+    }
+
+    /**
+     * 숫자·영문 도메인·목록 번호의 마침표를 제외하고 문장 경계에서 줄바꿈한다.
+     */
+    splitSentences(text) {
+        return text.replace(/([.!?。！？]+)([”’"'」』】)]*)[ \t]*(?=\S)/g,
+            (match, punctuation, closingMarks, offset, source) => {
+                const previous = source[offset - 1] || '';
+                const next = source[offset + match.length] || '';
+
+                if (punctuation === '.') {
+                    const lineBefore = source.slice(source.lastIndexOf('\n', offset - 1) + 1, offset);
+                    const hasFollowingWhitespace = /[ \t]$/.test(match);
+                    const numericBoundary = /\d/.test(previous) && /\d/.test(next);
+                    const latinBoundary = !hasFollowingWhitespace &&
+                        /[A-Za-z]/.test(previous) && /[A-Za-z]/.test(next);
+                    const numberedList = /^\s*\d+$/.test(lineBefore);
+                    const dateBoundary = /\d{4}\.\s*\d{1,2}\.\s*\d{1,2}$/.test(lineBefore);
+                    if (numericBoundary || latinBoundary || numberedList || dateBoundary) return match;
+                }
+
+                return `${punctuation}${closingMarks}\n`;
+            });
+    }
+
+    /**
      * 텍스트 변환 유틸리티들
      */
     transform = {
-        'normalize-hangul': (text) => text.normalize('NFC'),
-        'join-lines': (text) => text
-            .replace(/\r\n?/g, '\n')
-            .split(/\n[ \t]*\n+/)
-            .map(paragraph => paragraph
-                .split('\n')
-                .map(line => line.trim())
-                .filter(Boolean)
-                .join(' '))
-            .join('\n\n'),
-        'split-sentences': (text) => text.replace(/([.!?。！？]+[”’"'」』】)]*)[ \t]+(?=\S)/g, '$1\n'),
+        'normalize-hangul': (text) => this.composeHangul(text),
+        'join-lines': (text) => this.joinLines(text),
+        'join-lines-preserve-lists': (text) => this.joinLines(text, true),
+        'split-sentences': (text) => this.splitSentences(text),
         'remove-special': (text) => text.replace(/[^\w\sㄱ-ㅎㅏ-ㅣ가-힣]/g, ''),
         'remove-spaces': (text) => text.replace(/\s/g, ''),
         'trim-lines': (text) => text.split('\n').map(line => line.trim()).join('\n'),

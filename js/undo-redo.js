@@ -8,6 +8,7 @@ class UndoRedo {
 
     // 상태 추가
     addState(text) {
+        if (this.states[this.currentIndex] === text) return;
         // 현재 인덱스 이후의 상태들은 제거 (새로운 분기 생성)
         this.states = this.states.slice(0, this.currentIndex + 1);
 

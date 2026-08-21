@@ -21,7 +21,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
             integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
             crossorigin="anonymous" referrerpolicy="no-referrer">
-        <link rel="stylesheet" href="/css/index.css?5">
+        <link rel="stylesheet" href="/css/index.css?6">
         <link rel="dns-prefetch" href="//translate.google.com">
 
         <!-- PWA Manifest -->
@@ -330,29 +330,39 @@
                             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                                 <div>
                                     <h3 class="h6 mb-2" data-i18n="help.text_transform">텍스트 변환 도구</h3>
-                                    <div class="btn-group flex-wrap" role="group" aria-label="텍스트 변환 도구">
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="normalize-hangul" data-i18n="buttons.normalize_hangul" data-i18n-title="help.transform_normalize_hangul" data-bs-toggle="tooltip" title="분리된 한글 자모를 완성형 글자로 결합합니다" aria-describedby="normalize-hangul-help">
+                                    <div class="text-transform-toolbar" role="group" aria-label="텍스트 변환 도구">
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="normalize-hangul" data-i18n="buttons.normalize_hangul" data-i18n-title="help.transform_normalize_hangul" data-bs-toggle="tooltip" title="분리된 한글 자모를 완성형 글자로 결합합니다">
                                             <i class="fas fa-language me-1" aria-hidden="true"></i>한글 조합
                                         </button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="join-lines" data-i18n="buttons.join_lines" data-i18n-title="help.transform_join_lines" data-bs-toggle="tooltip" title="문단은 유지하고 문단 안의 줄바꿈을 연결합니다" aria-describedby="join-lines-help">
-                                            <i class="fas fa-link me-1" aria-hidden="true"></i>줄바꿈 연결
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-primary btn-sm" data-transform="join-lines" data-i18n="buttons.join_lines" data-i18n-title="help.transform_join_lines" data-bs-toggle="tooltip" title="문단은 유지하고 문단 안의 줄바꿈을 연결합니다">
+                                                <i class="fas fa-link me-1" aria-hidden="true"></i>줄바꿈 연결
+                                            </button>
+                                            <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" data-i18n-aria="buttons.join_options">
+                                                <span class="visually-hidden" data-i18n="buttons.join_options">줄바꿈 연결 방식</span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><button type="button" class="dropdown-item" data-transform="join-lines" data-i18n="buttons.join_lines_standard">일반 연결</button></li>
+                                                <li><button type="button" class="dropdown-item" data-transform="join-lines-preserve-lists" data-i18n="buttons.join_lines_preserve_lists">목록 유지</button></li>
+                                            </ul>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="split-sentences" data-i18n="buttons.split_sentences" data-i18n-title="help.transform_split_sentences" data-bs-toggle="tooltip" title="숫자와 주소는 유지하고 문장 부호 뒤에서 줄바꿈합니다">
+                                            <i class="fas fa-level-down-alt me-1" aria-hidden="true"></i>문장별 줄바꿈
                                         </button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="split-sentences" data-i18n="buttons.split_sentences" data-i18n-title="help.transform_split_sentences" data-bs-toggle="tooltip" title="문장 부호 뒤에서 문장을 줄바꿈합니다" aria-describedby="split-sentences-help">
-                                            <i class="fas fa-level-down-alt me-1" aria-hidden="true"></i>문장 나누기
-                                        </button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-special" data-i18n="buttons.remove_special" data-i18n-title="help.transform_special" data-bs-toggle="tooltip" title="특수문자를 제거합니다" aria-describedby="remove-special-help">
-                                            <i class="fas fa-filter me-1" aria-hidden="true"></i>특수문자제거
-                                        </button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-spaces" data-i18n="buttons.remove_spaces" data-i18n-title="help.transform_spaces" data-bs-toggle="tooltip" title="모든 공백을 제거합니다" aria-describedby="remove-spaces-help">
-                                            <i class="fas fa-compress me-1" aria-hidden="true"></i>공백제거
-                                        </button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="trim-lines" data-i18n="buttons.trim_lines" data-i18n-title="help.transform_trim" data-bs-toggle="tooltip" title="각 줄의 앞뒤 공백을 정리합니다" aria-describedby="trim-lines-help">
-                                            <i class="fas fa-align-left me-1" aria-hidden="true"></i>공백정리
-                                        </button>
-                                        <button type="button" class="btn btn-outline-danger btn-sm" data-transform="clear" data-i18n="buttons.clear" data-bs-toggle="tooltip" title="모든 텍스트를 지웁니다" aria-describedby="clear-help">
-                                            <i class="fas fa-trash me-1" aria-hidden="true"></i>지우기
-                                        </button>
+                                        <div class="dropdown transform-more">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-i18n="buttons.more_tools">
+                                                <i class="fas fa-ellipsis-h me-1" aria-hidden="true"></i>더보기
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><button type="button" class="dropdown-item" data-transform="remove-special" data-i18n="buttons.remove_special">특수문자 제거</button></li>
+                                                <li><button type="button" class="dropdown-item" data-transform="remove-spaces" data-i18n="buttons.remove_spaces">공백 제거</button></li>
+                                                <li><button type="button" class="dropdown-item" data-transform="trim-lines" data-i18n="buttons.trim_lines">공백 정리</button></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><button type="button" class="dropdown-item text-danger" data-transform="clear" data-i18n="buttons.clear">지우기</button></li>
+                                            </ul>
+                                        </div>
                                     </div>
+                                    <div id="transform-preview" class="small text-muted mt-2" role="status" aria-live="polite" data-i18n="help.transform_preview_hint">변환 도구에 마우스를 올리거나 키보드로 선택하면 적용 전 변경 개수를 확인할 수 있습니다.</div>
                                     <div class="btn-group mt-2" role="group" aria-label="실행 취소 및 다시 실행">
                                         <button type="button" class="btn btn-outline-secondary btn-sm" data-action="undo" data-i18n="buttons.undo" data-bs-toggle="tooltip" title="실행 취소 (Ctrl+Z)" aria-keyshortcuts="Ctrl+Z">
                                             <i class="fas fa-undo me-1" aria-hidden="true"></i>실행 취소
@@ -630,10 +640,12 @@
                                 </h2>
                                 <div id="textTools" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
                                     <div class="accordion-body">
+                                        <p class="small text-muted" data-i18n="help.transform_selection_hint">글을 선택하면 선택한 부분만, 선택하지 않으면 전체 글을 변환합니다.</p>
                                         <ul>
-                                            <li><strong data-i18n="buttons.normalize_hangul">한글 조합</strong>: <span data-i18n="help.transform_normalize_hangul">분리된 유니코드 한글 자모를 완성형 글자로 결합</span></li>
+                                            <li><strong data-i18n="buttons.normalize_hangul">한글 조합</strong>: <span data-i18n="help.transform_normalize_hangul">분리형 유니코드 자모와 ㅎㅏㄴㄱㅡㄹ 같은 입력 자모를 완성형 글자로 결합</span></li>
                                             <li><strong data-i18n="buttons.join_lines">줄바꿈 연결</strong>: <span data-i18n="help.transform_join_lines">문단은 유지하고 문단 안의 줄바꿈을 공백으로 연결</span></li>
-                                            <li><strong data-i18n="buttons.split_sentences">문장 나누기</strong>: <span data-i18n="help.transform_split_sentences">마침표, 물음표, 느낌표 뒤에서 문장을 줄바꿈</span></li>
+                                            <li><strong data-i18n="buttons.join_lines_preserve_lists">목록 유지</strong>: <span data-i18n="help.transform_join_lists">줄바꿈을 연결하되 글머리표와 번호 목록은 줄 단위로 유지</span></li>
+                                            <li><strong data-i18n="buttons.split_sentences">문장별 줄바꿈</strong>: <span data-i18n="help.transform_split_sentences">숫자, 날짜, 영문 주소는 유지하고 문장 부호 뒤에서 줄바꿈</span></li>
                                             <li><strong data-i18n="buttons.remove_special">특수문자제거</strong>: <span data-i18n="help.transform_special">한글, 영어, 숫자만 남기고 제거</span></li>
                                             <li><strong data-i18n="buttons.remove_spaces">공백제거</strong>: <span data-i18n="help.transform_spaces">모든 공백 제거</span></li>
                                             <li><strong data-i18n="buttons.trim_lines">공백정리</strong>: <span data-i18n="help.transform_trim">각 줄의 앞뒤 공백 정리</span></li>
@@ -700,19 +712,19 @@
         
         <script src="/js/utils.js?3" defer></script>
         <script src="/js/darkmode.js" defer></script>
-        <script src="/js/text-analyzer.js?1" defer></script>
+        <script src="/js/text-analyzer.js?2" defer></script>
         <script src="/js/navigation-manager.js?20" defer></script>
         <script src="/js/storage-manager.js" defer></script>
-        <script src="/js/toast.js?1" defer></script>
+        <script src="/js/toast.js?2" defer></script>
         <script src="/js/error-handler.js?1" defer></script>
-        <script src="/js/undo-redo.js?1" defer></script>
+        <script src="/js/undo-redo.js?2" defer></script>
         <script src="/js/i18n.js?3" defer></script>
         <script src="/js/advanced-analyzer.js?4" defer></script>
         <script src="/js/analysis-ui.js?2" defer></script>
         <script src="/js/mobile-handler.js?1" defer></script>
         <script src="/js/keyboard-handler.js?1" defer></script>
         <script src="/js/pwa.js" defer></script>
-        <script src="/js/index.js?35" defer></script>
+        <script src="/js/index.js?36" defer></script>
         <script src="/js/ads-init.js" defer></script>
         <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" defer></script>
         <script>

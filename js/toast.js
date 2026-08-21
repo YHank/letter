@@ -23,7 +23,7 @@ const Toast = {
         }
     },
 
-    show(message, type = 'info', duration = 3000) {
+    show(message, type = 'info', duration = 3000, action = null) {
         this.init();
 
         const toastId = 'toast-' + Date.now();
@@ -40,13 +40,17 @@ const Toast = {
             'warning': 'fa-exclamation-triangle',
             'info': 'fa-info-circle'
         };
+        const actionButton = action
+            ? `<button type="button" class="btn btn-sm btn-light text-nowrap me-2 toast-action">${escapeToastHtml(action.label)}</button>`
+            : '';
 
         toast.innerHTML = `
-            <div class="d-flex">
+            <div class="d-flex align-items-center">
                 <div class="toast-body">
                     <i class="fas ${iconMap[type] || iconMap.info} me-2"></i>${escapeToastHtml(message)}
                 </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                ${actionButton}
+                <button type="button" class="btn-close btn-close-white me-2" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         `;
 
@@ -56,7 +60,10 @@ const Toast = {
             autohide: true,
             delay: duration
         });
-
+        toast.querySelector('.toast-action')?.addEventListener('click', () => {
+            action.onClick();
+            bsToast.hide();
+        });
         bsToast.show();
 
         toast.addEventListener('hidden.bs.toast', () => {

@@ -3,9 +3,9 @@
  * 글자수 세기 웹앱의 핵심 기능을 오프라인에서도 사용할 수 있도록 함
  */
 
-const CACHE_NAME = 'letter-counter-v10';
-const STATIC_CACHE_NAME = 'letter-counter-static-v10';
-const DYNAMIC_CACHE_NAME = 'letter-counter-dynamic-v10';
+const CACHE_NAME = 'letter-counter-v11';
+const STATIC_CACHE_NAME = 'letter-counter-static-v11';
+const DYNAMIC_CACHE_NAME = 'letter-counter-dynamic-v11';
 
 // 캐시할 정적 자원들
 const STATIC_ASSETS = [

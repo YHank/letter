@@ -171,6 +171,36 @@ describe('transform - 한국어 텍스트 변환', () => {
         '끝입니다.”\n다음 문장입니다.',
         '닫는 따옴표 뒤에서도 문장을 나눔'
     );
+    assertEquals(
+        analyzer.transform['normalize-hangul']('ㅎㅏㄴㄱㅡㄹ'),
+        '한글',
+        '호환 자모 입력을 완성형 글자로 결합'
+    );
+    assertEquals(
+        analyzer.transform['normalize-hangul']('ㄲㅗㅊ ㄱㅗㅏ ㄷㅏㄹㄱ ㄱㅏㄴㅏ'),
+        '꽃 과 닭 가나',
+        '쌍자음·복합 모음·겹받침과 다음 음절 경계를 처리'
+    );
+    assertEquals(
+        analyzer.transform['join-lines-preserve-lists']('소개\n- 첫 항목\n  설명입니다\n- 둘째 항목\n\n마무리\n문장'),
+        '소개\n- 첫 항목 설명입니다\n- 둘째 항목\n\n마무리 문장',
+        '목록 유지 모드는 목록 항목 사이의 줄바꿈을 보존'
+    );
+    assertEquals(
+        analyzer.transform['split-sentences']('첫 문장입니다.다음은 3.14입니다. 정말인가요?'),
+        '첫 문장입니다.\n다음은 3.14입니다.\n정말인가요?',
+        '공백 없는 문장 경계를 나누고 소수점은 유지'
+    );
+    assertEquals(
+        analyzer.transform['split-sentences']('날짜는 2026. 8. 21.입니다. 주소는 example.com입니다.'),
+        '날짜는 2026. 8. 21.입니다.\n주소는 example.com입니다.',
+        '날짜와 영문 주소의 마침표는 유지'
+    );
+    assertEquals(
+        analyzer.transform['split-sentences']('1. 첫 항목\n2. 둘째 항목'),
+        '1. 첫 항목\n2. 둘째 항목',
+        '번호 목록의 마침표는 유지'
+    );
 });
 
 // ─────────────────────────────────────────────

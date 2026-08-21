@@ -10,14 +10,15 @@ if (window.location.hostname !== 'localhost' && window.location.hostname !== '12
 // Debounce 함수 - 성능 최적화를 위해 입력 이벤트를 지연시킴
 function debounce(func, wait) {
     let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func.apply(this, args);
-        };
+    function executedFunction(...args) {
         clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    }
+    executedFunction.cancel = () => {
+        clearTimeout(timeout);
+        timeout = null;
     };
+    return executedFunction;
 }
 
 // XSS 방지를 위한 HTML 이스케이프 함수
@@ -132,46 +133,198 @@ DOMUtils.addEvent('#letter_count', 'input', function(e) {
     }, 600);
 });
 
-// 텍스트 변환 함수들
-// 텍스트 변환 처리 (TextAnalyzer 모듈 사용)
-function handleTextTransform(transformType) {
-    const letterCountElement = DOMUtils.getElement('#letter_count');
-    const currentText = letterCountElement.innerText;
+const transformNameKeys = {
+    'normalize-hangul': 'buttons.normalize_hangul',
+    'join-lines': 'buttons.join_lines',
+    'join-lines-preserve-lists': 'buttons.join_lines_preserve_lists',
+    'split-sentences': 'buttons.split_sentences',
+    'remove-special': 'buttons.remove_special',
+    'remove-spaces': 'buttons.remove_spaces',
+    'trim-lines': 'buttons.trim_lines',
+    'clear': 'buttons.clear'
+};
 
-    // 지우기 버튼 클릭 시 확인 다이얼로그 표시
-    if (transformType === 'clear' && !confirm('입력한 내용을 모두 지우시겠습니까?')) {
+const transformNameFallbacks = {
+    'normalize-hangul': '한글 조합',
+    'join-lines': '줄바꿈 연결',
+    'join-lines-preserve-lists': '목록 유지 연결',
+    'split-sentences': '문장별 줄바꿈',
+    'remove-special': '특수문자 제거',
+    'remove-spaces': '공백 제거',
+    'trim-lines': '공백 정리',
+    'clear': '텍스트 지우기'
+};
+
+function translate(key, fallback) {
+    return window.i18nManager?.t(key, fallback) || fallback;
+}
+
+function formatMessage(template, values) {
+    return Object.entries(values).reduce(
+        (message, [key, value]) => message.split(`{${key}}`).join(value),
+        template
+    );
+}
+
+function updateUndoRedoButtons() {
+    const undoBtn = DOMUtils.getElement('[data-action="undo"]');
+    const redoBtn = DOMUtils.getElement('[data-action="redo"]');
+    if (undoBtn) undoBtn.disabled = !historyManager.canUndo();
+    if (redoBtn) redoBtn.disabled = !historyManager.canRedo();
+}
+
+function getEditorSelection(editor) {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return null;
+
+    const range = selection.getRangeAt(0);
+    if (!editor.contains(range.startContainer) || !editor.contains(range.endContainer)) return null;
+    return { selection, range, text: range.toString() };
+}
+
+function replaceEditorSelection(editorSelection, text) {
+    const { selection, range } = editorSelection;
+    range.deleteContents();
+
+    const fragment = document.createDocumentFragment();
+    const insertedNodes = [];
+    text.split('\n').forEach((line, index) => {
+        if (index > 0) {
+            const breakElement = document.createElement('br');
+            fragment.appendChild(breakElement);
+            insertedNodes.push(breakElement);
+        }
+        if (line) {
+            const textNode = document.createTextNode(line);
+            fragment.appendChild(textNode);
+            insertedNodes.push(textNode);
+        }
+    });
+
+    if (insertedNodes.length === 0) {
+        selection.removeAllRanges();
+        selection.addRange(range);
         return;
     }
 
-    // TextAnalyzer 모듈의 transform 객체 사용
-    if (transformType in window.textAnalyzer.transform) {
-        const transformedText = window.textAnalyzer.transform[transformType](currentText);
-        letterCountElement.innerText = transformedText;
-        
-        // 변환 후 통계 업데이트
-        updateStatistics();
-        
-        // 히스토리에 추가
-        historyManager.addState(transformedText);
-        
-        // 버튼 상태 업데이트
-        if (typeof updateUndoRedoButtons === 'function') {
-            updateUndoRedoButtons();
-        }
-        
-        // 토스트 알림 표시
-        const transformNames = {
-            'normalize-hangul': '한글 조합',
-            'join-lines': '줄바꿈 연결',
-            'split-sentences': '문장 나누기',
-            'remove-special': '특수문자 제거',
-            'remove-spaces': '공백 제거',
-            'trim-lines': '공백 정리',
-            'clear': '텍스트 지우기'
-        };
-        
-        appToast.show(`${transformNames[transformType] || '텍스트 변환'} 완료`, 'success', 2000);
+    range.insertNode(fragment);
+    const transformedRange = document.createRange();
+    transformedRange.setStartBefore(insertedNodes[0]);
+    transformedRange.setEndAfter(insertedNodes[insertedNodes.length - 1]);
+    selection.removeAllRanges();
+    selection.addRange(transformedRange);
+}
+
+function countTransformChanges(transformType, before, after) {
+    const countMatches = (text, pattern) => (text.match(pattern) || []).length;
+
+    if (transformType === 'normalize-hangul') {
+        return countMatches(after, /[가-힣]/g) - countMatches(before, /[가-힣]/g);
     }
+    if (transformType === 'join-lines' || transformType === 'join-lines-preserve-lists') {
+        return countMatches(before, /\n/g) - countMatches(after, /\n/g);
+    }
+    if (transformType === 'split-sentences') {
+        return countMatches(after, /\n/g) - countMatches(before, /\n/g);
+    }
+    if (transformType === 'trim-lines') {
+        const afterLines = after.split('\n');
+        return before.split('\n').filter((line, index) => line !== afterLines[index]).length;
+    }
+
+    return Math.abs(Array.from(before).length - Array.from(after).length);
+}
+
+function updateTransformPreview(transformType) {
+    const preview = DOMUtils.getElement('#transform-preview');
+    const editor = DOMUtils.getElement('#letter_count');
+    const transform = window.textAnalyzer.transform[transformType];
+    if (!preview || !editor || !transform) return;
+
+    const editorSelection = transformType === 'clear' ? null : getEditorSelection(editor);
+    const sourceText = editorSelection?.text ?? editor.innerText;
+    const transformedText = transform(sourceText);
+    const name = translate(transformNameKeys[transformType], transformNameFallbacks[transformType]);
+
+    if (sourceText === transformedText) {
+        preview.textContent = formatMessage(
+            translate('messages.transform_no_change', '{name}: 변경할 내용이 없습니다'),
+            { name }
+        );
+        return;
+    }
+
+    const messageKey = editorSelection
+        ? 'messages.transform_selection_preview'
+        : 'messages.transform_preview';
+    const fallback = editorSelection
+        ? '{name}: 선택 영역 {count}곳 변경 예정'
+        : '{name}: {count}곳 변경 예정';
+    preview.textContent = formatMessage(translate(messageKey, fallback), {
+        name,
+        count: Math.max(1, countTransformChanges(transformType, sourceText, transformedText))
+    });
+}
+
+function showTransformResult(transformType, changedCount, selected) {
+    const name = translate(transformNameKeys[transformType], transformNameFallbacks[transformType]);
+    const messageKey = selected ? 'messages.transform_selection_result' : 'messages.transform_result';
+    const fallback = selected ? '{name}: 선택 영역 {count}곳 변경' : '{name}: {count}곳 변경';
+    const message = formatMessage(translate(messageKey, fallback), {
+        name,
+        count: Math.max(1, changedCount)
+    });
+    appToast.show(message, 'success', 5000, {
+        label: translate('buttons.undo', '실행 취소'),
+        onClick: () => DOMUtils.getElement('[data-action="undo"]')?.click()
+    });
+}
+
+function handleTextTransform(transformType) {
+    const editor = DOMUtils.getElement('#letter_count');
+    const currentText = editor.innerText;
+
+    if (transformType === 'clear' &&
+        !confirm(translate('messages.clear_confirm', '입력한 내용을 모두 지우시겠습니까?'))) {
+        return;
+    }
+
+    const transform = window.textAnalyzer.transform[transformType];
+    if (!transform) return;
+
+    const editorSelection = transformType === 'clear' ? null : getEditorSelection(editor);
+    const sourceText = editorSelection?.text ?? currentText;
+    const transformedText = transform(sourceText);
+    const transformName = translate(transformNameKeys[transformType], transformNameFallbacks[transformType]);
+
+    if (sourceText === transformedText) {
+        const noChangeTemplate = translate(
+            'messages.transform_no_change',
+            '{name}: 변경할 내용이 없습니다'
+        );
+        appToast.show(formatMessage(noChangeTemplate, { name: transformName }), 'info', 2500);
+        return;
+    }
+
+    debouncedAddHistory.cancel();
+    historyManager.addState(currentText);
+
+    if (editorSelection) {
+        replaceEditorSelection(editorSelection, transformedText);
+        editor.focus();
+    } else {
+        editor.innerText = transformedText;
+    }
+
+    const updatedText = editor.innerText;
+    historyManager.addState(updatedText);
+    updateStatistics();
+    updateUndoRedoButtons();
+    showTransformResult(
+        transformType,
+        countTransformChanges(transformType, sourceText, transformedText),
+        Boolean(editorSelection)
+    );
 }
 
 // DOMContentLoaded 이벤트
@@ -261,23 +414,17 @@ DOMUtils.addEvent(document, 'DOMContentLoaded', function(){
         }
     });
     
-    // 실행 취소/다시 실행 버튼 상태 업데이트
-    function updateUndoRedoButtons() {
-        const undoBtn = DOMUtils.getElement('[data-action="undo"]');
-        const redoBtn = DOMUtils.getElement('[data-action="redo"]');
-        
-        if (undoBtn) {
-            undoBtn.disabled = !historyManager.canUndo();
-        }
-        if (redoBtn) {
-            redoBtn.disabled = !historyManager.canRedo();
-        }
-    }
     
     // 텍스트 변환 버튼 이벤트 리스너
     DOMUtils.addEventToAll('[data-transform]', 'click', function() {
         const transformType = this.dataset.transform;
         handleTextTransform(transformType);
+    });
+    DOMUtils.addEventToAll('[data-transform]', 'mouseenter', function() {
+        updateTransformPreview(this.dataset.transform);
+    });
+    DOMUtils.addEventToAll('[data-transform]', 'focus', function() {
+        updateTransformPreview(this.dataset.transform);
     });
     
     // 실행 취소/다시 실행 버튼 이벤트 리스너
