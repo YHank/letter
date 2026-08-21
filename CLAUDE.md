@@ -30,7 +30,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 한국 사용자를 위한 다양한 도구를 제공하는 정적 웹 기반 유틸리티 애플리케이션입니다:
 - 한국어 지원 글자수/단어수 세기
-- 다음 iframe을 사용한 한국어 맞춤법 검사기 (이전에는 부산대 API 사용)
+- 자체 규칙 기반 한국어 맞춤법 검사기 (외부 API·iframe 의존 없음)
 - 한국 세금 시스템 기반 연봉 계산기 (2023년 기준)
 - 4대보험료 계산기 (2025년 기준)
 - 퇴직금 계산기
@@ -43,7 +43,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 빌드 도구가 없는 순수 프론트엔드 프로젝트이므로:
 - **로컬 실행**: 정적 파일 서버 사용 (예: `python -m http.server 8000` 또는 VS Code Live Server)
 - **배포**: GitHub Pages로 푸시 (CNAME 파일에 `letter.ymyhome.loan` 설정됨)
-- **맞춤법 검사기 테스트**: `node test/langchkg_test.js`
+- **맞춤법 검사기 테스트**: `node test/spellcheck_test.js`
 - **연봉 계산기 테스트**: 브라우저에서 `html/salary_test_runner.html` 열기
 
 ## 아키텍처 및 핵심 구현
@@ -52,20 +52,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 단일 페이지 아키텍처를 사용하여 콘텐츠를 동적으로 로드합니다:
 - 메인 진입점: `index.html`
 - 네비게이션 클릭 시 jQuery의 `.load()`를 통해 `/html/` 디렉토리에서 페이지 로드
-- URL 패턴: `/?page=pagename` (예: `/?page=spellcheck`)
+- URL 패턴: `/?page=pagename` (예: `/?page=spellcheck_simple`)
 - 페이지 초기화: 각 페이지는 로드 후 호출되는 초기화 함수를 가질 수 있음
-  - 맞춤법 검사 페이지: `initializeSpellchecker()`
+  - 맞춤법 검사 페이지: `initializeSimpleSpellchecker()`
   - 연봉 계산기: `initializeSalaryPage()`
   - 4대보험료 계산기: `initializeInsuranceCalculator()`
   - 타자 연습: `initializeTypingPractice()`
 
 ### 외부 의존성
 
-**맞춤법 검사기**
-- 현재 다음 맞춤법 검사기를 iframe으로 사용: `https://alldic.daum.net/grammar_checker.do`
-- 이전 구현은 부산대 API 사용 (코드는 `js/langchkg.js`에 여전히 존재)
-- 부산대 API 엔드포인트: `https://nara-speller.co.kr/speller/spell_check.do`
-- 부산대 API 제한: 요청당 200단어 (텍스트가 길면 자동으로 분할)
+**맞춤법 검사기** — 외부 의존성 없음
+- 자체 규칙 기반으로 동작한다. 다음·네이버·부산대 검사기는 모두
+  `X-Frame-Options: SAMEORIGIN` 또는 `frame-ancestors 'self'`로 iframe을 차단하고
+  CORS도 열어두지 않아, 정적 호스팅에서 연동할 방법이 없다.
+- 구현 세부는 아래 "한글 맞춤법 검사" 항목 참고.
 
 **Google 번역**
 - 스크립트로 로드: `//translate.google.com/translate_a/element.js`
@@ -84,14 +84,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 빈 줄을 올바르게 처리하여 줄 수에서 제외
 
 **한국 세금 계산** (`js/salary_calculator.js`)
-- 2023년 한국 세금 테이블과 요율
-- 4대 보험 계산:
-  - 국민연금: 월급의 4.5%
-  - 건강보험: 월급의 3.545%
+- 2026년 한국 세금 테이블과 요율
+- 4대 보험 계산 (근로자 부담분):
+  - 국민연금: 월급의 4.75% (2026-01 연금개혁으로 9% → 9.5%)
+    - 기준소득월액 상한 6,590,000원 / 하한 410,000원 (2026-07 ~ 2027-06)
+  - 건강보험: 월급의 3.595%
   - 고용보험: 월급의 0.9%
-  - 장기요양보험: 건강보험의 12.95%
+  - 장기요양보험: 건강보험료의 13.14%
 - 부양가족 수에 따른 소득세 구간과 공제
+- 근로소득공제 한도 2,000만원, 근로소득세액공제 한도는 총급여 3,300만/7,000만/1.2억 구간별 적용
+- 양방향 계산 지원: 연봉 → 월 실수령액 / 월 실수령액 → 연봉(`calculateAnnualSalaryFromNetMonthly`, 이분 탐색)
+- 입력 단위: 연봉은 백만원, 희망 월 실수령액은 만원 (내부는 원 단위로 환산)
 - 모든 금액은 10원 단위로 절사
+
+**한글 맞춤법 검사** (`js/spellcheck_rules.js` + `js/spellcheck_client.js`)
+- 규칙 데이터와 엔진을 분리한다. 규칙 추가는 `spellcheck_rules.js`만 고치면 되고 엔진은 손대지 않는다
+- **설계 원칙은 오탐 0 우선**. 못 잡는 오류보다 정상 문장을 오류로 잡는 쪽이 훨씬 해롭다
+  - 문맥이 필요한 짝(쌓이다/싸이다, 받치다/바치다, 두껍다/두텁다)은 `ambiguous`로 안내만 하고 교정하지 않는다
+  - 정상 단어를 오류로 잡을 위험이 있는 항목(저가, 자욱, 갖은, 등살, 똑똑이)은 수록하지 않는다
+- 매칭 타입 두 가지
+  - `always`: 어디에 나타나도 오류. 어간만 등록해 활용형까지 커버 (`닥달` 하나로 닥달하다/닥달했다/닥달하는)
+  - `words`: 독립 단어일 때만 오류. 앞뒤 한글 경계 검사 (`깍다`는 잡고 `깍두기`는 통과)
+- 정규식 규칙: 왠/웬, 되/돼, 의존명사 띄어쓰기(수·것·줄), 문장부호 뒤 이중 공백
+  - 의존명사 규칙은 앞 글자의 **ㄹ 받침**(`(code-0xAC00)%28===8`)을 확인해 `물수건` 오탐을 피한다
+  - 그래도 남는 예외는 `skipStems`로 막는다 (`별것·날것·들것·탈것`, `실수없이`)
+  - `되었다`, `되어요`는 본말이라 교정 대상이 아니다
+- **짧은 항목은 붙여 쓴 합성어 내부에 매칭된다**. 실제로 걸러낸 사례:
+  - `임마`→임마누엘, `당체`→정당체제, `회손`→기회손실, `건내`→사건내용, `궂이`→짓궂이
+  - 대응: 항목을 빼거나(`임마`, `당체`), 긴 형태로 등록하거나(`명예회손`),
+    활용형으로 쪼개거나(`건내다`/`건내주`/`건내받`), `words`로 옮겨 경계를 강제한다(`궂이`)
+  - `문안하다`(문안 인사)처럼 **그 자체가 표준어**인 것은 아예 수록하지 않는다
+- 구형 Safari 대응으로 룩비하인드(`(?<!...)`)를 쓰지 않는다. 앞 경계는 엔진이 코드로 검사한다
+- **규칙을 추가하면 반드시 `node test/spellcheck_test.js`로 오탐 회귀를 확인할 것**
+  - 오탐 코퍼스는 `data/typing/korean/*.json`과 `i18n/ko.json`에서 자동 수집한다 (약 400문장)
 
 **다크모드 시스템** (`js/darkmode.js`)
 - `css/index.css`에 정의된 CSS 변수로 테마 색상 관리
@@ -111,6 +136,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 프로그레스 바로 진행률 표시
 - 타이머 종료 시 자동 결과 표시
 - 이벤트 리스너 관리로 메모리 누수 방지
+- 모드 선택 시 연습 영역으로 자동 스크롤 (`scrollToElement`, sticky navbar 높이만큼 보정)
+
+**타자 연습 데이터** (`data/typing/` + `js/practice_data.js`)
+- 연습 텍스트는 JS가 아니라 `data/typing/` 아래 **언어 × 분류별 JSON 파일**로 관리
+  - `data/typing/manifest.json` - 언어/분류별 파일 목록 (단일 진입점)
+  - `data/typing/{korean,english}/{free,beginner,special,standard}.json`
+- `js/practice_data.js`는 데이터를 담지 않고 **로더** 역할만 수행
+  - 스크립트 로드 즉시 fetch 시작, `window.PracticeData.ready()`가 완료 Promise 반환
+  - 결과는 기존과 동일하게 `window.practiceTexts[언어][분류]`에 채워짐
+  - `initializeTypingPractice()`가 `ready()`를 await한 뒤 UI를 초기화 (실패 시 토스트 후 중단)
+- **데이터 확장 방법**: JSON 파일을 추가하고 `manifest.json`의 해당 분류 배열에 경로만 등록
+  - 같은 분류에 여러 파일을 등록하면 순서대로 병합됨 (배열은 이어붙이기, 객체는 깊은 병합, 그 외는 덮어쓰기)
+  - JSON 수정 시 `js/practice_data.js`의 `DATA_VERSION`을 1 증가시켜 캐시를 무효화할 것
+  - 새 JSON 파일은 `sw.js`의 `STATIC_ASSETS`에도 추가
 
 ### 페이지 로딩 흐름
 1. 사용자가 `data-move` 속성이 있는 네비게이션 링크 클릭

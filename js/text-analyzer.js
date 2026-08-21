@@ -235,12 +235,20 @@ class TextAnalyzer {
      * 텍스트 변환 유틸리티들
      */
     transform = {
-        uppercase: (text) => text.toUpperCase(),
-        lowercase: (text) => text.toLowerCase(),
-        capitalize: (text) => text.replace(/\b\w/g, l => l.toUpperCase()),
-        removeSpecial: (text) => text.replace(/[^\w\sㄱ-ㅎㅏ-ㅣ가-힣]/g, ''),
-        removeSpaces: (text) => text.replace(/\s/g, ''),
-        trimLines: (text) => text.split('\n').map(line => line.trim()).join('\n'),
+        'normalize-hangul': (text) => text.normalize('NFC'),
+        'join-lines': (text) => text
+            .replace(/\r\n?/g, '\n')
+            .split(/\n[ \t]*\n+/)
+            .map(paragraph => paragraph
+                .split('\n')
+                .map(line => line.trim())
+                .filter(Boolean)
+                .join(' '))
+            .join('\n\n'),
+        'split-sentences': (text) => text.replace(/([.!?。！？]+[”’"'」』】)]*)[ \t]+(?=\S)/g, '$1\n'),
+        'remove-special': (text) => text.replace(/[^\w\sㄱ-ㅎㅏ-ㅣ가-힣]/g, ''),
+        'remove-spaces': (text) => text.replace(/\s/g, ''),
+        'trim-lines': (text) => text.split('\n').map(line => line.trim()).join('\n'),
         clear: () => ''
     };
 }

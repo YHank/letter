@@ -3,9 +3,9 @@
  * 글자수 세기 웹앱의 핵심 기능을 오프라인에서도 사용할 수 있도록 함
  */
 
-const CACHE_NAME = 'letter-counter-v8';
-const STATIC_CACHE_NAME = 'letter-counter-static-v8';
-const DYNAMIC_CACHE_NAME = 'letter-counter-dynamic-v8';
+const CACHE_NAME = 'letter-counter-v10';
+const STATIC_CACHE_NAME = 'letter-counter-static-v10';
+const DYNAMIC_CACHE_NAME = 'letter-counter-dynamic-v10';
 
 // 캐시할 정적 자원들
 const STATIC_ASSETS = [
@@ -35,9 +35,20 @@ const STATIC_ASSETS = [
     '/html/insurance_calculator.html',
     '/html/severancepay.html',
     '/html/scientific_calculator.html',
+    '/js/spellcheck_rules.js',
+    '/js/spellcheck_client.js',
     '/js/spellcheck_simple.js',
     '/js/typing_practice.js',
     '/js/practice_data.js',
+    '/data/typing/manifest.json',
+    '/data/typing/korean/free.json',
+    '/data/typing/korean/beginner.json',
+    '/data/typing/korean/special.json',
+    '/data/typing/korean/standard.json',
+    '/data/typing/english/free.json',
+    '/data/typing/english/beginner.json',
+    '/data/typing/english/special.json',
+    '/data/typing/english/standard.json',
     '/js/salary_calculator.js',
     '/js/insurance_calculator.js',
     '/js/scientific_calculator.js',

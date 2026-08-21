@@ -185,6 +185,29 @@ function cleanupTypingPractice() {
     }
 }
 
+/**
+ * 지정한 요소가 화면 상단에 오도록 부드럽게 스크롤한다.
+ * .navbar 가 position:sticky 이므로 그 높이만큼 위쪽 여백을 확보한다.
+ * @param {HTMLElement} element - 스크롤 대상 요소
+ */
+function scrollToElement(element) {
+    if (!element) return;
+
+    const navbar = document.querySelector('.navbar');
+    const navbarHeight = navbar ? navbar.getBoundingClientRect().height : 0;
+    const prefersReducedMotion = window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // 레이아웃(display 전환)이 반영된 뒤의 위치를 기준으로 계산
+    requestAnimationFrame(() => {
+        const top = element.getBoundingClientRect().top + window.pageYOffset - navbarHeight - 16;
+        window.scrollTo({
+            top: Math.max(top, 0),
+            behavior: prefersReducedMotion ? 'auto' : 'smooth'
+        });
+    });
+}
+
 // 새로운 타자 연습 시스템
 function initializeTypingPracticeNew() {
     // console.log('새로운 타자 연습 시스템 초기화 중...');
@@ -219,7 +242,10 @@ function initializeTypingPracticeNew() {
     };
     
     // DOM 요소들
-    const versionSelector = DOMUtils.getElement('#version-selector');
+    // versionSelector 는 아래에서 리스너 제거용으로 노드를 교체하므로 let 으로 선언하고
+    // 교체 후 실제 DOM 에 붙어 있는 노드로 다시 잡는다. (교체 전 노드를 들고 있으면
+    // display 조작이 화면에 반영되지 않아 카드 목록이 사라지지 않는다)
+    let versionSelector = DOMUtils.getElement('#version-selector');
     const practiceArea = DOMUtils.getElement('#practice-area');
     const backToMenuBtn = DOMUtils.getElement('#back-to-menu');
     const statsArea = DOMUtils.getElement('#stats-area');
@@ -257,7 +283,10 @@ function initializeTypingPracticeNew() {
         // 모든 기존 클릭 이벤트 리스너 강제 제거
         const clonedElement = versionSelectorElement.cloneNode(true);
         versionSelectorElement.parentNode.replaceChild(clonedElement, versionSelectorElement);
-        
+
+        // 교체된 노드를 기준으로 다시 참조 (기존 노드는 DOM 에서 분리된 상태)
+        versionSelector = clonedElement;
+
         const delegationHandler = function(e) {
             const btn = e.target.closest('.select-mode-btn');
             if (btn) {
@@ -282,10 +311,15 @@ function initializeTypingPracticeNew() {
     // 메뉴로 돌아가기
     if (backToMenuBtn) {
         const handler = function() {
-            versionSelector.style.display = 'block';
+            // #version-selector 는 Bootstrap .row(flex) 이므로 'block' 으로 되돌리면
+            // 카드 그리드가 세로로 무너진다. 인라인 스타일만 비워 원래 레이아웃으로 복구.
+            versionSelector.style.display = '';
             practiceArea.style.display = 'none';
             statsArea.style.display = 'none';
             resetAllPractices();
+
+            // 메뉴 위치로 스크롤 복귀
+            scrollToElement(versionSelector);
             
             // \ub0a8\uc740 \uc2dc\uac04 \ud45c\uc2dc \uc601\uc5ed \uc228\uae30\uae30
             const remainingTimeRow = document.querySelector('#remaining-time')?.closest('.row');
@@ -367,6 +401,9 @@ function initializeTypingPracticeNew() {
                 initializeCustomPractice();
                 break;
         }
+
+        // 선택 즉시 연습 영역으로 스크롤해 화면이 바뀐 것을 명확히 알린다.
+        scrollToElement(practiceArea);
     }
     
     // 자유 타자 연습
@@ -1788,4 +1825,4 @@ async function initializeTypingPractice() {
     initializeTypingPracticeNew();
 }
 
-// 연습 데이터는 practice_data.js에서 관리됩니다.
+// 연습 데이터는 /data/typing/ 아래 JSON 파일에 있고, js/practice_data.js 로더가 불러옵니다.

@@ -1265,3 +1265,21 @@ html, body,
         padding-right: 0 !important;
     }
 }
+
+/* 연봉 역계산(실수령액 → 연봉) 결과 강조
+   alert-info 배경은 라이트/다크 모두 밝은 하늘색이므로, 대비를 위해 진한 파랑을 고정합니다.
+   (.dark .text-primary는 밝은 파랑이라 이 배경 위에서 대비가 떨어짐) */
+.reverse-salary-amount {
+    color: #0a4bab;
+}
+
+/* 연봉 계산기 입력 행 정렬
+   각 필드의 도움말 길이가 달라도 입력창이 같은 가로선에 오도록,
+   행 상단 기준 정렬 + 라벨을 한 줄로 고정합니다. (도움말은 입력창 아래라 정렬에 영향 없음) */
+@media (min-width: 768px) {
+    .salary-input-row .form-label {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}

@@ -1,0 +1,36 @@
+{
+  "words": {
+    "easy": [
+      "hello",
+      "thank",
+      "love",
+      "happy",
+      "good"
+    ],
+    "medium": [
+      "computer",
+      "internet",
+      "smartphone"
+    ],
+    "hard": [
+      "information technology infrastructure"
+    ]
+  },
+  "sentences": {
+    "easy": [
+      "Today is a beautiful day",
+      "I want to eat something delicious"
+    ],
+    "medium": [
+      "Learning to code is very beneficial for personal growth"
+    ],
+    "hard": [
+      "The rapid advancement of artificial intelligence technology is fundamentally transforming our daily lives"
+    ]
+  },
+  "paragraph": {
+    "easy": "Spring has arrived. The warm sunshine is shining down.",
+    "medium": "Learning to code is not easy. However, your skills will improve.",
+    "hard": "Modern society is changing rapidly. Technological advancement has transformed our way of life."
+  }
+}

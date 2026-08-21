@@ -1,15 +1,35 @@
 // salary_calculator.js
 
-// 2026년 기준 국민연금 요율: 9.0% (근로자 4.5%, 사업주 4.5%)
-// 근로자 부담분: 4.5%
-// 월 소득액 하한: 400,000원 (이하일 경우 400,000원으로 계산) -> 개인부담 월 18,000원
-// 월 소득액 상한: 6,370,000원 (이상일 경우 6,370,000원으로 계산) -> 개인부담 월 286,650원
-// (2026년 상반기 기준, 하반기(7월~)에는 상한 659만원, 하한 41만원으로 변경)
+/**
+ * 화면에 표시할 문구를 현재 언어로 가져온다.
+ * i18n이 아직 준비되지 않았으면 한국어 원문을 그대로 사용한다.
+ * @param {string} key - 번역 키
+ * @param {string} fallback - 한국어 원문
+ * @param {Object} [params] - {name} 자리에 채울 값
+ */
+function salaryText(key, fallback, params) {
+    const manager = window.i18nManager;
+    if (!manager || !manager.ready) return fallback;
+    return params ? manager.format(key, params, fallback) : manager.t(key, fallback);
+}
+
+
+// 2026년 기준 국민연금 요율: 9.5% (근로자 4.75%, 사업주 4.75%)
+// - 2025년 연금개혁(국민연금법 개정)으로 2026-01-01부터 9% -> 9.5%로 인상
+//   (2033년 13%까지 매년 0.5%p 단계적 인상 예정)
+// 근로자 부담분: 4.75%
+// 기준소득월액 (2026-07 ~ 2027-06 적용)
+// - 하한: 410,000원   -> 근로자 부담 월 19,470원 (10원 절사)
+// - 상한: 6,590,000원 -> 근로자 부담 월 313,020원 (10원 절사)
+const NATIONAL_PENSION_RATE = 0.0475;              // 근로자 부담 요율
+const NATIONAL_PENSION_MIN_MONTHLY_INCOME = 410000;   // 기준소득월액 하한
+const NATIONAL_PENSION_MAX_MONTHLY_INCOME = 6590000;  // 기준소득월액 상한
+
 function calculateNationalPension(annualSalary) {
     const monthlySalary = annualSalary / 12;
-    const rate = 0.045;
-    const minMonthlyIncome = 400000;
-    const maxMonthlyIncome = 6370000; // 2026년 상반기 기준
+    const rate = NATIONAL_PENSION_RATE;
+    const minMonthlyIncome = NATIONAL_PENSION_MIN_MONTHLY_INCOME;
+    const maxMonthlyIncome = NATIONAL_PENSION_MAX_MONTHLY_INCOME;
 
     let basisMonthlyIncome = monthlySalary;
     if (monthlySalary < minMonthlyIncome) {
@@ -79,20 +99,25 @@ function calculateLongTermCareInsurance(annualHealthInsurancePremium) {
 // 여기서는 TDD를 위한 기본 구조와 예시 값을 사용합니다.
 
 // 근로소득공제 (2026년 귀속 기준 적용 - 2023년 이후 변동 없음)
+// 공제 한도 2,000만원 (소득세법 제47조 제1항 단서)
+const INCOME_DEDUCTION_LIMIT = 20000000;
+
 function getIncomeDeduction(annualSalary) {
     if (annualSalary <= 0) return 0;
+    let deduction;
     if (annualSalary <= 5000000) { // 500만원 이하: 총급여액의 70%
-        return annualSalary * 0.7;
+        deduction = annualSalary * 0.7;
     } else if (annualSalary <= 15000000) { // 500만원 초과 1,500만원 이하: 350만원 + (500만원 초과금액의 40%)
-        return 3500000 + (annualSalary - 5000000) * 0.4;
-    } else if (annualSalary <= 45000000) { // 1,500만원 초과 4,500만원 이하: 750만원 + (1,500만원 초과금액의 15%) -> (정정: 350 + 1000*0.4 = 750)
-        return 7500000 + (annualSalary - 15000000) * 0.15;
-    } else if (annualSalary <= 100000000) { // 4,500만원 초과 1억원 이하: 1,200만원 + (4,500만원 초과금액의 5%) -> (정정: 750 + 3000*0.15 = 1200)
-        return 12000000 + (annualSalary - 45000000) * 0.05;
-    } else { // 1억원 초과: 1,475만원 + (1억원 초과금액의 2%) -> (정정: 1200 + 5500*0.05 = 1475)
-        return 14750000 + (annualSalary - 100000000) * 0.02;
+        deduction = 3500000 + (annualSalary - 5000000) * 0.4;
+    } else if (annualSalary <= 45000000) { // 1,500만원 초과 4,500만원 이하: 750만원 + (1,500만원 초과금액의 15%)
+        deduction = 7500000 + (annualSalary - 15000000) * 0.15;
+    } else if (annualSalary <= 100000000) { // 4,500만원 초과 1억원 이하: 1,200만원 + (4,500만원 초과금액의 5%)
+        deduction = 12000000 + (annualSalary - 45000000) * 0.05;
+    } else { // 1억원 초과: 1,475만원 + (1억원 초과금액의 2%)
+        deduction = 14750000 + (annualSalary - 100000000) * 0.02;
     }
-    // 참고: 실제로는 더 복잡한 한도액(예: 2,000만원) 등이 존재할 수 있음.
+    // 공제액이 2,000만원을 초과하면 2,000만원까지만 공제 (총급여 약 3억 6,250만원 초과 시 적용)
+    return Math.min(deduction, INCOME_DEDUCTION_LIMIT);
 }
 
 // 인적공제 (본인 포함 부양가족 1명당 150만원) - 변경 없음
@@ -142,15 +167,19 @@ function getIncomeTaxCredit(calculatedTax, annualSalary) {
         taxCredit = 715000 + (calculatedTax - 1300000) * 0.30;
     }
 
+    // 근로소득세액공제 한도 (소득세법 제59조)
     let creditLimit = 0;
     if (annualSalary <= 33000000) {
         creditLimit = 740000;
     } else if (annualSalary <= 70000000) {
+        // 3,300만원 초과 7,000만원 이하: Max[74만원 - (총급여 - 3,300만원) x 0.008, 66만원]
         creditLimit = Math.max(660000, 740000 - (annualSalary - 33000000) * 0.008);
-    } else { // 7000만원 초과
+    } else if (annualSalary <= 120000000) {
+        // 7,000만원 초과 1억 2,000만원 이하: Max[66만원 - (총급여 - 7,000만원) x 1/2, 50만원]
         creditLimit = Math.max(500000, 660000 - (annualSalary - 70000000) * 0.5);
-         // 한도액이 음수가 될 경우 0으로 처리 (또는 최소 한도 50만원)
-        if (creditLimit < 500000 && annualSalary > 70000000 + ( (660000-500000) / 0.5) ) creditLimit = 500000;
+    } else {
+        // 1억 2,000만원 초과: Max[50만원 - (총급여 - 1억 2,000만원) x 1/2, 20만원]
+        creditLimit = Math.max(200000, 500000 - (annualSalary - 120000000) * 0.5);
     }
 
     return Math.floor(Math.min(taxCredit, creditLimit) / 10) * 10; // 10원 단위 절사
@@ -208,32 +237,108 @@ function calculateNetMonthlyPay(annualSalary, nonTaxableMonthlyAmount, dependent
     return Math.floor((netAnnualPay / 12) / 10) * 10; // 월 실수령액 10원 단위 절사
 }
 
+// ─────────────────────────────────────────────
+// 역계산: 월 실수령액 -> 연봉 추정
+// ─────────────────────────────────────────────
+// calculateNetMonthlyPay(연봉)은 연봉에 대해 단조 증가(비감소)하므로 이분 탐색으로 역산합니다.
+// 10원 단위 절사 때문에 하나의 실수령액에 여러 연봉이 대응될 수 있어,
+// 목표 실수령액 이상이 되는 "최소 연봉"을 반환합니다.
+const REVERSE_SEARCH_MAX_ANNUAL_SALARY = 10000000000; // 탐색 상한: 100억원
+
+function calculateAnnualSalaryFromNetMonthly(targetNetMonthly, nonTaxableMonthlyAmount, dependentsCount) {
+    if (!Number.isFinite(targetNetMonthly) || targetNetMonthly <= 0) return null;
+
+    const hiNet = calculateNetMonthlyPay(REVERSE_SEARCH_MAX_ANNUAL_SALARY, nonTaxableMonthlyAmount, dependentsCount);
+    if (hiNet < targetNetMonthly) return null; // 탐색 범위를 넘어서는 실수령액
+
+    let lo = 0;
+    let hi = REVERSE_SEARCH_MAX_ANNUAL_SALARY;
+
+    while (hi - lo > 1) {
+        const mid = Math.floor((lo + hi) / 2);
+        if (calculateNetMonthlyPay(mid, nonTaxableMonthlyAmount, dependentsCount) >= targetNetMonthly) {
+            hi = mid;
+        } else {
+            lo = mid;
+        }
+    }
+
+    return hi;
+}
+
+// 역계산 결과를 만원 단위로 반올림한 "표시용 연봉"
+function roundAnnualSalaryToManwon(annualSalary) {
+    return Math.round(annualSalary / 10000) * 10000;
+}
+
+// ─────────────────────────────────────────────
+// UI 관련
+// ─────────────────────────────────────────────
+const SALARY_INPUT_UNIT = 1000000;      // 연봉 입력 단위: 백만원
+const NET_MONTHLY_INPUT_UNIT = 10000;   // 실수령 월급 입력 단위: 만원
+
+// 입력값(백만원) -> 원
+function annualSalaryInputToWon(inputValue) {
+    const parsed = parseFloat(inputValue);
+    if (!Number.isFinite(parsed)) return NaN;
+    return Math.round(parsed * SALARY_INPUT_UNIT);
+}
+
+// 입력값(만원) -> 원
+function netMonthlyInputToWon(inputValue) {
+    const parsed = parseFloat(inputValue);
+    if (!Number.isFinite(parsed)) return NaN;
+    return Math.round(parsed * NET_MONTHLY_INPUT_UNIT);
+}
+
+function showSalaryError(message) {
+    const errorDiv = DOMUtils.getElement('#error_message');
+    const resultsContainer = DOMUtils.getElement('#salary_results_container');
+    if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+    }
+    if (resultsContainer) {
+        resultsContainer.style.display = 'none';
+    }
+}
+
+// 결과 강조 전환: 어떤 값이 "정답"인지 한눈에 보이도록 모드별로 크기/굵기를 바꿉니다.
+const RESULT_EMPHASIS = {
+    netPayPrimary: { fontSize: '2.75rem', weightClass: 'fw-bolder' },
+    netPaySecondary: { fontSize: '1.9rem', weightClass: 'fw-bold' }
+};
+
+function applyResultEmphasis(isReverseMode) {
+    const netPayEl = DOMUtils.getElement('#result_net_monthly_pay');
+    if (!netPayEl) return;
+
+    const style = isReverseMode ? RESULT_EMPHASIS.netPaySecondary : RESULT_EMPHASIS.netPayPrimary;
+    netPayEl.style.fontSize = style.fontSize;
+    netPayEl.classList.remove('fw-bold', 'fw-bolder');
+    netPayEl.classList.add(style.weightClass);
+}
+
 // UI 업데이트 함수 (결과 표시)
-function displaySalaryCalculationResults(annualSalary, nonTaxableMonthly, dependentsCount) {
+// reverseInfo: 역계산(실수령액 -> 연봉) 결과일 때 { targetNetMonthly, exactAnnualSalary } 전달
+function displaySalaryCalculationResults(annualSalary, nonTaxableMonthly, dependentsCount, reverseInfo = null) {
     const resultsContainer = DOMUtils.getElement('#salary_results_container');
     const errorDiv = DOMUtils.getElement('#error_message');
     errorDiv.style.display = 'none'; // 이전 오류 메시지 숨김
 
     // 입력값 유효성 검사
     if (isNaN(annualSalary) || annualSalary <= 0) {
-        errorDiv.textContent = '유효한 연봉을 입력해주세요.';
-        errorDiv.style.display = 'block';
-        resultsContainer.style.display = 'none';
+        showSalaryError(salaryText('salary.err_annual', '유효한 연봉을 입력해주세요.'));
         return;
     }
     if (isNaN(nonTaxableMonthly) || nonTaxableMonthly < 0) {
-        errorDiv.textContent = '유효한 월 비과세액을 입력해주세요.';
-        errorDiv.style.display = 'block';
-        resultsContainer.style.display = 'none';
+        showSalaryError(salaryText('salary.err_non_taxable', '유효한 월 비과세액을 입력해주세요.'));
         return;
     }
     if (isNaN(dependentsCount) || dependentsCount < 1) {
-        errorDiv.textContent = '부양가족 수는 본인을 포함하여 1명 이상이어야 합니다.';
-        errorDiv.style.display = 'block';
-        resultsContainer.style.display = 'none';
+        showSalaryError(salaryText('salary.err_dependents', '부양가족 수는 본인을 포함하여 1명 이상이어야 합니다.'));
         return;
     }
-
 
     const nonTaxableAnnual = nonTaxableMonthly * 12;
 
@@ -260,7 +365,7 @@ function displaySalaryCalculationResults(annualSalary, nonTaxableMonthly, depend
         '#result_annual_salary': NumberUtils.formatCurrency(annualSalary),
         '#result_non_taxable_monthly': NumberUtils.formatCurrency(nonTaxableMonthly),
         '#result_non_taxable_annual': NumberUtils.formatCurrency(nonTaxableAnnual),
-        '#result_dependents_count': `${dependentsCount}명`,
+        '#result_dependents_count': salaryText('salary.unit_people', `${dependentsCount}명`, { count: dependentsCount }),
         '#result_net_monthly_pay': NumberUtils.formatCurrency(netMonthlyPay),
         '#result_gross_monthly_pay': NumberUtils.formatCurrency(Math.floor((annualSalary / 12) / 10) * 10),
         '#result_total_monthly_deduction': NumberUtils.formatCurrency(totalMonthlyDeduction),
@@ -272,24 +377,137 @@ function displaySalaryCalculationResults(annualSalary, nonTaxableMonthly, depend
         '#deduction_local_income_tax': NumberUtils.formatCurrency(Math.floor((localIncomeTax / 12) / 10) * 10)
     });
 
+    // 역계산 안내 배너 처리
+    const notice = DOMUtils.getElement('#reverse_result_notice');
+    if (notice) {
+        if (reverseInfo) {
+            DOMUtils.setTexts({
+                '#reverse_target_net': NumberUtils.formatCurrency(reverseInfo.targetNetMonthly),
+                '#reverse_estimated_salary': NumberUtils.formatCurrency(annualSalary),
+                '#reverse_result_detail': salaryText(
+                    'salary.reverse_detail',
+                    `정확히는 연봉 ${NumberUtils.formatCurrency(reverseInfo.exactAnnualSalary)}부터 목표 실수령액에 도달하며, 위 금액은 만원 단위로 정리한 값입니다. (실수령 ${NumberUtils.formatCurrency(netMonthlyPay)})`,
+                    {
+                        exact: NumberUtils.formatCurrency(reverseInfo.exactAnnualSalary),
+                        net: NumberUtils.formatCurrency(netMonthlyPay)
+                    }
+                )
+            });
+            notice.classList.remove('d-none');
+        } else {
+            notice.classList.add('d-none');
+        }
+    }
+
+    // 모드별 강조 전환
+    // - 정방향(연봉 → 실수령액): 월 실수령액을 가장 크고 진하게
+    // - 역방향(실수령액 → 연봉): 배너의 연봉을 가장 크고 진하게, 실수령액은 한 단계 축소
+    applyResultEmphasis(!!reverseInfo);
+
     resultsContainer.style.display = 'block';
 }
 
 function initializeSalaryPage() {
     const calculateButton = DOMUtils.getElement('#calculate_salary_button');
     const annualSalaryInput = DOMUtils.getElement('#annual_salary');
+    const targetNetMonthlyInput = DOMUtils.getElement('#target_net_monthly');
     const nonTaxableMonthlyInput = DOMUtils.getElement('#non_taxable_monthly');
     const dependentsCountInput = DOMUtils.getElement('#dependents_count');
+    const annualSalaryGroup = DOMUtils.getElement('#annual_salary_group');
+    const targetNetMonthlyGroup = DOMUtils.getElement('#target_net_monthly_group');
+    const annualSalaryPreview = DOMUtils.getElement('#annual_salary_preview');
+    const targetNetMonthlyPreview = DOMUtils.getElement('#target_net_monthly_preview');
+    const modeForward = DOMUtils.getElement('#salary_mode_forward');
+    const modeReverse = DOMUtils.getElement('#salary_mode_reverse');
 
-    if (calculateButton && annualSalaryInput && nonTaxableMonthlyInput && dependentsCountInput) {
-        DOMUtils.addEvent(calculateButton, 'click', function() {
-            const annualSalary = parseInt(annualSalaryInput.value, 10);
-            const nonTaxableMonthly = parseInt(nonTaxableMonthlyInput.value, 10);
-            const dependentsCount = parseInt(dependentsCountInput.value, 10);
-
-            displaySalaryCalculationResults(annualSalary, nonTaxableMonthly, dependentsCount);
-        });
-    } else {
+    if (!calculateButton || !annualSalaryInput || !nonTaxableMonthlyInput || !dependentsCountInput) {
         console.error('One or more salary input elements are missing for event listener setup.');
+        return;
     }
+
+    function isReverseMode() {
+        return !!(modeReverse && modeReverse.checked);
+    }
+
+    function updatePreviews() {
+        if (annualSalaryPreview) {
+            const won = annualSalaryInputToWon(annualSalaryInput.value);
+            annualSalaryPreview.textContent = Number.isFinite(won) && won > 0
+                ? NumberUtils.formatCurrency(won)
+                : salaryText('salary.hint_forward', '연봉을 백만원 단위로 입력하세요 (예: 50 → 5,000만원)');
+        }
+        if (targetNetMonthlyPreview && targetNetMonthlyInput) {
+            const won = netMonthlyInputToWon(targetNetMonthlyInput.value);
+            targetNetMonthlyPreview.textContent = Number.isFinite(won) && won > 0
+                ? NumberUtils.formatCurrency(won)
+                : salaryText('salary.hint_reverse', '월 실수령액을 만원 단위로 입력하세요 (예: 300 → 300만원)');
+        }
+    }
+
+    function applyMode() {
+        const reverse = isReverseMode();
+        if (annualSalaryGroup) annualSalaryGroup.classList.toggle('d-none', reverse);
+        if (targetNetMonthlyGroup) targetNetMonthlyGroup.classList.toggle('d-none', !reverse);
+    }
+
+    function runCalculation() {
+        const nonTaxableMonthly = parseInt(nonTaxableMonthlyInput.value, 10);
+        const dependentsCount = parseInt(dependentsCountInput.value, 10);
+
+        if (!isReverseMode()) {
+            const annualSalary = annualSalaryInputToWon(annualSalaryInput.value);
+            displaySalaryCalculationResults(annualSalary, nonTaxableMonthly, dependentsCount);
+            return;
+        }
+
+        // 역계산 모드: 월 실수령액 -> 연봉
+        const targetNetMonthly = netMonthlyInputToWon(targetNetMonthlyInput ? targetNetMonthlyInput.value : '');
+        if (isNaN(targetNetMonthly) || targetNetMonthly <= 0) {
+            showSalaryError(salaryText('salary.err_net', '유효한 월 실수령액을 입력해주세요.'));
+            return;
+        }
+        if (isNaN(nonTaxableMonthly) || nonTaxableMonthly < 0) {
+            showSalaryError(salaryText('salary.err_non_taxable', '유효한 월 비과세액을 입력해주세요.'));
+            return;
+        }
+        if (isNaN(dependentsCount) || dependentsCount < 1) {
+            showSalaryError(salaryText('salary.err_dependents', '부양가족 수는 본인을 포함하여 1명 이상이어야 합니다.'));
+            return;
+        }
+
+        const exactAnnualSalary = calculateAnnualSalaryFromNetMonthly(targetNetMonthly, nonTaxableMonthly, dependentsCount);
+        if (exactAnnualSalary === null) {
+            showSalaryError(salaryText('salary.err_not_found', '입력하신 실수령액에 해당하는 연봉을 찾을 수 없습니다. 금액을 확인해주세요.'));
+            return;
+        }
+
+        const displayAnnualSalary = roundAnnualSalaryToManwon(exactAnnualSalary);
+        displaySalaryCalculationResults(displayAnnualSalary, nonTaxableMonthly, dependentsCount, {
+            targetNetMonthly,
+            exactAnnualSalary
+        });
+
+        // 역산된 연봉을 정방향 입력값에도 반영 (모드 전환 시 이어서 확인 가능)
+        annualSalaryInput.value = String(Math.round(displayAnnualSalary / SALARY_INPUT_UNIT * 100) / 100);
+        updatePreviews();
+    }
+
+    DOMUtils.addEvent(calculateButton, 'click', runCalculation);
+    DOMUtils.addEvent(annualSalaryInput, 'input', updatePreviews);
+    if (targetNetMonthlyInput) DOMUtils.addEvent(targetNetMonthlyInput, 'input', updatePreviews);
+    if (modeForward) DOMUtils.addEvent(modeForward, 'change', applyMode);
+    if (modeReverse) DOMUtils.addEvent(modeReverse, 'change', applyMode);
+
+    [annualSalaryInput, targetNetMonthlyInput, nonTaxableMonthlyInput, dependentsCountInput].forEach((input) => {
+        if (!input) return;
+        DOMUtils.addEvent(input, 'keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                runCalculation();
+            }
+        });
+    });
+
+    applyMode();
+    updatePreviews();
 }

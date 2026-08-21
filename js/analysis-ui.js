@@ -159,10 +159,12 @@
 
         container.innerHTML = `
             <div>
-                <div class="mb-2">
+                <div class="mb-2 d-flex align-items-center gap-2">
+                    <span class="small text-muted">격식성</span>
                     <span class="badge bg-primary">${style.formality}</span>
                 </div>
-                <div class="mb-2">
+                <div class="mb-2 d-flex align-items-center gap-2">
+                    <span class="small text-muted">어조</span>
                     <span class="badge bg-info">${style.tone}</span>
                 </div>
                 <div class="small text-muted">

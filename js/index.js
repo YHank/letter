@@ -161,9 +161,9 @@ function handleTextTransform(transformType) {
         
         // 토스트 알림 표시
         const transformNames = {
-            'uppercase': '대문자 변환',
-            'lowercase': '소문자 변환',
-            'capitalize': '첫 글자 대문자 변환',
+            'normalize-hangul': '한글 조합',
+            'join-lines': '줄바꿈 연결',
+            'split-sentences': '문장 나누기',
             'remove-special': '특수문자 제거',
             'remove-spaces': '공백 제거',
             'trim-lines': '공백 정리',

@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "basePath": "/data/typing",
+  "languages": {
+    "korean": {
+      "free": [
+        "korean/free.json"
+      ],
+      "beginner": [
+        "korean/beginner.json"
+      ],
+      "special": [
+        "korean/special.json"
+      ],
+      "standard": [
+        "korean/standard.json"
+      ]
+    },
+    "english": {
+      "free": [
+        "english/free.json"
+      ],
+      "beginner": [
+        "english/beginner.json"
+      ],
+      "special": [
+        "english/special.json"
+      ],
+      "standard": [
+        "english/standard.json"
+      ]
+    }
+  }
+}

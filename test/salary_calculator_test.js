@@ -49,7 +49,9 @@ const {
     calculateFinalIncomeTax,
     calculateLocalIncomeTax,
     calculateTotalAnnualDeductions,
-    calculateNetMonthlyPay
+    calculateNetMonthlyPay,
+    calculateAnnualSalaryFromNetMonthly,
+    roundAnnualSalaryToManwon
 } = context;
 
 // ─────────────────────────────────────────────
@@ -107,25 +109,25 @@ function is10WonUnit(value, message) {
 // 테스트
 // ─────────────────────────────────────────────
 
-describe('calculateNationalPension - 국민연금 (2026년 기준 4.5%)', () => {
-    // 월급 390만원 (4680만원/년) → 월 3,900,000 × 4.5% = 175,500원 → 연 2,106,000원
+describe('calculateNationalPension - 국민연금 (2026년 기준 4.75%)', () => {
+    // 월급 390만원 (4680만원/년) → 월 3,900,000 × 4.75% = 185,250원 → 연 2,223,000원
     const result3900 = calculateNationalPension(46800000);
-    assertAlmostEquals(result3900, 2106000, 10, '연봉 4680만원 → 연 국민연금 2,106,000원');
+    assertAlmostEquals(result3900, 2223000, 10, '연봉 4680만원 → 연 국민연금 2,223,000원');
     is10WonUnit(result3900, '연봉 4680만원 국민연금');
 
-    // 하한 적용: 연봉 2400000원 (월 200,000원 < 하한 400,000원)
-    // 하한 적용 → 월 400,000 × 4.5% = 18,000원 → 연 216,000원
+    // 하한 적용: 연봉 2400000원 (월 200,000원 < 하한 410,000원)
+    // 하한 적용 → 월 410,000 × 4.75% = 19,475원 → 10원 절사 19,470원 → 연 233,640원
     const resultLow = calculateNationalPension(2400000);
-    assertEquals(resultLow, 216000, '월급 하한(400,000원) 적용 → 연 216,000원');
+    assertEquals(resultLow, 233640, '월급 하한(410,000원) 적용 → 연 233,640원');
 
-    // 상한 적용: 연봉 200000000원 (월 > 6,370,000원)
-    // 상한 적용 → 월 6,370,000 × 4.5% = 286,650원 → 연 3,439,800원
+    // 상한 적용: 연봉 200000000원 (월 > 6,590,000원)
+    // 상한 적용 → 월 6,590,000 × 4.75% = 313,025원 → 10원 절사 313,020원 → 연 3,756,240원
     const resultHigh = calculateNationalPension(200000000);
-    assertEquals(resultHigh, 3439800, '월급 상한(6,370,000원) 적용 → 연 3,439,800원');
+    assertEquals(resultHigh, 3756240, '월급 상한(6,590,000원) 적용 → 연 3,756,240원');
 
-    // 월급 정확히 상한인 경우: 연봉 6,370,000 × 12 = 76,440,000원
-    const resultExactMax = calculateNationalPension(76440000);
-    assertEquals(resultExactMax, 3439800, '상한 정확히 일치 → 연 3,439,800원');
+    // 월급 정확히 상한인 경우: 연봉 6,590,000 × 12 = 79,080,000원
+    const resultExactMax = calculateNationalPension(79080000);
+    assertEquals(resultExactMax, 3756240, '상한 정확히 일치 → 연 3,756,240원');
 
     is10WonUnit(calculateNationalPension(50000000), '연봉 5000만원 국민연금');
 });
@@ -184,6 +186,9 @@ describe('getIncomeDeduction - 근로소득공제', () => {
 
     // 1억 초과: 1475만원 + 초과분 × 2%
     assertEquals(getIncomeDeduction(110000000), 14950000, '1.1억 → 1475 + 1000*0.02 = 1495만원');
+
+    // 공제 한도 2,000만원 (총급여 약 3억 6,250만원 초과 시 적용)
+    assertEquals(getIncomeDeduction(400000000), 20000000, '4억 → 공제 한도 2,000만원 적용');
 });
 
 describe('getHumanDeduction - 인적공제 (1인당 150만원)', () => {
@@ -251,6 +256,10 @@ describe('getIncomeTaxCredit - 근로소득세액공제', () => {
     const credit200 = getIncomeTaxCredit(2000000, 36000000);
     assertAlmostEquals(credit200, 716000, 10, '산출세액 200만원, 연봉 3600만원 → 한도 적용 716,000원');
 
+    // 고소득 구간 한도 (소득세법 제59조)
+    assertEquals(getIncomeTaxCredit(10000000, 100000000), 500000, '연봉 1억 → 한도 50만원');
+    assertEquals(getIncomeTaxCredit(30000000, 150000000), 200000, '연봉 1.5억 → 한도 20만원 (1.2억 초과 구간)');
+
     is10WonUnit(credit100, '세액공제 10원 단위');
 });
 
@@ -297,6 +306,39 @@ describe('calculateNetMonthlyPay - 월 실수령액', () => {
     // 비과세 금액이 있으면 실수령액이 더 높아야 함
     const netWithNonTaxable = calculateNetMonthlyPay(36000000, 200000, 1);
     assertEquals(netWithNonTaxable >= net36, true, '비과세 있을 때 실수령 >= 비과세 없을 때');
+});
+
+describe('calculateAnnualSalaryFromNetMonthly - 실수령액 → 연봉 역계산', () => {
+    // 왕복 검증: 역산한 연봉을 다시 정방향 계산하면 목표 실수령액과 일치해야 함
+    [2000000, 3000000, 3500000, 5000000, 10000000].forEach((target) => {
+        const salary = calculateAnnualSalaryFromNetMonthly(target, 200000, 1);
+        assertEquals(typeof salary === 'number' && salary > 0, true, `목표 실수령 ${target.toLocaleString()}원 → 연봉 산출`);
+
+        const net = calculateNetMonthlyPay(salary, 200000, 1);
+        assertAlmostEquals(net, target, 10, `역계산 왕복 검증: ${target.toLocaleString()}원 (오차 10원 이내)`);
+
+        // 1원 낮은 연봉은 목표 실수령액에 미달해야 함 (최소 연봉 경계)
+        const netBelow = calculateNetMonthlyPay(salary - 1, 200000, 1);
+        assertEquals(netBelow < target, true, `최소 연봉 경계 검증: ${target.toLocaleString()}원`);
+    });
+
+    // 예외 입력
+    assertEquals(calculateAnnualSalaryFromNetMonthly(0, 0, 1), null, '실수령액 0 → null');
+    assertEquals(calculateAnnualSalaryFromNetMonthly(-100, 0, 1), null, '음수 실수령액 → null');
+    assertEquals(calculateAnnualSalaryFromNetMonthly(1000000000000, 0, 1), null, '탐색 범위 초과 → null');
+
+    // 부양가족이 많을수록 같은 실수령액에 필요한 연봉은 낮아짐
+    const depSalary1 = calculateAnnualSalaryFromNetMonthly(3000000, 0, 1);
+    const depSalary4 = calculateAnnualSalaryFromNetMonthly(3000000, 0, 4);
+    assertEquals(depSalary4 < depSalary1, true, '부양가족 많을수록 동일 실수령액에 필요한 연봉이 낮음');
+
+    // 비과세액이 클수록 같은 실수령액에 필요한 연봉은 낮아짐
+    const noneTaxFree = calculateAnnualSalaryFromNetMonthly(3000000, 0, 1);
+    const withTaxFree = calculateAnnualSalaryFromNetMonthly(3000000, 200000, 1);
+    assertEquals(withTaxFree <= noneTaxFree, true, '비과세액이 있으면 필요한 연봉이 더 낮거나 같음');
+
+    assertEquals(roundAnnualSalaryToManwon(41660060), 41660000, '만원 단위 반올림');
+    assertEquals(roundAnnualSalaryToManwon(41665000), 41670000, '만원 단위 반올림 (올림 경계)');
 });
 
 // ─────────────────────────────────────────────

@@ -78,8 +78,14 @@ letter/
 │   ├── index.js           # 메인 스크립트 (글자수 계산)
 │   ├── darkmode.js        # 다크모드 토글
 │   ├── typing_practice.js # 타자 연습 시스템
+│   ├── practice_data.js   # 타자 연습 데이터 로더 (data/typing/*.json)
 │   ├── salary_calculator.js # 연봉 계산 로직
 │   └── ...                # 기타 기능별 스크립트
+├── data/
+│   └── typing/
+│       ├── manifest.json      # 언어/분류별 데이터 파일 목록
+│       ├── korean/            # 한글 연습 데이터 (분류별 JSON)
+│       └── english/           # 영어 연습 데이터 (분류별 JSON)
 ├── html/
 │   ├── typing_practice.html    # 타자 연습
 │   ├── salary.html            # 연봉 계산기

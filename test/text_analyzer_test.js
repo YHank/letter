@@ -3,7 +3,7 @@
  * Node.js 환경에서 실행: node test/text_analyzer_test.js
  */
 
-// Node.js 환경에서 window 및 의존성 모킹
+// Node.js 환경에서 브라우저 전역 객체를 모킹한 뒤 실제 모듈을 로드
 if (typeof window === 'undefined') {
     global.window = {
         i18nManager: null,
@@ -11,97 +11,8 @@ if (typeof window === 'undefined') {
     };
 }
 
-// TextAnalyzer 클래스 로드 (window 참조 제거 버전을 인라인 재정의)
-class TextAnalyzer {
-    constructor() {
-        this.koreanReadingSpeed = 400;
-        this.englishReadingSpeed = 225;
-        this.japaneseReadingSpeed = 300;
-        this.chineseReadingSpeed = 350;
-        this.currentLanguage = 'ko';
-    }
-
-    countSentences(text) {
-        if (!text || text.trim() === '') return 0;
-        const sentences = text.match(/[^.!?。！？]+[.!?。！？]+/g) || [];
-        return sentences.length;
-    }
-
-    countWords(text) {
-        if (!text || text.trim() === '') return 0;
-        const words = text.trim().split(/\s+/).filter(word => word.length > 0);
-        return words.length;
-    }
-
-    countCharacters(text, includeSpaces = true) {
-        if (!text) return 0;
-        if (includeSpaces) return text.length;
-        return text.replace(/\s/g, '').length;
-    }
-
-    countLines(text) {
-        if (!text) return 0;
-        const lines = text.split('\n').filter(line => line.trim().length > 0);
-        return lines.length;
-    }
-
-    countParagraphs(text) {
-        if (!text || text.trim() === '') return 0;
-        const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 0);
-        return paragraphs.length;
-    }
-
-    calculateAverageWordLength(text) {
-        const words = text.trim().split(/\s+/).filter(word => word.length > 0);
-        if (words.length === 0) return 0;
-        const totalLength = words.reduce((sum, word) => sum + word.length, 0);
-        return parseFloat((totalLength / words.length).toFixed(1));
-    }
-
-    detectLanguage(text) {
-        if (!text || text.trim() === '') return 'unknown';
-        const koreanPattern = /[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]/;
-        const englishPattern = /[a-zA-Z]/;
-        const japanesePattern = /[\u3040-\u309F\u30A0-\u30FF]/;
-        const chinesePattern = /[\u4E00-\u9FFF]/;
-        const hasKorean = koreanPattern.test(text);
-        const hasEnglish = englishPattern.test(text);
-        const hasJapanese = japanesePattern.test(text);
-        const hasChinese = chinesePattern.test(text);
-        const languageCount = [hasKorean, hasEnglish, hasJapanese, hasChinese].filter(Boolean).length;
-        if (languageCount > 1) return 'mixed';
-        if (hasKorean) return 'korean';
-        if (hasEnglish) return 'english';
-        if (hasJapanese) return 'japanese';
-        if (hasChinese) return 'chinese';
-        return 'other';
-    }
-
-    analyzeText(text) {
-        if (!text) {
-            return {
-                charactersWithSpaces: 0,
-                charactersWithoutSpaces: 0,
-                words: 0,
-                sentences: 0,
-                lines: 0,
-                paragraphs: 0,
-                averageWordLength: 0,
-                language: 'unknown'
-            };
-        }
-        return {
-            charactersWithSpaces: this.countCharacters(text, true),
-            charactersWithoutSpaces: this.countCharacters(text, false),
-            words: this.countWords(text),
-            sentences: this.countSentences(text),
-            lines: this.countLines(text),
-            paragraphs: this.countParagraphs(text),
-            averageWordLength: this.calculateAverageWordLength(text),
-            language: this.detectLanguage(text)
-        };
-    }
-}
+require('../js/text-analyzer.js');
+const analyzer = window.textAnalyzer;
 
 // ─────────────────────────────────────────────
 // 테스트 프레임워크 (기존 salary_test_runner 패턴 준용)
@@ -139,7 +50,6 @@ function describe(name, fn) {
 // ─────────────────────────────────────────────
 // 테스트 실행
 // ─────────────────────────────────────────────
-const analyzer = new TextAnalyzer();
 
 describe('countCharacters - 글자수 계산', () => {
     assertEquals(analyzer.countCharacters(''), 0, '빈 문자열 → 0');
@@ -228,6 +138,39 @@ describe('analyzeText - 통합 분석', () => {
     assertEquals(en.language, 'english', '영문 텍스트 → english');
     assertEquals(en.words, 5, '영문 5단어');
     assertEquals(en.sentences, 2, '영문 2문장');
+});
+
+describe('transform - 한국어 텍스트 변환', () => {
+    assertEquals(
+        analyzer.transform['normalize-hangul']('\u1112\u1161\u11AB\u1100\u1173\u11AF'),
+        '한글',
+        '분해된 유니코드 한글 자모를 완성형 글자로 결합'
+    );
+    assertEquals(
+        analyzer.transform['normalize-hangul']('이미 완성된 한글'),
+        '이미 완성된 한글',
+        '완성형 한글은 변경하지 않음'
+    );
+    assertEquals(
+        analyzer.transform['join-lines']('첫째 줄\n둘째 줄\n\n새 문단\n마지막 줄'),
+        '첫째 줄 둘째 줄\n\n새 문단 마지막 줄',
+        '문단은 유지하고 문단 안의 줄바꿈만 연결'
+    );
+    assertEquals(
+        analyzer.transform['join-lines']('첫째 줄\r\n  둘째 줄  '),
+        '첫째 줄 둘째 줄',
+        '윈도우 줄바꿈과 줄 가장자리 공백을 함께 정리'
+    );
+    assertEquals(
+        analyzer.transform['split-sentences']('첫 문장입니다. 다음 문장인가요? 네!'),
+        '첫 문장입니다.\n다음 문장인가요?\n네!',
+        '한국어 문장 부호 뒤에서 줄바꿈'
+    );
+    assertEquals(
+        analyzer.transform['split-sentences']('끝입니다.” 다음 문장입니다.'),
+        '끝입니다.”\n다음 문장입니다.',
+        '닫는 따옴표 뒤에서도 문장을 나눔'
+    );
 });
 
 // ─────────────────────────────────────────────
