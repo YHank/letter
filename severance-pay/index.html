@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script>
+        // 구 SPA URL(?page=xxx) → 클린 URL 리다이렉트 (하위호환)
+        (function () {
+        var routes = {
+        'spellcheck_simple': '/spellcheck/',
+        'salary': '/salary/',
+        'typing_practice': '/typing-practice/',
+        'insurance_calculator': '/insurance-calculator/',
+        'severancepay': '/severance-pay/',
+        'scientific_calculator': '/scientific-calculator/'
+        };
+        var page = new URLSearchParams(window.location.search).get('page');
+        if (page && routes[page]) {
+        window.location.replace(routes[page] + window.location.hash);
+        }
+        })();
+        </script>
+        
+        <!-- 보안 헤더 -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://ajax.googleapis.com https://pagead2.googlesyndication.com https://www.googletagmanager.com https://translate.google.com https://www.gstatic.com https://translate.googleapis.com https://ep2.adtrafficquality.google; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://www.gstatic.com https://translate.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https:; frame-src https://www.google.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net;">
+        <meta http-equiv="X-Content-Type-Options" content="nosniff">
+        <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+        <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1009706165028289"
+        crossorigin="anonymous"></script>
+        <link rel="preconnect" href="https://cdn.jsdelivr.net">
+        <link rel="preconnect" href="https://ajax.googleapis.com">
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+        <link rel="stylesheet" href="/css/index.css?6">
+        <link rel="dns-prefetch" href="//translate.google.com">
+
+        <!-- PWA Manifest -->
+        <link rel="manifest" href="/manifest.json">
+        <meta name="theme-color" content="#0d6efd">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="글자수세기">
+        <link rel="apple-touch-icon" sizes="180x180" href="/img/logo.webp">
+
+        <!-- Favicons -->
+        <link rel="icon" type="image/webp" sizes="16x16" href="/img/logo.webp">
+        <link rel="icon" type="image/webp" sizes="32x32" href="/img/logo.webp">
+        <link rel="shortcut icon" href="/img/logo.webp">
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous" defer>
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+        <meta name="robots" content="follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large">
+        
+        <!-- 추가 SEO 메타 태그 -->
+        <meta name="author" content="Letter Counter">
+        <meta name="language" content="Korean">
+        <meta name="revisit-after" content="7 days">
+        
+        <!-- 구조화된 데이터 (Schema.org) -->
+        
+        <!-- FAQ 구조화된 데이터 -->
+
+        <title>퇴직금 계산기 - 평균임금 기준 퇴직금</title>
+        <meta name="description" content="근로기준법 기준 퇴직금 계산기. 근무기간과 월 평균임금으로 예상 퇴직금을 계산하세요.">
+        <link rel="canonical" href="https://letter.ymyhome.loan/severance-pay/">
+        <meta property="og:locale" content="ko_KR">
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="퇴직금 계산기 - 평균임금 기준 퇴직금">
+        <meta property="og:description" content="근로기준법 기준 퇴직금 계산기. 근무기간과 월 평균임금으로 예상 퇴직금을 계산하세요.">
+        <meta property="og:url" content="https://letter.ymyhome.loan/severance-pay/">
+        <meta property="og:site_name" content="글자수세기">
+        <meta property="og:image" content="https://letter.ymyhome.loan/img/logo.webp">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="퇴직금 계산기 - 평균임금 기준 퇴직금">
+        <meta name="twitter:description" content="근로기준법 기준 퇴직금 계산기. 근무기간과 월 평균임금으로 예상 퇴직금을 계산하세요.">
+        <meta name="twitter:image" content="https://letter.ymyhome.loan/img/logo.webp">
+
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "퇴직금 계산기",
+            "url": "https://letter.ymyhome.loan/severance-pay/",
+            "description": "근로기준법 기준 퇴직금 계산기. 근무기간과 월 평균임금으로 예상 퇴직금을 계산하세요.",
+            "applicationCategory": "UtilityApplication",
+            "operatingSystem": "All",
+            "inLanguage": "ko",
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "KRW"
+            },
+            "isPartOf": {
+                "@type": "WebSite",
+                "name": "글자수세기",
+                "url": "https://letter.ymyhome.loan/"
+            }
+        }
+        </script>
+    </head>
+    <body>
+        <script>
+            // HTTPS 강제 적용
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                location.replace('https:' + window.location.href.substring(window.location.protocol.length));
+            }
+        </script>
+<nav class="navbar navbar-expand-lg navbar-light bg-light" aria-label="메인 네비게이션">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/" data-i18n="app.brand">글자수 세기</a>
+
+                <!-- 항상 표시: 다크모드 토글 + 모바일 햄버거 (데스크탑에서 오른쪽 정렬) -->
+                <div class="d-flex align-items-center gap-2 order-lg-last">
+                    <button type="button" id="darkModeToggle" class="dark-mode-toggle" aria-label="다크모드 토글" aria-pressed="false">
+                        <svg id="darkModeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+                        </svg>
+                        <svg id="lightModeIcon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+                        </svg>
+                    </button>
+                    <button class="navbar-toggler border-0" type="button"
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasNavbar"
+                            aria-controls="offcanvasNavbar"
+                            aria-label="메뉴 열기">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+
+                <!-- 오프캔버스 네비게이션 (모바일: 슬라이드 패널, 데스크탑: 인라인) -->
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel" data-bs-backdrop="false">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel" data-i18n="navigation.menu">메뉴</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="닫기"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/" data-i18n="navigation.counter">글자수 / 단어수</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/spellcheck/" data-i18n="navigation.spellcheck">맞춤법 검사</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/salary/" data-i18n="navigation.salary">연봉실수령</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/typing-practice/" data-i18n="navigation.typing_practice">타자연습</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false" data-i18n="navigation.calculators">계산기 모음</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/insurance-calculator/" data-i18n="navigation.insurance">4대보험료 계산기</a></li>
+                                    <li><a class="dropdown-item" href="/severance-pay/" data-i18n="navigation.severance">퇴직금 계산기</a></li>
+                                    <li><a class="dropdown-item" href="/scientific-calculator/" data-i18n="navigation.scientific">공학용 계산기</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item disabled" href="#" data-i18n="navigation.more_soon">더 많은 계산기 준비중...</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+<div class="container">
+            <div class="row px-0 mx-0 justify-content-center mt-4 d-none d-lg-flex">
+                <ins class="adsbygoogle"
+                    style="display:inline-block;width:728px;height:90px"
+                    data-ad-client="ca-pub-1009706165028289"
+                    data-ad-slot="8081181989"></ins>
+            </div>
+        </div>
+        <main class="container" role="main" id="main-content">
+<div class="container mt-5 mb-5">
+    <div class="text-center mb-5">
+        <h1 class="mb-3">
+            <span class="d-inline-block p-3 rounded-circle bg-warning bg-opacity-10 mb-3">
+                <i class="fas fa-hand-holding-usd text-warning"></i>
+            </span>
+            <br>
+            <span data-i18n="severance.title">퇴직금 계산기</span>
+        </h1>
+        <p class="text-muted" data-i18n="severance.subtitle">근로자퇴직급여 보장법 기준 퇴직금을 계산합니다 (1년 이상 근무 시 지급)</p>
+        <p class="text-muted small mb-3">평균임금과 근속기간에 연간 상여금·연차수당까지 반영해 퇴직금을 계산합니다. 2026년 최신 기준 적용.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-edit me-2"></i>근무 정보 입력</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="sv_years" class="form-label" data-i18n="severance.work_years">근무 기간 (년)</label>
+                            <input type="number" class="form-control" id="sv_years" min="0" max="50" placeholder="예: 3" inputmode="numeric">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="sv_months" class="form-label" data-i18n="severance.work_months">근무 기간 (개월)</label>
+                            <input type="number" class="form-control" id="sv_months" min="0" max="11" placeholder="예: 6" inputmode="numeric">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="sv_days" class="form-label" data-i18n="severance.work_days">근무 기간 (일)</label>
+                            <input type="number" class="form-control" id="sv_days" min="0" max="30" placeholder="예: 15" inputmode="numeric">
+                        </div>
+                        <div class="col-12">
+                            <label for="sv_monthly_salary" class="form-label">
+                                <span data-i18n="severance.avg_monthly_wage">최근 3개월 월 평균임금 (원)</span>
+                                <span class="text-muted small">— 기본급 + 수당 포함</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="sv_monthly_salary" placeholder="예: 3,000,000" inputmode="numeric">
+                                <span class="input-group-text">원</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sv_annual_bonus" class="form-label">
+                                <span data-i18n="severance.annual_bonus">연간 상여금 총액 (원)</span>
+                                <span class="text-muted small">— 선택</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="sv_annual_bonus" placeholder="예: 4,000,000" inputmode="numeric">
+                                <span class="input-group-text">원</span>
+                            </div>
+                            <div class="form-text">퇴직 전 1년간 받은 상여금 합계 (3/12만 산입)</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sv_annual_leave_pay" class="form-label">
+                                <span data-i18n="severance.annual_leave_pay">연차수당 (원)</span>
+                                <span class="text-muted small">— 선택</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="sv_annual_leave_pay" placeholder="예: 300,000" inputmode="numeric">
+                                <span class="input-group-text">원</span>
+                            </div>
+                            <div class="form-text">전전년도 발생분 중 전년도 미사용 일수분 (3/12만 산입)</div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-4">
+                        <button class="btn btn-warning flex-grow-1" onclick="calculateSeverance()" aria-label="퇴직금 계산 실행">
+                            <i class="fas fa-calculator me-1"></i><span data-i18n="calculator.calculate">계산하기</span>
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="resetSeverance()" aria-label="입력 초기화">
+                            <i class="fas fa-redo me-1"></i><span data-i18n="calculator.reset">초기화</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4 d-none" id="sv_result_card" aria-live="polite" aria-label="퇴직금 계산 결과">
+                <div class="card-header bg-warning bg-opacity-10">
+                    <h5 class="mb-0"><i class="fas fa-receipt me-2 text-warning"></i>계산 결과</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center py-3 mb-4">
+                        <div class="text-muted small mb-1" data-i18n="severance.estimated_severance">예상 퇴직금</div>
+                        <div class="fs-2 fw-bold text-warning" id="sv_result_amount">0원</div>
+                        <div class="text-muted small mt-1" id="sv_result_period"></div>
+                    </div>
+                    <hr>
+                    <div class="row g-2 text-center">
+                        <div class="col-6 col-md-4">
+                            <div class="small text-muted" data-i18n="severance.total_days">총 근무일수</div>
+                            <div class="fw-semibold" id="sv_total_days">-</div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="small text-muted" data-i18n="severance.daily_wage">1일 평균임금</div>
+                            <div class="fw-semibold" id="sv_daily_wage">-</div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="small text-muted">월 평균임금</div>
+                            <div class="fw-semibold" id="sv_monthly_display">-</div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="small text-muted">상여·연차 가산액</div>
+                            <div class="fw-semibold" id="sv_extra_display">-</div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="small text-muted">계산식</div>
+                            <div class="fw-semibold small" id="sv_formula">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>계산 기준 안내</h6>
+                </div>
+                <div class="card-body small text-muted">
+                    <ul class="mb-0 ps-3">
+                        <li>퇴직금 = <strong>1일 평균임금 × 30일 × (총 재직일수 ÷ 365)</strong></li>
+                        <li>1일 평균임금 = (3개월 임금총액 + 연간상여금 × 3/12 + 연차수당 × 3/12) ÷ 3개월 총 역일 수<br>
+                            <span class="text-secondary">본 계산기는 3개월을 91.2일(월 30.4일)로 근사합니다. 실제 역일 수(89~92일)와 최대 ±1.3% 차이가 날 수 있습니다.</span></li>
+                        <li>1일 통상임금이 1일 평균임금보다 크면 <strong>통상임금</strong>을 기준으로 계산해야 합니다 (본 계산기는 미반영)</li>
+                        <li>계속근로기간 1년 미만은 퇴직금 지급 의무 없음 (2026년 8월 기준, 확대 입법 논의 중)</li>
+                        <li>4주 평균 주 15시간 이상 근무한 근로자에게만 적용됩니다</li>
+                        <li>육아휴직 등 평균임금 산정 제외기간은 반영되지 않습니다</li>
+                        <li>본 계산기는 참고용이며, 실제 금액은 임금명세서 기준으로 달라질 수 있습니다<br>
+                            정확한 금액은 <a href="https://www.moel.go.kr/retirementpayCal.do" target="_blank" rel="noopener noreferrer">고용노동부 퇴직금 계산기</a>에서 확인하세요</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        </main>
+<footer class="mt-5" role="contentinfo">
+            <div class="container">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <p class="text-muted small mb-2"><strong data-i18n="footer.related_tools">관련 도구</strong></p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="/salary/" class="text-muted small text-decoration-none" data-i18n="navigation.salary">연봉 계산기</a>
+                            <span class="text-muted">·</span>
+                            <a href="/insurance-calculator/" class="text-muted small text-decoration-none" data-i18n="navigation.insurance">4대보험 계산기</a>
+                            <span class="text-muted">·</span>
+                            <a href="/spellcheck/" class="text-muted small text-decoration-none" data-i18n="navigation.spellcheck">맞춤법 검사기</a>
+                            <span class="text-muted">·</span>
+                            <a href="/typing-practice/" class="text-muted small text-decoration-none" data-i18n="navigation.typing_practice">타자 연습</a>
+                            <span class="text-muted">·</span>
+                            <a href="/severance-pay/" class="text-muted small text-decoration-none" data-i18n="navigation.severance">퇴직금 계산기</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 text-center mb-3">
+                        <p class="text-muted small">
+                            © 2024 글자수 세기 |
+                            <a href="https://letter.ymyhome.loan" class="text-muted">letter.ymyhome.loan</a> |
+                            <span data-i18n="footer.privacy">모든 데이터는 브라우저에만 저장됩니다</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row px-0 mx-0 justify-content-center mt-4">
+                <ins class="adsbygoogle text-center"
+                    style="display:block"
+                    data-ad-client="ca-pub-1009706165028289"
+                    data-ad-slot="6057653874"
+                    data-ad-format="auto"
+                    data-full-width-responsive="true"></ins>
+            </div>
+        </footer>
+
+        <script src="/js/utils.js?3" defer></script>
+        <script src="/js/darkmode.js" defer></script>
+        <script src="/js/i18n.js?3" defer></script>
+        <script src="/js/toast.js?2" defer></script>
+        <script src="/js/error-handler.js?1" defer></script>
+        <script src="/js/pwa.js" defer></script>
+        <script src="/js/mobile-handler.js?1" defer></script>
+        <script src="/js/ads-init.js" defer></script>
+        <script src="/js/severancepay.js?2" defer></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (window.Toast) window.Toast.init();
+                if (window.ErrorHandler) window.ErrorHandler.init();
+
+                if (window.pwaManager) {
+                    window.pwaManager.init();
+                    window.pwaManager.setupNetworkMonitoring();
+                }
+
+                if (window.MobileTouchHandler) {
+                    window.mobileHandler = window.mobileHandler || new window.MobileTouchHandler();
+                    window.mobileHandler.init();
+                }
+
+                if (window.bootstrap) {
+                    document.querySelectorAll('.dropdown-toggle').forEach(function (el) {
+                        new window.bootstrap.Dropdown(el);
+                    });
+                }
+
+                if (typeof window.initializeSeverancePay === 'function') {
+                    try {
+                        window.initializeSeverancePay();
+                    } catch (error) {
+                        console.error('페이지 초기화 실패: severance-pay', error);
+                    }
+                }
+
+                if (window.i18nManager) {
+                    window.i18nManager.init().catch(function (error) {
+                        console.error('다국어 초기화 실패', error);
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>

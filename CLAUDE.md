@@ -48,11 +48,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 아키텍처 및 핵심 구현
 
-### 동적 페이지 로딩 시스템
-단일 페이지 아키텍처를 사용하여 콘텐츠를 동적으로 로드합니다:
-- 메인 진입점: `index.html`
-- 네비게이션 클릭 시 jQuery의 `.load()`를 통해 `/html/` 디렉토리에서 페이지 로드
-- URL 패턴: `/?page=pagename` (예: `/?page=spellcheck_simple`)
+### 클린 URL 정적 페이지 구조
+각 메뉴는 독립된 정적 페이지입니다 (SEO 색인을 위해 2026-08-21 SPA에서 전환):
+- 메인 진입점: `index.html` (홈 = 글자수 세기)
+- 각 메뉴: `/{경로}/index.html` → `/{경로}/` 로 서빙 (GitHub Pages 기본 동작)
+  - `/spellcheck/`, `/salary/`, `/typing-practice/`,
+    `/insurance-calculator/`, `/severance-pay/`, `/scientific-calculator/`
+- **페이지는 손으로 고치지 말고 `node tools/build-pages.js`로 재생성**한다.
+  `index.html`의 head 공통 블록·nav·footer + `html/{조각}.html` 본문을 합쳐 만든다.
+  즉 `html/*.html` 조각과 `index.html` 셸이 여전히 원본이다.
+- 구 URL `/?page=xxx`는 `index.html` head의 shim이 새 경로로 `location.replace` 한다
+- 각 페이지는 고유 title·description·self canonical·WebApplication JSON-LD를 갖는다
+- 서브페이지는 `js/index.js`와 `js/navigation-manager.js`를 로드하지 않는다
+  (홈 전용 DOM에 의존하므로). 공통 초기화는 각 페이지 하단 인라인 스크립트가 담당
+- Google 번역 위젯은 홈 전용이다. 콜백이 `index.js`에만 있어 서브페이지에서는 제외
 - 페이지 초기화: 각 페이지는 로드 후 호출되는 초기화 함수를 가질 수 있음
   - 맞춤법 검사 페이지: `initializeSimpleSpellchecker()`
   - 연봉 계산기: `initializeSalaryPage()`
@@ -151,11 +160,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - JSON 수정 시 `js/practice_data.js`의 `DATA_VERSION`을 1 증가시켜 캐시를 무효화할 것
   - 새 JSON 파일은 `sw.js`의 `STATIC_ASSETS`에도 추가
 
-### 페이지 로딩 흐름
-1. 사용자가 `data-move` 속성이 있는 네비게이션 링크 클릭
-2. jQuery가 `/html/{page}.html`에서 HTML 로드
-3. 페이지별 초기화 함수가 있으면 호출
-4. URL이 `/?page={pagename}` 형식으로 업데이트
+### 페이지 이동 흐름
+1. 네비게이션 링크는 평문 `<a href="/salary/">` — 클릭 시 일반 페이지 이동
+2. 해당 경로의 정적 `index.html`이 그대로 서빙됨 (JS 렌더링 불필요)
+3. 페이지 하단 인라인 스크립트가 공통 매니저와 페이지별 초기화 함수를 호출
+4. 조각(`html/*.html`)이나 셸(`index.html`)을 고쳤으면 `node tools/build-pages.js` 재실행
 
 **4대보험료 계산기** (`js/insurance_calculator.js`)
 - 2025년 한국 4대보험 요율 기준

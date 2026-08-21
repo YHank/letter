@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script>
+        // 구 SPA URL(?page=xxx) → 클린 URL 리다이렉트 (하위호환)
+        (function () {
+        var routes = {
+        'spellcheck_simple': '/spellcheck/',
+        'salary': '/salary/',
+        'typing_practice': '/typing-practice/',
+        'insurance_calculator': '/insurance-calculator/',
+        'severancepay': '/severance-pay/',
+        'scientific_calculator': '/scientific-calculator/'
+        };
+        var page = new URLSearchParams(window.location.search).get('page');
+        if (page && routes[page]) {
+        window.location.replace(routes[page] + window.location.hash);
+        }
+        })();
+        </script>
+        
+        <!-- 보안 헤더 -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://ajax.googleapis.com https://pagead2.googlesyndication.com https://www.googletagmanager.com https://translate.google.com https://www.gstatic.com https://translate.googleapis.com https://ep2.adtrafficquality.google; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://www.gstatic.com https://translate.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https:; frame-src https://www.google.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net;">
+        <meta http-equiv="X-Content-Type-Options" content="nosniff">
+        <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+        <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1009706165028289"
+        crossorigin="anonymous"></script>
+        <link rel="preconnect" href="https://cdn.jsdelivr.net">
+        <link rel="preconnect" href="https://ajax.googleapis.com">
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+        <link rel="stylesheet" href="/css/index.css?6">
+        <link rel="dns-prefetch" href="//translate.google.com">
+
+        <!-- PWA Manifest -->
+        <link rel="manifest" href="/manifest.json">
+        <meta name="theme-color" content="#0d6efd">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="글자수세기">
+        <link rel="apple-touch-icon" sizes="180x180" href="/img/logo.webp">
+
+        <!-- Favicons -->
+        <link rel="icon" type="image/webp" sizes="16x16" href="/img/logo.webp">
+        <link rel="icon" type="image/webp" sizes="32x32" href="/img/logo.webp">
+        <link rel="shortcut icon" href="/img/logo.webp">
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous" defer>
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+        <meta name="robots" content="follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large">
+        
+        <!-- 추가 SEO 메타 태그 -->
+        <meta name="author" content="Letter Counter">
+        <meta name="language" content="Korean">
+        <meta name="revisit-after" content="7 days">
+        
+        <!-- 구조화된 데이터 (Schema.org) -->
+        
+        <!-- FAQ 구조화된 데이터 -->
+
+        <title>타자연습 - 한글/영어 타자 속도 연습</title>
+        <meta name="description" content="한글/영어 타자 연습. WPM 속도 측정, 정확도 분석, 레벨 시스템으로 타자 실력을 향상하세요.">
+        <link rel="canonical" href="https://letter.ymyhome.loan/typing-practice/">
+        <meta property="og:locale" content="ko_KR">
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="타자연습 - 한글/영어 타자 속도 연습">
+        <meta property="og:description" content="한글/영어 타자 연습. WPM 속도 측정, 정확도 분석, 레벨 시스템으로 타자 실력을 향상하세요.">
+        <meta property="og:url" content="https://letter.ymyhome.loan/typing-practice/">
+        <meta property="og:site_name" content="글자수세기">
+        <meta property="og:image" content="https://letter.ymyhome.loan/img/logo.webp">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="타자연습 - 한글/영어 타자 속도 연습">
+        <meta name="twitter:description" content="한글/영어 타자 연습. WPM 속도 측정, 정확도 분석, 레벨 시스템으로 타자 실력을 향상하세요.">
+        <meta name="twitter:image" content="https://letter.ymyhome.loan/img/logo.webp">
+
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "타자 연습",
+            "url": "https://letter.ymyhome.loan/typing-practice/",
+            "description": "한글/영어 타자 연습. WPM 속도 측정, 정확도 분석, 레벨 시스템으로 타자 실력을 향상하세요.",
+            "applicationCategory": "UtilityApplication",
+            "operatingSystem": "All",
+            "inLanguage": "ko",
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "KRW"
+            },
+            "isPartOf": {
+                "@type": "WebSite",
+                "name": "글자수세기",
+                "url": "https://letter.ymyhome.loan/"
+            }
+        }
+        </script>
+    </head>
+    <body>
+        <script>
+            // HTTPS 강제 적용
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                location.replace('https:' + window.location.href.substring(window.location.protocol.length));
+            }
+        </script>
+<nav class="navbar navbar-expand-lg navbar-light bg-light" aria-label="메인 네비게이션">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/" data-i18n="app.brand">글자수 세기</a>
+
+                <!-- 항상 표시: 다크모드 토글 + 모바일 햄버거 (데스크탑에서 오른쪽 정렬) -->
+                <div class="d-flex align-items-center gap-2 order-lg-last">
+                    <button type="button" id="darkModeToggle" class="dark-mode-toggle" aria-label="다크모드 토글" aria-pressed="false">
+                        <svg id="darkModeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+                        </svg>
+                        <svg id="lightModeIcon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+                        </svg>
+                    </button>
+                    <button class="navbar-toggler border-0" type="button"
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasNavbar"
+                            aria-controls="offcanvasNavbar"
+                            aria-label="메뉴 열기">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+
+                <!-- 오프캔버스 네비게이션 (모바일: 슬라이드 패널, 데스크탑: 인라인) -->
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel" data-bs-backdrop="false">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel" data-i18n="navigation.menu">메뉴</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="닫기"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/" data-i18n="navigation.counter">글자수 / 단어수</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/spellcheck/" data-i18n="navigation.spellcheck">맞춤법 검사</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/salary/" data-i18n="navigation.salary">연봉실수령</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/typing-practice/" data-i18n="navigation.typing_practice">타자연습</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false" data-i18n="navigation.calculators">계산기 모음</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/insurance-calculator/" data-i18n="navigation.insurance">4대보험료 계산기</a></li>
+                                    <li><a class="dropdown-item" href="/severance-pay/" data-i18n="navigation.severance">퇴직금 계산기</a></li>
+                                    <li><a class="dropdown-item" href="/scientific-calculator/" data-i18n="navigation.scientific">공학용 계산기</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item disabled" href="#" data-i18n="navigation.more_soon">더 많은 계산기 준비중...</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+<div class="container">
+            <div class="row px-0 mx-0 justify-content-center mt-4 d-none d-lg-flex">
+                <ins class="adsbygoogle"
+                    style="display:inline-block;width:728px;height:90px"
+                    data-ad-client="ca-pub-1009706165028289"
+                    data-ad-slot="8081181989"></ins>
+            </div>
+        </div>
+        <main class="container" role="main" id="main-content">
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <div class="text-center mb-5">
+                <h1 class="mb-3">
+                    <span class="d-inline-block p-3 rounded-circle bg-primary bg-opacity-10 mb-3">
+                        <i class="fas fa-keyboard text-primary"></i>
+                    </span>
+                    <br>
+                    <span data-i18n="typing.page_title">한글 타자 연습</span>
+                </h1>
+                <p class="text-muted" data-i18n="typing.subtitle">다양한 모드로 타자 실력을 향상시켜보세요</p>
+                <p class="text-muted small mb-3" data-i18n="typing.description">한글과 영어 타자 연습을 통해 타이핑 속도와 정확도를 향상시켜보세요. WPM 측정과 실시간 정확도 피드백을 제공합니다.</p>
+            </div>
+            
+            <!-- 타자 연습 버전 선택 -->
+            <div class="row mb-4" id="version-selector">
+                <div class="col-6 col-md-6 col-lg-3 mb-3">
+                    <div class="card h-100 practice-mode-card" data-practice-mode="free">
+                        <div class="card-body text-center d-flex flex-column">
+                            <div class="mode-icon-wrapper mb-3">
+                                <div class="mode-icon bg-primary bg-opacity-10 rounded-circle p-4 d-inline-block">
+                                    <i class="fas fa-keyboard fa-3x text-primary"></i>
+                                </div>
+                            </div>
+                            <h5 class="card-title fw-bold" data-i18n="typing.mode_free">자유 타자 연습</h5>
+                            <p class="card-text flex-grow-1" data-i18n="typing.mode_free_desc">자유롭게 타자를 연습할 수 있습니다. 원하는 텍스트를 입력하여 연습하세요.</p>
+                            <button class="btn btn-primary select-mode-btn">
+                                <i class="fas fa-play me-2"></i>선택하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-6 col-lg-3 mb-3">
+                    <div class="card h-100 practice-mode-card" data-practice-mode="beginner">
+                        <div class="card-body text-center d-flex flex-column">
+                            <div class="mode-icon-wrapper mb-3">
+                                <div class="mode-icon bg-success bg-opacity-10 rounded-circle p-4 d-inline-block">
+                                    <i class="fas fa-graduation-cap fa-3x text-success"></i>
+                                </div>
+                            </div>
+                            <h5 class="card-title fw-bold" data-i18n="typing.mode_beginner">초보자 타자 연습</h5>
+                            <p class="card-text flex-grow-1" data-i18n="typing.mode_beginner_desc">키보드 위치를 보며 타자를 익힐 수 있습니다. 타자 위치 학습에 최적화되어 있습니다.</p>
+                            <button class="btn btn-success select-mode-btn">
+                                <i class="fas fa-play me-2"></i>선택하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-6 col-lg-3 mb-3">
+                    <div class="card h-100 practice-mode-card" data-practice-mode="special">
+                        <div class="card-body text-center d-flex flex-column">
+                            <div class="mode-icon-wrapper mb-3">
+                                <div class="mode-icon bg-warning bg-opacity-10 rounded-circle p-4 d-inline-block">
+                                    <i class="fas fa-hashtag fa-3x text-warning"></i>
+                                </div>
+                            </div>
+                            <h5 class="card-title fw-bold" data-i18n="typing.mode_special">특수 타자 연습</h5>
+                            <p class="card-text flex-grow-1" data-i18n="typing.mode_special_desc">숫자, 특수문자, 천지인 등 특별한 타자를 연습할 수 있습니다.</p>
+                            <button class="btn btn-warning select-mode-btn">
+                                <i class="fas fa-play me-2"></i>선택하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-6 col-lg-3 mb-3">
+                    <div class="card h-100 practice-mode-card" data-practice-mode="standard">
+                        <div class="card-body text-center d-flex flex-column">
+                            <div class="mode-icon-wrapper mb-3">
+                                <div class="mode-icon bg-info bg-opacity-10 rounded-circle p-4 d-inline-block">
+                                    <i class="fas fa-chart-line fa-3x text-info"></i>
+                                </div>
+                            </div>
+                            <h5 class="card-title fw-bold" data-i18n="typing.mode_standard">표준 타자 연습</h5>
+                            <p class="card-text flex-grow-1" data-i18n="typing.mode_standard_desc">단어, 문장, 문단을 단계별로 연습하며 실력을 향상시킬 수 있습니다.</p>
+                            <button class="btn btn-info select-mode-btn">
+                                <i class="fas fa-play me-2"></i>선택하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3 mb-3">
+                    <div class="card h-100 practice-mode-card" data-practice-mode="custom">
+                        <div class="card-body text-center d-flex flex-column">
+                            <div class="mode-icon-wrapper mb-3">
+                                <div class="mode-icon bg-secondary bg-opacity-10 rounded-circle p-4 d-inline-block">
+                                    <i class="fas fa-file-upload fa-3x text-secondary"></i>
+                                </div>
+                            </div>
+                            <h5 class="card-title fw-bold" data-i18n="typing.mode_custom">사용자 정의</h5>
+                            <p class="card-text flex-grow-1" data-i18n="typing.mode_custom_desc">직접 준비한 TXT 파일을 업로드하고 문장 또는 문단 단위로 연습할 수 있습니다.</p>
+                            <button class="btn btn-secondary select-mode-btn">
+                                <i class="fas fa-play me-2"></i>선택하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 연습 영역 (처음엔 숨김) -->
+            <div id="practice-area" style="display: none;">
+                <div class="mb-3 d-flex justify-content-between align-items-center">
+                    <button class="btn btn-secondary btn-sm" id="back-to-menu">
+                        <i class="fas fa-arrow-left"></i> <span data-i18n="typing.back_to_menu">메뉴로 돌아가기</span>
+                    </button>
+                    <div class="btn-group" role="group" aria-label="언어 선택" data-i18n-aria="typing.lang_select">
+                        <button type="button" class="btn btn-outline-secondary btn-sm active" id="lang-korean" data-lang="korean" data-i18n="typing.lang_korean">한글</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="lang-english" data-lang="english">English</button>
+                    </div>
+                </div>
+                
+                <!-- 자유 타자 연습 -->
+                <div id="free-practice" class="practice-content" style="display: none;">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3" data-i18n="typing.mode_free">자유 타자 연습</h4>
+                            <p class="text-muted" data-i18n="typing.free_desc">다양한 명언과 속담을 랜덤으로 연습합니다.</p>
+                            <button id="start-free-practice" class="btn btn-primary" data-i18n="typing.start_practice">연습 시작</button>
+                            
+                            <div id="free-typing-area" style="display: none;" class="mt-4">
+                                <div id="free-typing-text" class="fs-4 mb-4 p-3 bg-light rounded">
+                                    <span id="free-typed-text" class="text-success"></span><span id="free-current-char" class="bg-primary text-white"></span><span id="free-remaining-text"></span>
+                                </div>
+                                <input type="text" id="free-typing-input" class="form-control form-control-lg" placeholder="위 텍스트를 입력하세요..." data-i18n-placeholder="typing.input_ph" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
+                                <div class="mt-3">
+                                    <button id="reset-free-practice" class="btn btn-secondary" data-i18n="typing.retry">다시하기</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 초보자 타자 연습 -->
+                <div id="beginner-practice" class="practice-content" style="display: none;">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3" data-i18n="typing.mode_beginner">초보자 타자 연습</h4>
+                            
+                            <!-- 키보드 시각화 -->
+                            <div id="keyboard-visual" class="mb-4">
+                                <div class="keyboard-container">
+                                    <!-- 키보드 레이아웃이 여기에 들어갑니다 -->
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label" data-i18n="typing.practice_type">연습 타입 선택:</label>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-outline-primary active" data-beginner-type="home" data-i18n="typing.type_home">홈 포지션</button>
+                                    <button type="button" class="btn btn-outline-primary" data-beginner-type="consonant" data-i18n="typing.type_consonant">자음 연습</button>
+                                    <button type="button" class="btn btn-outline-primary" data-beginner-type="vowel" data-i18n="typing.type_vowel">모음 연습</button>
+                                </div>
+                            </div>
+                            
+                            <div id="beginner-typing-text" class="fs-4 mb-4 p-3 bg-light rounded">
+                                <span id="beginner-typed-text" class="text-success"></span><span id="beginner-current-char" class="bg-primary text-white"></span><span id="beginner-remaining-text"></span>
+                            </div>
+                            
+                            <input type="text" id="beginner-typing-input" class="form-control form-control-lg" placeholder="키보드를 보며 입력하세요..." data-i18n-placeholder="typing.input_ph_beginner" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
+                            
+                            <div class="mt-3">
+                                <button id="start-beginner-practice" class="btn btn-success" data-i18n="typing.start">시작</button>
+                                <button id="reset-beginner-practice" class="btn btn-secondary" data-i18n="typing.retry">다시하기</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 특수 타자 연습 -->
+                <div id="special-practice" class="practice-content" style="display: none;">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3" data-i18n="typing.mode_special">특수 타자 연습</h4>
+                            
+                            <!-- 키보드 시각화 -->
+                            <div id="special-keyboard-visual" class="mb-4">
+                                <div class="special-keyboard-container">
+                                    <!-- 키보드 레이아웃이 여기에 들어갑니다 -->
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label" data-i18n="typing.special_type">특수 타자 타입 선택:</label>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-outline-warning active" data-special-type="numbers" data-i18n="typing.special_numbers">숫자</button>
+                                    <button type="button" class="btn btn-outline-warning" data-special-type="symbols" data-i18n="typing.special_symbols">특수문자</button>
+                                    <button type="button" class="btn btn-outline-warning" data-special-type="mixed" data-i18n="typing.special_mixed">혼합</button>
+                                    <button type="button" class="btn btn-outline-warning" data-special-type="chunjiin" data-i18n="typing.special_chunjiin">천지인</button>
+                                </div>
+                            </div>
+                            
+                            <div id="special-typing-text" class="fs-4 mb-4 p-3 bg-light rounded">
+                                <span id="special-typed-text" class="text-success"></span><span id="special-current-char" class="bg-primary text-white"></span><span id="special-remaining-text"></span>
+                            </div>
+                            
+                            <input type="text" id="special-typing-input" class="form-control form-control-lg" placeholder="위 텍스트를 입력하세요..." data-i18n-placeholder="typing.input_ph" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
+                            
+                            <div class="mt-3">
+                                <button id="start-special-practice" class="btn btn-warning" data-i18n="typing.start">시작</button>
+                                <button id="reset-special-practice" class="btn btn-secondary" data-i18n="typing.retry">다시하기</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 표준 타자 연습 (기존 내용) -->
+                <div id="standard-practice" class="practice-content" style="display: none;">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title" data-i18n="typing.practice_mode">연습 모드 선택</h5>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-outline-primary active" data-standard-mode="words" data-i18n="typing.std_words">단어 연습</button>
+                                        <button type="button" class="btn btn-outline-primary" data-standard-mode="sentences" data-i18n="typing.std_sentences">문장 연습</button>
+                                        <button type="button" class="btn btn-outline-primary" data-standard-mode="paragraph" data-i18n="typing.std_paragraph">문단 연습</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title" data-i18n="typing.difficulty">난이도</h5>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-outline-success active" data-standard-level="easy" data-i18n="typing.level_easy">쉬움</button>
+                                        <button type="button" class="btn btn-outline-warning" data-standard-level="medium" data-i18n="typing.level_medium">보통</button>
+                                        <button type="button" class="btn btn-outline-danger" data-standard-level="hard" data-i18n="typing.level_hard">어려움</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 타자 연습 영역 -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div id="standard-typing-text" class="fs-4 mb-4 p-3 bg-light rounded">
+                                <span id="standard-typed-text" class="text-success"></span><span id="standard-current-char" class="bg-primary text-white"></span><span id="standard-remaining-text"></span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <input type="text" id="standard-typing-input" class="form-control form-control-lg" placeholder="위 텍스트를 입력하세요..." data-i18n-placeholder="typing.input_ph" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button id="standard-start-btn" class="btn btn-success" data-i18n="typing.start">시작</button>
+                                <button id="standard-reset-btn" class="btn btn-secondary" data-i18n="typing.retry">다시하기</button>
+                                <button id="standard-next-btn" class="btn btn-primary" style="display: none;" data-i18n="typing.next_question">다음 문제</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 사용자 정의 타자 연습 -->
+                <div id="custom-practice" class="practice-content" style="display: none;">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3" data-i18n="typing.custom_title">사용자 정의 타자 연습</h4>
+                            <p class="text-muted mb-3" data-i18n="typing.custom_desc">TXT 파일을 업로드하면 문장 또는 문단 단위로 자동 분리하여 연습할 수 있습니다.</p>
+
+                            <div class="row g-3 align-items-end mb-3">
+                                <div class="col-12 col-lg-7">
+                                    <label for="custom-file-input" class="form-label" data-i18n="typing.custom_file">텍스트 파일 업로드</label>
+                                    <input type="file" id="custom-file-input" class="form-control" accept=".txt,text/plain">
+                                </div>
+                                <div class="col-12 col-sm-6 col-lg-3">
+                                    <label for="custom-segment-type" class="form-label" data-i18n="typing.custom_split">분할 방식</label>
+                                    <select id="custom-segment-type" class="form-select">
+                                        <option value="sentences" data-i18n="typing.split_sentences">문장 단위</option>
+                                        <option value="paragraphs" data-i18n="typing.split_paragraphs">문단 단위</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-sm-6 col-lg-2 d-grid">
+                                    <button id="start-custom-practice" class="btn btn-secondary" disabled>
+                                        <i class="fas fa-play me-2"></i>시작
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="custom-upload-feedback" class="alert alert-secondary mb-3" role="status">
+                                업로드할 TXT 파일을 선택해주세요.
+                            </div>
+
+                            <div id="custom-typing-text" class="fs-4 mb-4 p-3 bg-light rounded">
+                                <span id="custom-typed-text" class="text-success"></span><span id="custom-current-char" class="bg-primary text-white"></span><span id="custom-remaining-text">파일을 업로드하면 연습 문장이 여기에 표시됩니다.</span>
+                            </div>
+
+                            <div class="mb-3">
+                                <input type="text" id="custom-typing-input" class="form-control form-control-lg" placeholder="업로드한 텍스트를 입력하세요..." data-i18n-placeholder="typing.input_ph_custom" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text" disabled>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                                <small id="custom-segment-meta" class="text-muted">업로드 후 연습 구간 수가 표시됩니다.</small>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button id="reset-custom-practice" class="btn btn-secondary" data-i18n="typing.retry">다시하기</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 공통 통계 영역 -->
+                <div class="row mt-4 g-3" id="stats-area" style="display: none;">
+                    <div class="col-6 col-md-3">
+                        <div class="stats-card h-100 text-center">
+                            <div class="stats-icon primary mx-auto mb-2">
+                                <i class="fas fa-tachometer-alt"></i>
+                            </div>
+                            <h6 class="text-muted small mb-1" data-i18n="typing.stat_speed">타수</h6>
+                            <h2 id="wpm" class="text-primary fw-bold mb-0 animate-number">0</h2>
+                            <small id="wpm-unit" class="text-muted">타/분</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stats-card h-100 text-center">
+                            <div class="stats-icon success mx-auto mb-2">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <h6 class="text-muted small mb-1" data-i18n="typing.accuracy">정확도</h6>
+                            <h2 id="accuracy" class="text-success fw-bold mb-0 animate-number">100%</h2>
+                            <small class="text-muted" data-i18n="typing.accuracy">정확도</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stats-card h-100 text-center">
+                            <div class="stats-icon info mx-auto mb-2">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h6 class="text-muted small mb-1" data-i18n="typing.stat_time">시간</h6>
+                            <h2 id="time" class="text-info fw-bold mb-0">0:00</h2>
+                            <small class="text-muted" data-i18n="typing.elapsed">경과 시간</small>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="stats-card h-100 text-center">
+                            <div class="stats-icon warning mx-auto mb-2">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <h6 class="text-muted small mb-1" data-i18n="typing.stat_progress">진행률</h6>
+                            <h2 id="progress" class="text-warning fw-bold mb-0 animate-number">0%</h2>
+                            <small class="text-muted" data-i18n="typing.completed">완료</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 남은 시간 표시 영역 -->
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-hourglass-half text-danger me-2"></i>
+                                        <span id="remaining-time" class="text-danger fw-bold">남은 시간: 5:00</span>
+                                    </h6>
+                                    <small class="text-muted" data-i18n="typing.challenge_5min">5분 챌린지</small>
+                                </div>
+                                <div class="progress" style="height: 10px;">
+                                    <div id="time-progress-bar" class="progress-bar" role="progressbar" 
+                                         style="width: 100%; background: var(--warning-gradient);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 개인 기록 영역 -->
+                <div class="row mt-3" id="personal-records" style="display: none;">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    <i class="fas fa-trophy"></i> <span data-i18n="typing.personal_records">개인 기록</span>
+                                </h6>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <small class="text-muted" data-i18n="typing.best_wpm">최고 타수:</small>
+                                        <strong id="best-wpm">0</strong> <span data-i18n="typing.unit_kpm">타/분</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted" data-i18n="typing.avg_wpm">평균 타수:</small>
+                                        <strong id="avg-wpm">0</strong> <span data-i18n="typing.unit_kpm">타/분</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 성장 추이 차트 영역 -->
+                <div class="row mt-3" id="growth-chart-area" style="display: none;">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-3 text-muted">
+                                    <i class="fas fa-chart-line"></i> <span data-i18n="typing.growth_chart">WPM 성장 추이</span>
+                                </h6>
+                                <div class="btn-group btn-group-sm mb-3" role="group" aria-label="모드 필터" data-i18n-aria="typing.filter_mode">
+                                    <button type="button" class="btn btn-outline-primary active" data-chart-mode="all" data-i18n="typing.chart_all">전체</button>
+                                    <button type="button" class="btn btn-outline-primary" data-chart-mode="free" data-i18n="typing.chart_free">자유</button>
+                                    <button type="button" class="btn btn-outline-primary" data-chart-mode="beginner" data-i18n="typing.chart_beginner">초보자</button>
+                                    <button type="button" class="btn btn-outline-primary" data-chart-mode="special" data-i18n="typing.chart_special">특수</button>
+                                    <button type="button" class="btn btn-outline-primary" data-chart-mode="standard" data-i18n="typing.chart_standard">표준</button>
+                                </div>
+                                <div id="chart-no-data" class="text-center text-muted py-4" style="display: none;">
+                                    <i class="fas fa-chart-line fa-2x mb-2 d-block"></i>
+                                    <span data-i18n="typing.no_records">아직 기록이 없습니다. 연습을 시작해보세요!</span>
+                                </div>
+                                <div id="chart-container" style="position: relative; height: 200px;">
+                                    <canvas id="wpm-growth-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 결과 모달 -->
+            <div class="modal fade" id="resultModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" data-i18n="typing.result_title">타자 연습 결과</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="text-center">
+                                <h3 class="mb-4" data-i18n="typing.congrats">수고하셨습니다!</h3>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <h5 data-i18n="typing.final_wpm">최종 타수</h5>
+                                        <h2 id="final-wpm" class="text-primary">0</h2>
+                                    </div>
+                                    <div class="col-6">
+                                        <h5 data-i18n="typing.final_accuracy">최종 정확도</h5>
+                                        <h2 id="final-accuracy" class="text-success">0%</h2>
+                                    </div>
+                                </div>
+                                <hr>
+                                <p id="result-message" class="mt-3" style="white-space: pre-line;"></p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="buttons.close">닫기</button>
+                            <button type="button" class="btn btn-primary" id="continue-btn" data-bs-dismiss="modal" data-i18n="typing.continue_practice">계속 연습</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.practice-mode-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.practice-mode-card:hover {
+    transform: translateY(-5px);
+}
+
+/* 타이핑 입력창 스타일 */
+.typing-input[contenteditable="true"] {
+    min-height: 60px;
+    outline: none;
+    border: 2px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    background-color: #fff;
+    font-size: 1.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.typing-input[contenteditable="true"]:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.typing-input[contenteditable="true"]:empty:before {
+    content: attr(data-placeholder);
+    color: #6c757d;
+    font-style: italic;
+}
+
+.typing-input.is-invalid {
+    border-color: #dc3545;
+    animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* 키보드 시각화 스타일 */
+.keyboard-container, .special-keyboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid #dee2e6;
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.key {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    height: 50px;
+    margin: 2px;
+    background: #fff;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #495057;
+    transition: all 0.2s ease;
+    cursor: default;
+    user-select: none;
+}
+
+.key.space {
+    min-width: 200px;
+}
+
+.key.active {
+    background: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+}
+
+.key:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.key.active:hover {
+    background: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* 모바일 반응형 개선 */
+@media (max-width: 768px) {
+    .practice-mode-card {
+        margin-bottom: 1rem;
+    }
+    
+    .practice-mode-card .card-body {
+        padding: 1rem;
+    }
+    
+    .practice-mode-card h5 {
+        font-size: 1.1rem;
+    }
+    
+    .practice-mode-card p {
+        font-size: 0.9rem;
+    }
+    
+    #letter_count, 
+    #free-typing-text, 
+    #beginner-typing-text, 
+    #special-typing-text, 
+    #standard-typing-text {
+        font-size: 1rem !important;
+        padding: 1rem !important;
+    }
+    
+    .keyboard-container,
+    .special-keyboard-container {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 10px;
+    }
+    
+    .key {
+        width: 35px;
+        height: 35px;
+        font-size: 0.8rem;
+    }
+    
+    .key.space {
+        width: 150px;
+    }
+    
+    .key.enter, .key.shift, .key.backspace, .key.tab {
+        width: 60px;
+    }
+}
+</style>
+        </main>
+<footer class="mt-5" role="contentinfo">
+            <div class="container">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <p class="text-muted small mb-2"><strong data-i18n="footer.related_tools">관련 도구</strong></p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="/salary/" class="text-muted small text-decoration-none" data-i18n="navigation.salary">연봉 계산기</a>
+                            <span class="text-muted">·</span>
+                            <a href="/insurance-calculator/" class="text-muted small text-decoration-none" data-i18n="navigation.insurance">4대보험 계산기</a>
+                            <span class="text-muted">·</span>
+                            <a href="/spellcheck/" class="text-muted small text-decoration-none" data-i18n="navigation.spellcheck">맞춤법 검사기</a>
+                            <span class="text-muted">·</span>
+                            <a href="/typing-practice/" class="text-muted small text-decoration-none" data-i18n="navigation.typing_practice">타자 연습</a>
+                            <span class="text-muted">·</span>
+                            <a href="/severance-pay/" class="text-muted small text-decoration-none" data-i18n="navigation.severance">퇴직금 계산기</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 text-center mb-3">
+                        <p class="text-muted small">
+                            © 2024 글자수 세기 |
+                            <a href="https://letter.ymyhome.loan" class="text-muted">letter.ymyhome.loan</a> |
+                            <span data-i18n="footer.privacy">모든 데이터는 브라우저에만 저장됩니다</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row px-0 mx-0 justify-content-center mt-4">
+                <ins class="adsbygoogle text-center"
+                    style="display:block"
+                    data-ad-client="ca-pub-1009706165028289"
+                    data-ad-slot="6057653874"
+                    data-ad-format="auto"
+                    data-full-width-responsive="true"></ins>
+            </div>
+        </footer>
+
+        <script src="/js/utils.js?3" defer></script>
+        <script src="/js/darkmode.js" defer></script>
+        <script src="/js/i18n.js?3" defer></script>
+        <script src="/js/toast.js?2" defer></script>
+        <script src="/js/error-handler.js?1" defer></script>
+        <script src="/js/pwa.js" defer></script>
+        <script src="/js/mobile-handler.js?1" defer></script>
+        <script src="/js/ads-init.js" defer></script>
+        <script src="/js/practice_data.js?3" defer></script>
+        <script src="/js/typing_practice.js?18" defer></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (window.Toast) window.Toast.init();
+                if (window.ErrorHandler) window.ErrorHandler.init();
+
+                if (window.pwaManager) {
+                    window.pwaManager.init();
+                    window.pwaManager.setupNetworkMonitoring();
+                }
+
+                if (window.MobileTouchHandler) {
+                    window.mobileHandler = window.mobileHandler || new window.MobileTouchHandler();
+                    window.mobileHandler.init();
+                }
+
+                if (window.bootstrap) {
+                    document.querySelectorAll('.dropdown-toggle').forEach(function (el) {
+                        new window.bootstrap.Dropdown(el);
+                    });
+                }
+
+                if (typeof window.initializeTypingPractice === 'function') {
+                    try {
+                        window.initializeTypingPractice();
+                    } catch (error) {
+                        console.error('페이지 초기화 실패: typing-practice', error);
+                    }
+                }
+
+                if (window.i18nManager) {
+                    window.i18nManager.init().catch(function (error) {
+                        console.error('다국어 초기화 실패', error);
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>

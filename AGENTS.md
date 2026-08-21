@@ -85,9 +85,11 @@ node test/storage_manager_test.js
 로컬 실행: `python -m http.server 8000` 후 `http://localhost:8000`
 
 ### Common Patterns
-- SPA 라우팅: URL 파라미터 `?page=pagename`으로 페이지 전환
-- 페이지 로드: `NavigationManager`가 `html/{page}.html`을 fetch하고 `main.container`에 삽입한 뒤 필요한 JS를 동적 주입
-- 페이지 초기화: `navigation-manager.js`의 `initializePageScript()` 안에 있는 **명시적 함수명 맵**으로 호출 (자동 규칙 아님)
+- 클린 URL: 각 메뉴는 `/{경로}/index.html` 독립 정적 페이지 (`/salary/`, `/typing-practice/` 등). SPA 라우팅은 2026-08-21 폐지
+- 페이지 생성: `node tools/build-pages.js`가 `index.html` 셸 + `html/{조각}.html`을 합쳐 생성. **생성된 페이지를 직접 수정하지 말 것** — 조각이나 셸을 고치고 재생성
+- 구 URL 호환: `index.html` head의 shim이 `?page=xxx`를 새 경로로 리다이렉트
+- 페이지 초기화: 각 생성 페이지 하단 인라인 스크립트가 공통 매니저(Toast·ErrorHandler·PWA·i18n·MobileTouchHandler) + 페이지별 `initializeXxx()`를 호출
+- 서브페이지 제외 대상: `js/index.js`, `js/navigation-manager.js`, Google 번역 위젯 (모두 홈 전용 DOM/콜백 의존)
 - 다크모드: `document.documentElement`에 `.dark` 클래스 토글 + CSS 변수 + `localStorage('theme')` + 시스템 테마 감지
 
 ## Dependencies

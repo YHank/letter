@@ -3,6 +3,23 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script>
+            // 구 SPA URL(?page=xxx) → 클린 URL 리다이렉트 (하위호환)
+            (function () {
+                var routes = {
+                    'spellcheck_simple': '/spellcheck/',
+                    'salary': '/salary/',
+                    'typing_practice': '/typing-practice/',
+                    'insurance_calculator': '/insurance-calculator/',
+                    'severancepay': '/severance-pay/',
+                    'scientific_calculator': '/scientific-calculator/'
+                };
+                var page = new URLSearchParams(window.location.search).get('page');
+                if (page && routes[page]) {
+                    window.location.replace(routes[page] + window.location.hash);
+                }
+            })();
+        </script>
         <title>글자수 세기 - 한글 글자수, 단어수, 문장수 계산기 | 무료 온라인 도구</title>
         
         <!-- 보안 헤더 -->
@@ -43,17 +60,12 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
         <meta name="description" content="무료 온라인 글자수 세기 도구. 한글과 영어의 글자수, 단어수, 문장수, 읽기 시간을 실시간으로 계산합니다. 공백 포함/제외, 자동 저장, 텍스트 변환 기능 제공. 블로그, 리포트, 논문 작성에 필수!">
         <meta name="robots" content="follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large">
-        <link rel="canonical" href="https://letter.ymyhome.loan">
-        <link rel="alternate" hreflang="ko" href="https://letter.ymyhome.loan/">
-        <link rel="alternate" hreflang="en" href="https://letter.ymyhome.loan/">
-        <link rel="alternate" hreflang="ja" href="https://letter.ymyhome.loan/">
-        <link rel="alternate" hreflang="zh" href="https://letter.ymyhome.loan/">
-        <link rel="alternate" hreflang="x-default" href="https://letter.ymyhome.loan/">
+        <link rel="canonical" href="https://letter.ymyhome.loan/">
         <meta property="og:locale" content="ko_KR">
         <meta property="og:type" content="website">
         <meta property="og:title" content="글자수 세기 - 한글 글자수, 단어수 계산기">
         <meta property="og:description" content="무료 온라인 글자수 세기 도구. 실시간 글자수, 단어수, 문장수, 읽기 시간 계산. 자동 저장 기능으로 안전하게 작업하세요.">
-        <meta property="og:url" content="https://letter.ymyhome.loan">
+        <meta property="og:url" content="https://letter.ymyhome.loan/">
         <meta property="og:site_name" content="글자수세기">
         <meta property="og:updated_time" content="2026-04-08T00:00:00+09:00">
         <meta property="og:image" content="https://letter.ymyhome.loan/img/logo.webp">
@@ -193,20 +205,20 @@
                                 <a class="nav-link active" aria-current="page" href="/" data-i18n="navigation.counter">글자수 / 단어수</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-move="spellcheck_simple" href="#" data-i18n="navigation.spellcheck">맞춤법 검사</a>
+                                <a class="nav-link" href="/spellcheck/" data-i18n="navigation.spellcheck">맞춤법 검사</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-move="salary" href="#" data-i18n="navigation.salary">연봉실수령</a>
+                                <a class="nav-link" href="/salary/" data-i18n="navigation.salary">연봉실수령</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-move="typing_practice" href="#" data-i18n="navigation.typing_practice">타자연습</a>
+                                <a class="nav-link" href="/typing-practice/" data-i18n="navigation.typing_practice">타자연습</a>
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false" data-i18n="navigation.calculators">계산기 모음</a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" data-move="insurance_calculator" href="#" data-i18n="navigation.insurance">4대보험료 계산기</a></li>
-                                    <li><a class="dropdown-item" data-move="severancepay" href="#" data-i18n="navigation.severance">퇴직금 계산기</a></li>
-                                    <li><a class="dropdown-item" data-move="scientific_calculator" href="#" data-i18n="navigation.scientific">공학용 계산기</a></li>
+                                    <li><a class="dropdown-item" href="/insurance-calculator/" data-i18n="navigation.insurance">4대보험료 계산기</a></li>
+                                    <li><a class="dropdown-item" href="/severance-pay/" data-i18n="navigation.severance">퇴직금 계산기</a></li>
+                                    <li><a class="dropdown-item" href="/scientific-calculator/" data-i18n="navigation.scientific">공학용 계산기</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item disabled" href="#" data-i18n="navigation.more_soon">더 많은 계산기 준비중...</a></li>
                                 </ul>
@@ -536,15 +548,15 @@
                     <div class="col-12">
                         <p class="text-muted small mb-2"><strong data-i18n="footer.related_tools">관련 도구</strong></p>
                         <div class="d-flex flex-wrap gap-2">
-                            <a href="/?page=salary" class="text-muted small text-decoration-none" data-move="salary" data-i18n="navigation.salary">연봉 계산기</a>
+                            <a href="/salary/" class="text-muted small text-decoration-none" data-i18n="navigation.salary">연봉 계산기</a>
                             <span class="text-muted">·</span>
-                            <a href="/?page=insurance_calculator" class="text-muted small text-decoration-none" data-move="insurance_calculator" data-i18n="navigation.insurance">4대보험 계산기</a>
+                            <a href="/insurance-calculator/" class="text-muted small text-decoration-none" data-i18n="navigation.insurance">4대보험 계산기</a>
                             <span class="text-muted">·</span>
-                            <a href="/?page=spellcheck_simple" class="text-muted small text-decoration-none" data-move="spellcheck_simple" data-i18n="navigation.spellcheck">맞춤법 검사기</a>
+                            <a href="/spellcheck/" class="text-muted small text-decoration-none" data-i18n="navigation.spellcheck">맞춤법 검사기</a>
                             <span class="text-muted">·</span>
-                            <a href="/?page=typing_practice" class="text-muted small text-decoration-none" data-move="typing_practice" data-i18n="navigation.typing_practice">타자 연습</a>
+                            <a href="/typing-practice/" class="text-muted small text-decoration-none" data-i18n="navigation.typing_practice">타자 연습</a>
                             <span class="text-muted">·</span>
-                            <a href="/?page=severancepay" class="text-muted small text-decoration-none" data-move="severancepay" data-i18n="navigation.severance">퇴직금 계산기</a>
+                            <a href="/severance-pay/" class="text-muted small text-decoration-none" data-i18n="navigation.severance">퇴직금 계산기</a>
                         </div>
                     </div>
                 </div>

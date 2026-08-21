@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script>
+        // 구 SPA URL(?page=xxx) → 클린 URL 리다이렉트 (하위호환)
+        (function () {
+        var routes = {
+        'spellcheck_simple': '/spellcheck/',
+        'salary': '/salary/',
+        'typing_practice': '/typing-practice/',
+        'insurance_calculator': '/insurance-calculator/',
+        'severancepay': '/severance-pay/',
+        'scientific_calculator': '/scientific-calculator/'
+        };
+        var page = new URLSearchParams(window.location.search).get('page');
+        if (page && routes[page]) {
+        window.location.replace(routes[page] + window.location.hash);
+        }
+        })();
+        </script>
+        
+        <!-- 보안 헤더 -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://ajax.googleapis.com https://pagead2.googlesyndication.com https://www.googletagmanager.com https://translate.google.com https://www.gstatic.com https://translate.googleapis.com https://ep2.adtrafficquality.google; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://www.gstatic.com https://translate.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https:; frame-src https://www.google.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net;">
+        <meta http-equiv="X-Content-Type-Options" content="nosniff">
+        <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+        <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1009706165028289"
+        crossorigin="anonymous"></script>
+        <link rel="preconnect" href="https://cdn.jsdelivr.net">
+        <link rel="preconnect" href="https://ajax.googleapis.com">
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+        <link rel="stylesheet" href="/css/index.css?6">
+        <link rel="dns-prefetch" href="//translate.google.com">
+
+        <!-- PWA Manifest -->
+        <link rel="manifest" href="/manifest.json">
+        <meta name="theme-color" content="#0d6efd">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="글자수세기">
+        <link rel="apple-touch-icon" sizes="180x180" href="/img/logo.webp">
+
+        <!-- Favicons -->
+        <link rel="icon" type="image/webp" sizes="16x16" href="/img/logo.webp">
+        <link rel="icon" type="image/webp" sizes="32x32" href="/img/logo.webp">
+        <link rel="shortcut icon" href="/img/logo.webp">
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous" defer>
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+        <meta name="robots" content="follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large">
+        
+        <!-- 추가 SEO 메타 태그 -->
+        <meta name="author" content="Letter Counter">
+        <meta name="language" content="Korean">
+        <meta name="revisit-after" content="7 days">
+        
+        <!-- 구조화된 데이터 (Schema.org) -->
+        
+        <!-- FAQ 구조화된 데이터 -->
+
+        <title>공학용 계산기 - 고급 수학 계산기</title>
+        <meta name="description" content="공학용 계산기. 삼각함수, 로그, 지수 등 고급 수학 계산을 지원합니다.">
+        <link rel="canonical" href="https://letter.ymyhome.loan/scientific-calculator/">
+        <meta property="og:locale" content="ko_KR">
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="공학용 계산기 - 고급 수학 계산기">
+        <meta property="og:description" content="공학용 계산기. 삼각함수, 로그, 지수 등 고급 수학 계산을 지원합니다.">
+        <meta property="og:url" content="https://letter.ymyhome.loan/scientific-calculator/">
+        <meta property="og:site_name" content="글자수세기">
+        <meta property="og:image" content="https://letter.ymyhome.loan/img/logo.webp">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="공학용 계산기 - 고급 수학 계산기">
+        <meta name="twitter:description" content="공학용 계산기. 삼각함수, 로그, 지수 등 고급 수학 계산을 지원합니다.">
+        <meta name="twitter:image" content="https://letter.ymyhome.loan/img/logo.webp">
+
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "공학용 계산기",
+            "url": "https://letter.ymyhome.loan/scientific-calculator/",
+            "description": "공학용 계산기. 삼각함수, 로그, 지수 등 고급 수학 계산을 지원합니다.",
+            "applicationCategory": "UtilityApplication",
+            "operatingSystem": "All",
+            "inLanguage": "ko",
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "KRW"
+            },
+            "isPartOf": {
+                "@type": "WebSite",
+                "name": "글자수세기",
+                "url": "https://letter.ymyhome.loan/"
+            }
+        }
+        </script>
+    </head>
+    <body>
+        <script>
+            // HTTPS 강제 적용
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                location.replace('https:' + window.location.href.substring(window.location.protocol.length));
+            }
+        </script>
+<nav class="navbar navbar-expand-lg navbar-light bg-light" aria-label="메인 네비게이션">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/" data-i18n="app.brand">글자수 세기</a>
+
+                <!-- 항상 표시: 다크모드 토글 + 모바일 햄버거 (데스크탑에서 오른쪽 정렬) -->
+                <div class="d-flex align-items-center gap-2 order-lg-last">
+                    <button type="button" id="darkModeToggle" class="dark-mode-toggle" aria-label="다크모드 토글" aria-pressed="false">
+                        <svg id="darkModeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+                        </svg>
+                        <svg id="lightModeIcon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+                        </svg>
+                    </button>
+                    <button class="navbar-toggler border-0" type="button"
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasNavbar"
+                            aria-controls="offcanvasNavbar"
+                            aria-label="메뉴 열기">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+
+                <!-- 오프캔버스 네비게이션 (모바일: 슬라이드 패널, 데스크탑: 인라인) -->
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel" data-bs-backdrop="false">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel" data-i18n="navigation.menu">메뉴</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="닫기"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/" data-i18n="navigation.counter">글자수 / 단어수</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/spellcheck/" data-i18n="navigation.spellcheck">맞춤법 검사</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/salary/" data-i18n="navigation.salary">연봉실수령</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/typing-practice/" data-i18n="navigation.typing_practice">타자연습</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false" data-i18n="navigation.calculators">계산기 모음</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/insurance-calculator/" data-i18n="navigation.insurance">4대보험료 계산기</a></li>
+                                    <li><a class="dropdown-item" href="/severance-pay/" data-i18n="navigation.severance">퇴직금 계산기</a></li>
+                                    <li><a class="dropdown-item" href="/scientific-calculator/" data-i18n="navigation.scientific">공학용 계산기</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item disabled" href="#" data-i18n="navigation.more_soon">더 많은 계산기 준비중...</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+<div class="container">
+            <div class="row px-0 mx-0 justify-content-center mt-4 d-none d-lg-flex">
+                <ins class="adsbygoogle"
+                    style="display:inline-block;width:728px;height:90px"
+                    data-ad-client="ca-pub-1009706165028289"
+                    data-ad-slot="8081181989"></ins>
+            </div>
+        </div>
+        <main class="container" role="main" id="main-content">
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="main-content">
+                <div class="text-center mb-5">
+                    <h1 class="mb-3">
+                        <span class="d-inline-block p-3 rounded-circle bg-info bg-opacity-10 mb-3">
+                            <i class="fas fa-calculator text-info"></i>
+                        </span>
+                        <br>
+                        공학용 계산기
+                    </h1>
+                    <p class="text-muted">실제 공학용 계산기와 동일한 기능을 제공합니다</p>
+                </div>
+                
+                <div class="alert alert-info mb-4 border-0 shadow-sm">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-keyboard me-2 fs-5"></i>
+                        <div>
+                            <strong>키보드 입력 지원</strong><br>
+                            <small>숫자와 연산자는 키보드로 직접 입력할 수 있습니다.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 계산기 본체 -->
+                <div class="calculator-container">
+                    <div class="calculator-modern">
+                        <!-- 디스플레이 -->
+                        <div class="display-modern" role="region" aria-label="계산기 디스플레이">
+                            <div class="display-mode">
+                                <span class="angle-mode" id="angleMode">DEG</span>
+                                <span class="memory-indicator" id="memoryIndicator" style="display: none;">M</span>
+                            </div>
+                            <div class="display-expression" id="expressionDisplay" aria-live="polite" aria-label="수식 표시"></div>
+                            <div class="display-main" id="mainDisplay" aria-live="polite" aria-label="계산 결과" aria-atomic="true">0</div>
+                        </div>
+
+                        <!-- 버튼 섹션 -->
+                        <div class="button-section">
+                            <!-- 1행: 모드 및 메모리 -->
+                            <div class="button-row">
+                                <button class="btn-calc-modern mode" data-action="shift" aria-label="시프트 모드">SHIFT</button>
+                                <button class="btn-calc-modern mode" data-action="mode" aria-label="모드 변경">MODE</button>
+                                <button class="btn-calc-modern memory" data-action="memory-clear" aria-label="메모리 초기화">MC</button>
+                                <button class="btn-calc-modern memory" data-action="memory-recall" aria-label="메모리 불러오기">MR</button>
+                                <button class="btn-calc-modern memory" data-action="memory-minus" aria-label="메모리에서 빼기">M-</button>
+                                <button class="btn-calc-modern memory" data-action="memory-plus" aria-label="메모리에 더하기">M+</button>
+                            </div>
+
+                            <!-- 2행: 공학 함수 1 -->
+                            <div class="button-row">
+                                <button class="btn-calc-modern function" data-action="reciprocal" aria-label="역수 (1/x)">1/x</button>
+                                <button class="btn-calc-modern function" data-action="square" aria-label="제곱 (x²)">x²</button>
+                                <button class="btn-calc-modern function" data-action="sqrt" aria-label="제곱근 (√x)">√x</button>
+                                <button class="btn-calc-modern function" data-action="power" aria-label="거듭제곱 (x^y)">x^y</button>
+                                <button class="btn-calc-modern function" data-action="factorial" aria-label="팩토리얼 (n!)">n!</button>
+                                <button class="btn-calc-modern function" data-action="percent" aria-label="퍼센트">%</button>
+                            </div>
+
+                            <!-- 3행: 삼각함수 -->
+                            <div class="button-row">
+                                <button class="btn-calc-modern function" data-action="sin" aria-label="사인">sin</button>
+                                <button class="btn-calc-modern function" data-action="cos" aria-label="코사인">cos</button>
+                                <button class="btn-calc-modern function" data-action="tan" aria-label="탄젠트">tan</button>
+                                <button class="btn-calc-modern function" data-action="asin" aria-label="역사인 (sin⁻¹)">sin⁻¹</button>
+                                <button class="btn-calc-modern function" data-action="acos" aria-label="역코사인 (cos⁻¹)">cos⁻¹</button>
+                                <button class="btn-calc-modern function" data-action="atan" aria-label="역탄젠트 (tan⁻¹)">tan⁻¹</button>
+                            </div>
+
+                            <!-- 4행: 로그 및 지수 -->
+                            <div class="button-row">
+                                <button class="btn-calc-modern function" data-action="log" aria-label="상용로그 (log)">log</button>
+                                <button class="btn-calc-modern function" data-action="ln" aria-label="자연로그 (ln)">ln</button>
+                                <button class="btn-calc-modern function" data-action="exp" aria-label="e의 거듭제곱 (e^x)">e^x</button>
+                                <button class="btn-calc-modern function" data-action="10pow" aria-label="10의 거듭제곱 (10^x)">10^x</button>
+                                <button class="btn-calc-modern function" data-action="pi" aria-label="원주율 파이 (π)">π</button>
+                                <button class="btn-calc-modern function" data-action="e" aria-label="자연상수 e">e</button>
+                            </div>
+
+                            <!-- 5행: 괄호 및 Clear -->
+                            <div class="button-row">
+                                <button class="btn-calc-modern operation" data-action="open-paren" aria-label="여는 괄호">(</button>
+                                <button class="btn-calc-modern operation" data-action="close-paren" aria-label="닫는 괄호">)</button>
+                                <button class="btn-calc-modern clear" data-action="clear-entry" aria-label="현재 입력 취소">CE</button>
+                                <button class="btn-calc-modern clear" data-action="clear" aria-label="초기화">C</button>
+                                <button class="btn-calc-modern clear" data-action="backspace" aria-label="지우기">←</button>
+                                <button class="btn-calc-modern operation" data-action="divide" aria-label="나누기">÷</button>
+                            </div>
+
+                            <!-- 6-8행: 숫자 및 기본 연산 -->
+                            <div class="button-row">
+                                <button class="btn-calc-modern number" data-action="number" data-value="7" aria-label="7">7</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="8" aria-label="8">8</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="9" aria-label="9">9</button>
+                                <button class="btn-calc-modern operation" data-action="multiply" aria-label="곱하기">×</button>
+                                <button class="btn-calc-modern function" data-action="ans" aria-label="이전 답 불러오기">ANS</button>
+                                <button class="btn-calc-modern function" data-action="sign" aria-label="부호 변경 (±)">±</button>
+                            </div>
+
+                            <div class="button-row">
+                                <button class="btn-calc-modern number" data-action="number" data-value="4" aria-label="4">4</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="5" aria-label="5">5</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="6" aria-label="6">6</button>
+                                <button class="btn-calc-modern operation" data-action="subtract" aria-label="빼기">−</button>
+                                <button class="btn-calc-modern function" data-action="cube" aria-label="세제곱 (x³)">x³</button>
+                                <button class="btn-calc-modern function" data-action="cbrt" aria-label="세제곱근 (∛x)">∛x</button>
+                            </div>
+
+                            <div class="button-row">
+                                <button class="btn-calc-modern number" data-action="number" data-value="1" aria-label="1">1</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="2" aria-label="2">2</button>
+                                <button class="btn-calc-modern number" data-action="number" data-value="3" aria-label="3">3</button>
+                                <button class="btn-calc-modern operation" data-action="add" aria-label="더하기">+</button>
+                                <button class="btn-calc-modern function" data-action="abs" aria-label="절댓값 (|x|)">|x|</button>
+                                <button class="btn-calc-modern function" data-action="round" aria-label="반올림">RND</button>
+                            </div>
+
+                            <!-- 9행: 0, 소수점, 등호 -->
+                            <div class="button-row">
+                                <button class="btn-calc-modern number btn-zero" data-action="number" data-value="0" aria-label="0">0</button>
+                                <button class="btn-calc-modern number" data-action="decimal" aria-label="소수점">.</button>
+                                <button class="btn-calc-modern function" data-action="exp-notation" aria-label="지수 표기 (EXP)">EXP</button>
+                                <button class="btn-calc-modern equals" data-action="equals" aria-label="계산 실행">=</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 사용법 안내 -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">사용법 안내</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>기본 연산</h6>
+                                <ul class="small">
+                                    <li>사칙연산: +, −, ×, ÷</li>
+                                    <li>괄호를 사용한 우선순위 지정</li>
+                                    <li>CE: 현재 입력 취소</li>
+                                    <li>C: 전체 초기화</li>
+                                    <li>←: 마지막 입력 삭제</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>공학 함수</h6>
+                                <ul class="small">
+                                    <li>삼각함수: sin, cos, tan (각도 단위 확인)</li>
+                                    <li>로그: log (밑 10), ln (자연로그)</li>
+                                    <li>거듭제곱: x², x³, x^y</li>
+                                    <li>메모리: M+, M-, MR, MC</li>
+                                    <li>상수: π (원주율), e (자연상수)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <h6>키보드 단축키</h6>
+                            <p class="small mb-0">
+                                숫자와 기본 연산자는 키보드로 직접 입력 가능합니다. 
+                                Enter 키로 계산, Esc 키로 초기화, Backspace 키로 삭제할 수 있습니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.calculator-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+/* 버튼 섹션 */
+.button-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.button-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.btn-zero {
+    grid-column: span 2;
+}
+
+/* 디스플레이 스타일 */
+.display-mode {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.angle-mode {
+    padding: 3px 8px;
+    background: rgba(102, 126, 234, 0.2);
+    border-radius: 5px;
+    font-weight: 600;
+}
+
+.memory-indicator {
+    margin-left: 10px;
+    color: #f39c12;
+    font-weight: 600;
+}
+
+.display-expression {
+    color: #6c757d;
+    font-size: 14px;
+    text-align: right;
+    min-height: 25px;
+    margin-top: 25px;
+    overflow-x: auto;
+    white-space: nowrap;
+    font-family: 'Courier New', monospace;
+}
+
+.display-main {
+    color: #212529;
+    font-size: 36px;
+    text-align: right;
+    font-family: 'Courier New', monospace;
+    margin-top: 5px;
+    overflow-x: auto;
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.dark .display-main {
+    color: #e9ecef;
+}
+
+/* 반응형 */
+@media (max-width: 576px) {
+    .calculator-modern {
+        padding: 15px;
+    }
+    
+    .btn-calc-modern {
+        padding: 12px 4px;
+        font-size: 12px;
+    }
+    
+    .display-main {
+        font-size: 28px;
+    }
+}
+</style>
+        </main>
+<footer class="mt-5" role="contentinfo">
+            <div class="container">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <p class="text-muted small mb-2"><strong data-i18n="footer.related_tools">관련 도구</strong></p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="/salary/" class="text-muted small text-decoration-none" data-i18n="navigation.salary">연봉 계산기</a>
+                            <span class="text-muted">·</span>
+                            <a href="/insurance-calculator/" class="text-muted small text-decoration-none" data-i18n="navigation.insurance">4대보험 계산기</a>
+                            <span class="text-muted">·</span>
+                            <a href="/spellcheck/" class="text-muted small text-decoration-none" data-i18n="navigation.spellcheck">맞춤법 검사기</a>
+                            <span class="text-muted">·</span>
+                            <a href="/typing-practice/" class="text-muted small text-decoration-none" data-i18n="navigation.typing_practice">타자 연습</a>
+                            <span class="text-muted">·</span>
+                            <a href="/severance-pay/" class="text-muted small text-decoration-none" data-i18n="navigation.severance">퇴직금 계산기</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 text-center mb-3">
+                        <p class="text-muted small">
+                            © 2024 글자수 세기 |
+                            <a href="https://letter.ymyhome.loan" class="text-muted">letter.ymyhome.loan</a> |
+                            <span data-i18n="footer.privacy">모든 데이터는 브라우저에만 저장됩니다</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row px-0 mx-0 justify-content-center mt-4">
+                <ins class="adsbygoogle text-center"
+                    style="display:block"
+                    data-ad-client="ca-pub-1009706165028289"
+                    data-ad-slot="6057653874"
+                    data-ad-format="auto"
+                    data-full-width-responsive="true"></ins>
+            </div>
+        </footer>
+
+        <script src="/js/utils.js?3" defer></script>
+        <script src="/js/darkmode.js" defer></script>
+        <script src="/js/i18n.js?3" defer></script>
+        <script src="/js/toast.js?2" defer></script>
+        <script src="/js/error-handler.js?1" defer></script>
+        <script src="/js/pwa.js" defer></script>
+        <script src="/js/mobile-handler.js?1" defer></script>
+        <script src="/js/ads-init.js" defer></script>
+        <script src="/js/scientific_calculator.js?3" defer></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (window.Toast) window.Toast.init();
+                if (window.ErrorHandler) window.ErrorHandler.init();
+
+                if (window.pwaManager) {
+                    window.pwaManager.init();
+                    window.pwaManager.setupNetworkMonitoring();
+                }
+
+                if (window.MobileTouchHandler) {
+                    window.mobileHandler = window.mobileHandler || new window.MobileTouchHandler();
+                    window.mobileHandler.init();
+                }
+
+                if (window.bootstrap) {
+                    document.querySelectorAll('.dropdown-toggle').forEach(function (el) {
+                        new window.bootstrap.Dropdown(el);
+                    });
+                }
+
+                if (typeof window.initializeScientificCalculator === 'function') {
+                    try {
+                        window.initializeScientificCalculator();
+                    } catch (error) {
+                        console.error('페이지 초기화 실패: scientific-calculator', error);
+                    }
+                }
+
+                if (window.i18nManager) {
+                    window.i18nManager.init().catch(function (error) {
+                        console.error('다국어 초기화 실패', error);
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>
