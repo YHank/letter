@@ -3,9 +3,9 @@
  * 글자수 세기 웹앱의 핵심 기능을 오프라인에서도 사용할 수 있도록 함
  */
 
-const CACHE_NAME = 'letter-counter-v5';
-const STATIC_CACHE_NAME = 'letter-counter-static-v5';
-const DYNAMIC_CACHE_NAME = 'letter-counter-dynamic-v5';
+const CACHE_NAME = 'letter-counter-v8';
+const STATIC_CACHE_NAME = 'letter-counter-static-v8';
+const DYNAMIC_CACHE_NAME = 'letter-counter-dynamic-v8';
 
 // 캐시할 정적 자원들
 const STATIC_ASSETS = [
@@ -24,6 +24,11 @@ const STATIC_ASSETS = [
     '/js/mobile-handler.js',
     '/js/keyboard-handler.js',
     '/js/index.js',
+    '/js/i18n.js',
+    '/i18n/ko.json',
+    '/i18n/en.json',
+    '/i18n/ja.json',
+    '/i18n/zh.json',
     '/html/spellcheck_simple.html',
     '/html/typing_practice.html',
     '/html/salary.html',
@@ -144,7 +149,7 @@ self.addEventListener('fetch', (event) => {
     }
     
     // HTML 페이지에 대한 네트워크 우선 전략 (업데이트 반영을 위해)
-    if (request.headers.get('accept').includes('text/html')) {
+    if ((request.headers.get('accept') || '').includes('text/html')) {
         event.respondWith(
             fetch(request)
                 .then((response) => {

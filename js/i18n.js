@@ -9,6 +9,7 @@ class I18nManager {
         this.defaultLanguage = 'ko';
         this.supportedLanguages = ['ko', 'en', 'ja', 'zh'];
         this.translations = {};
+        this.ready = false;
         
         // 브라우저 언어 감지
         this.detectBrowserLanguage();
@@ -23,10 +24,18 @@ class I18nManager {
     async init() {
         await this.loadTranslations();
         this.createLanguageSelector();
+        this.applyDocumentLanguage();
         this.applyTranslations();
         this.setupLanguageEvents();
         
         return this;
+    }
+
+    /**
+     * <html lang> 속성을 현재 언어로 동기화
+     */
+    applyDocumentLanguage() {
+        document.documentElement.setAttribute('lang', this.currentLanguage);
     }
 
     /**
@@ -38,6 +47,7 @@ class I18nManager {
         );
         
         await Promise.all(loadPromises);
+        this.ready = true;
         // console.log('모든 번역 파일 로드 완료');
     }
 
@@ -156,6 +166,9 @@ class I18nManager {
         const oldLanguage = this.currentLanguage;
         this.currentLanguage = language;
 
+        // 문서 언어 속성 갱신 (스크린리더 / 검색엔진용)
+        this.applyDocumentLanguage();
+
         // 번역 적용
         this.applyTranslations();
 
@@ -175,7 +188,7 @@ class I18nManager {
 
         // 토스트 알림
         if (window.Toast) {
-            const message = this.t('language_changed', `언어가 ${this.getLanguageName(language)}(으)로 변경되었습니다`);
+            const message = this.t('messages.language_changed', `언어가 ${this.getLanguageName(language)}(으)로 변경되었습니다`);
             Toast.show(message, 'success', 3000);
         }
 
@@ -185,22 +198,51 @@ class I18nManager {
     /**
      * 번역 적용
      */
-    applyTranslations() {
-        // data-i18n 속성을 가진 모든 요소 번역
-        document.querySelectorAll('[data-i18n]').forEach(element => {
+    applyTranslations(root = document) {
+        // 번역 파일 로드 전에는 아무것도 건드리지 않는다 (원문 유지)
+        if (!this.ready) return;
+
+        // data-i18n 속성을 가진 모든 요소의 텍스트 번역
+        root.querySelectorAll('[data-i18n]').forEach(element => {
             const key = element.dataset.i18n;
-            const translation = this.t(key);
-            
+            const translation = this.translate(key);
+            if (!translation) return;
+
+            const tag = element.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA') {
+                // 입력 요소는 placeholder가 유일한 표시 텍스트
+                element.placeholder = translation;
+            } else {
+                // 아이콘 등 자식 요소를 보존하기 위해 텍스트 노드만 교체
+                this.setElementText(element, translation);
+            }
+        });
+
+        // 속성 전용 번역 (텍스트와 독립적으로 동작)
+        root.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+            const translation = this.translate(element.dataset.i18nPlaceholder);
+            if (!translation) return;
+
+            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                element.placeholder = translation;
+            } else {
+                // contenteditable 요소는 CSS의 attr(data-placeholder)로 표시
+                element.setAttribute('data-placeholder', translation);
+            }
+        });
+
+        root.querySelectorAll('[data-i18n-title]').forEach(element => {
+            const translation = this.translate(element.dataset.i18nTitle);
             if (translation) {
-                if (element.tagName === 'INPUT' && element.type === 'text') {
-                    element.placeholder = translation;
-                } else if (element.hasAttribute('title')) {
-                    element.title = translation;
-                } else if (element.hasAttribute('aria-label')) {
-                    element.setAttribute('aria-label', translation);
-                } else {
-                    element.textContent = translation;
-                }
+                element.title = translation;
+                this.updateTooltipContent(element, translation);
+            }
+        });
+
+        root.querySelectorAll('[data-i18n-aria]').forEach(element => {
+            const translation = this.translate(element.dataset.i18nAria);
+            if (translation) {
+                element.setAttribute('aria-label', translation);
             }
         });
 
@@ -245,6 +287,65 @@ class I18nManager {
         
         // 폴백 텍스트 또는 키 반환
         return fallback || key;
+    }
+
+    /**
+     * 이미 초기화된 Bootstrap 툴팁의 내용도 함께 갱신
+     * (툴팁은 초기화 시점의 title을 내부에 보관하므로 속성 변경만으로는 반영되지 않음)
+     */
+    updateTooltipContent(element, text) {
+        if (typeof bootstrap === 'undefined' || !bootstrap.Tooltip) return;
+
+        try {
+            const instance = bootstrap.Tooltip.getInstance(element);
+            if (!instance) return;
+
+            element.setAttribute('data-bs-original-title', text);
+            instance.setContent({ '.tooltip-inner': text });
+        } catch (error) {
+            // 툴팁 갱신 실패는 title 속성 번역까지 되돌릴 이유가 없다
+            console.warn('툴팁 내용 갱신 실패:', error);
+        }
+    }
+
+    /**
+     * 실제 번역이 있을 때만 값을 반환 (없으면 null → 마크업 원문 유지)
+     */
+    translate(key) {
+        if (!key) return null;
+        const value = this.t(key);
+        return (value && value !== key) ? value : null;
+    }
+
+    /**
+     * 요소의 텍스트만 교체 (아이콘 등 자식 요소는 보존)
+     */
+    setElementText(element, text) {
+        const textNodes = Array.from(element.childNodes)
+            .filter(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '');
+
+        if (textNodes.length > 0) {
+            textNodes[0].textContent = text;
+            // 남은 텍스트 노드는 비워서 중복 표시 방지
+            textNodes.slice(1).forEach(node => { node.textContent = ''; });
+        } else if (element.children.length > 0) {
+            element.appendChild(document.createTextNode(text));
+        } else {
+            element.textContent = text;
+        }
+    }
+
+    /**
+     * 번역문의 {name} 자리에 값을 채워 반환
+     * (언어마다 어순이 달라도 한 문장을 그대로 유지할 수 있게 해준다)
+     */
+    format(key, params = {}, fallback = null) {
+        const text = this.t(key, fallback);
+        if (typeof text !== 'string') return text;
+
+        return text.replace(/\{(\w+)\}/g, (match, name) => (
+            Object.prototype.hasOwnProperty.call(params, name) ? params[name] : match
+        ));
     }
 
     /**

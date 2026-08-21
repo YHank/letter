@@ -7,10 +7,10 @@
                         <i class="fas fa-keyboard text-primary"></i>
                     </span>
                     <br>
-                    한글 타자 연습
+                    <span data-i18n="typing.page_title">한글 타자 연습</span>
                 </h1>
-                <p class="text-muted">다양한 모드로 타자 실력을 향상시켜보세요</p>
-                <p class="text-muted small mb-3">한글과 영어 타자 연습을 통해 타이핑 속도와 정확도를 향상시켜보세요. WPM 측정과 실시간 정확도 피드백을 제공합니다.</p>
+                <p class="text-muted" data-i18n="typing.subtitle">다양한 모드로 타자 실력을 향상시켜보세요</p>
+                <p class="text-muted small mb-3" data-i18n="typing.description">한글과 영어 타자 연습을 통해 타이핑 속도와 정확도를 향상시켜보세요. WPM 측정과 실시간 정확도 피드백을 제공합니다.</p>
             </div>
             
             <!-- 타자 연습 버전 선택 -->
@@ -23,8 +23,8 @@
                                     <i class="fas fa-keyboard fa-3x text-primary"></i>
                                 </div>
                             </div>
-                            <h5 class="card-title fw-bold">자유 타자 연습</h5>
-                            <p class="card-text flex-grow-1">자유롭게 타자를 연습할 수 있습니다. 원하는 텍스트를 입력하여 연습하세요.</p>
+                            <h5 class="card-title fw-bold" data-i18n="typing.mode_free">자유 타자 연습</h5>
+                            <p class="card-text flex-grow-1" data-i18n="typing.mode_free_desc">자유롭게 타자를 연습할 수 있습니다. 원하는 텍스트를 입력하여 연습하세요.</p>
                             <button class="btn btn-primary select-mode-btn">
                                 <i class="fas fa-play me-2"></i>선택하기
                             </button>
@@ -39,8 +39,8 @@
                                     <i class="fas fa-graduation-cap fa-3x text-success"></i>
                                 </div>
                             </div>
-                            <h5 class="card-title fw-bold">초보자 타자 연습</h5>
-                            <p class="card-text flex-grow-1">키보드 위치를 보며 타자를 익힐 수 있습니다. 타자 위치 학습에 최적화되어 있습니다.</p>
+                            <h5 class="card-title fw-bold" data-i18n="typing.mode_beginner">초보자 타자 연습</h5>
+                            <p class="card-text flex-grow-1" data-i18n="typing.mode_beginner_desc">키보드 위치를 보며 타자를 익힐 수 있습니다. 타자 위치 학습에 최적화되어 있습니다.</p>
                             <button class="btn btn-success select-mode-btn">
                                 <i class="fas fa-play me-2"></i>선택하기
                             </button>
@@ -55,8 +55,8 @@
                                     <i class="fas fa-hashtag fa-3x text-warning"></i>
                                 </div>
                             </div>
-                            <h5 class="card-title fw-bold">특수 타자 연습</h5>
-                            <p class="card-text flex-grow-1">숫자, 특수문자, 천지인 등 특별한 타자를 연습할 수 있습니다.</p>
+                            <h5 class="card-title fw-bold" data-i18n="typing.mode_special">특수 타자 연습</h5>
+                            <p class="card-text flex-grow-1" data-i18n="typing.mode_special_desc">숫자, 특수문자, 천지인 등 특별한 타자를 연습할 수 있습니다.</p>
                             <button class="btn btn-warning select-mode-btn">
                                 <i class="fas fa-play me-2"></i>선택하기
                             </button>
@@ -71,8 +71,8 @@
                                     <i class="fas fa-chart-line fa-3x text-info"></i>
                                 </div>
                             </div>
-                            <h5 class="card-title fw-bold">표준 타자 연습</h5>
-                            <p class="card-text flex-grow-1">단어, 문장, 문단을 단계별로 연습하며 실력을 향상시킬 수 있습니다.</p>
+                            <h5 class="card-title fw-bold" data-i18n="typing.mode_standard">표준 타자 연습</h5>
+                            <p class="card-text flex-grow-1" data-i18n="typing.mode_standard_desc">단어, 문장, 문단을 단계별로 연습하며 실력을 향상시킬 수 있습니다.</p>
                             <button class="btn btn-info select-mode-btn">
                                 <i class="fas fa-play me-2"></i>선택하기
                             </button>
@@ -87,8 +87,8 @@
                                     <i class="fas fa-file-upload fa-3x text-secondary"></i>
                                 </div>
                             </div>
-                            <h5 class="card-title fw-bold">사용자 정의</h5>
-                            <p class="card-text flex-grow-1">직접 준비한 TXT 파일을 업로드하고 문장 또는 문단 단위로 연습할 수 있습니다.</p>
+                            <h5 class="card-title fw-bold" data-i18n="typing.mode_custom">사용자 정의</h5>
+                            <p class="card-text flex-grow-1" data-i18n="typing.mode_custom_desc">직접 준비한 TXT 파일을 업로드하고 문장 또는 문단 단위로 연습할 수 있습니다.</p>
                             <button class="btn btn-secondary select-mode-btn">
                                 <i class="fas fa-play me-2"></i>선택하기
                             </button>
@@ -101,10 +101,10 @@
             <div id="practice-area" style="display: none;">
                 <div class="mb-3 d-flex justify-content-between align-items-center">
                     <button class="btn btn-secondary btn-sm" id="back-to-menu">
-                        <i class="fas fa-arrow-left"></i> 메뉴로 돌아가기
+                        <i class="fas fa-arrow-left"></i> <span data-i18n="typing.back_to_menu">메뉴로 돌아가기</span>
                     </button>
-                    <div class="btn-group" role="group" aria-label="언어 선택">
-                        <button type="button" class="btn btn-outline-secondary btn-sm active" id="lang-korean" data-lang="korean">한글</button>
+                    <div class="btn-group" role="group" aria-label="언어 선택" data-i18n-aria="typing.lang_select">
+                        <button type="button" class="btn btn-outline-secondary btn-sm active" id="lang-korean" data-lang="korean" data-i18n="typing.lang_korean">한글</button>
                         <button type="button" class="btn btn-outline-secondary btn-sm" id="lang-english" data-lang="english">English</button>
                     </div>
                 </div>
@@ -113,17 +113,17 @@
                 <div id="free-practice" class="practice-content" style="display: none;">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title mb-3">자유 타자 연습</h4>
-                            <p class="text-muted">다양한 명언과 속담을 랜덤으로 연습합니다.</p>
-                            <button id="start-free-practice" class="btn btn-primary">연습 시작</button>
+                            <h4 class="card-title mb-3" data-i18n="typing.mode_free">자유 타자 연습</h4>
+                            <p class="text-muted" data-i18n="typing.free_desc">다양한 명언과 속담을 랜덤으로 연습합니다.</p>
+                            <button id="start-free-practice" class="btn btn-primary" data-i18n="typing.start_practice">연습 시작</button>
                             
                             <div id="free-typing-area" style="display: none;" class="mt-4">
                                 <div id="free-typing-text" class="fs-4 mb-4 p-3 bg-light rounded">
                                     <span id="free-typed-text" class="text-success"></span><span id="free-current-char" class="bg-primary text-white"></span><span id="free-remaining-text"></span>
                                 </div>
-                                <input type="text" id="free-typing-input" class="form-control form-control-lg" placeholder="위 텍스트를 입력하세요..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
+                                <input type="text" id="free-typing-input" class="form-control form-control-lg" placeholder="위 텍스트를 입력하세요..." data-i18n-placeholder="typing.input_ph" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
                                 <div class="mt-3">
-                                    <button id="reset-free-practice" class="btn btn-secondary">다시하기</button>
+                                    <button id="reset-free-practice" class="btn btn-secondary" data-i18n="typing.retry">다시하기</button>
                                 </div>
                             </div>
                         </div>
@@ -134,7 +134,7 @@
                 <div id="beginner-practice" class="practice-content" style="display: none;">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title mb-3">초보자 타자 연습</h4>
+                            <h4 class="card-title mb-3" data-i18n="typing.mode_beginner">초보자 타자 연습</h4>
                             
                             <!-- 키보드 시각화 -->
                             <div id="keyboard-visual" class="mb-4">
@@ -144,11 +144,11 @@
                             </div>
                             
                             <div class="mb-3">
-                                <label class="form-label">연습 타입 선택:</label>
+                                <label class="form-label" data-i18n="typing.practice_type">연습 타입 선택:</label>
                                 <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-outline-primary active" data-beginner-type="home">홈 포지션</button>
-                                    <button type="button" class="btn btn-outline-primary" data-beginner-type="consonant">자음 연습</button>
-                                    <button type="button" class="btn btn-outline-primary" data-beginner-type="vowel">모음 연습</button>
+                                    <button type="button" class="btn btn-outline-primary active" data-beginner-type="home" data-i18n="typing.type_home">홈 포지션</button>
+                                    <button type="button" class="btn btn-outline-primary" data-beginner-type="consonant" data-i18n="typing.type_consonant">자음 연습</button>
+                                    <button type="button" class="btn btn-outline-primary" data-beginner-type="vowel" data-i18n="typing.type_vowel">모음 연습</button>
                                 </div>
                             </div>
                             
@@ -156,11 +156,11 @@
                                 <span id="beginner-typed-text" class="text-success"></span><span id="beginner-current-char" class="bg-primary text-white"></span><span id="beginner-remaining-text"></span>
                             </div>
                             
-                            <input type="text" id="beginner-typing-input" class="form-control form-control-lg" placeholder="키보드를 보며 입력하세요..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
+                            <input type="text" id="beginner-typing-input" class="form-control form-control-lg" placeholder="키보드를 보며 입력하세요..." data-i18n-placeholder="typing.input_ph_beginner" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
                             
                             <div class="mt-3">
-                                <button id="start-beginner-practice" class="btn btn-success">시작</button>
-                                <button id="reset-beginner-practice" class="btn btn-secondary">다시하기</button>
+                                <button id="start-beginner-practice" class="btn btn-success" data-i18n="typing.start">시작</button>
+                                <button id="reset-beginner-practice" class="btn btn-secondary" data-i18n="typing.retry">다시하기</button>
                             </div>
                         </div>
                     </div>
@@ -170,7 +170,7 @@
                 <div id="special-practice" class="practice-content" style="display: none;">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title mb-3">특수 타자 연습</h4>
+                            <h4 class="card-title mb-3" data-i18n="typing.mode_special">특수 타자 연습</h4>
                             
                             <!-- 키보드 시각화 -->
                             <div id="special-keyboard-visual" class="mb-4">
@@ -180,12 +180,12 @@
                             </div>
                             
                             <div class="mb-3">
-                                <label class="form-label">특수 타자 타입 선택:</label>
+                                <label class="form-label" data-i18n="typing.special_type">특수 타자 타입 선택:</label>
                                 <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-outline-warning active" data-special-type="numbers">숫자</button>
-                                    <button type="button" class="btn btn-outline-warning" data-special-type="symbols">특수문자</button>
-                                    <button type="button" class="btn btn-outline-warning" data-special-type="mixed">혼합</button>
-                                    <button type="button" class="btn btn-outline-warning" data-special-type="chunjiin">천지인</button>
+                                    <button type="button" class="btn btn-outline-warning active" data-special-type="numbers" data-i18n="typing.special_numbers">숫자</button>
+                                    <button type="button" class="btn btn-outline-warning" data-special-type="symbols" data-i18n="typing.special_symbols">특수문자</button>
+                                    <button type="button" class="btn btn-outline-warning" data-special-type="mixed" data-i18n="typing.special_mixed">혼합</button>
+                                    <button type="button" class="btn btn-outline-warning" data-special-type="chunjiin" data-i18n="typing.special_chunjiin">천지인</button>
                                 </div>
                             </div>
                             
@@ -193,11 +193,11 @@
                                 <span id="special-typed-text" class="text-success"></span><span id="special-current-char" class="bg-primary text-white"></span><span id="special-remaining-text"></span>
                             </div>
                             
-                            <input type="text" id="special-typing-input" class="form-control form-control-lg" placeholder="위 텍스트를 입력하세요..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
+                            <input type="text" id="special-typing-input" class="form-control form-control-lg" placeholder="위 텍스트를 입력하세요..." data-i18n-placeholder="typing.input_ph" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
                             
                             <div class="mt-3">
-                                <button id="start-special-practice" class="btn btn-warning">시작</button>
-                                <button id="reset-special-practice" class="btn btn-secondary">다시하기</button>
+                                <button id="start-special-practice" class="btn btn-warning" data-i18n="typing.start">시작</button>
+                                <button id="reset-special-practice" class="btn btn-secondary" data-i18n="typing.retry">다시하기</button>
                             </div>
                         </div>
                     </div>
@@ -209,11 +209,11 @@
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-body">
-                                    <h5 class="card-title">연습 모드 선택</h5>
+                                    <h5 class="card-title" data-i18n="typing.practice_mode">연습 모드 선택</h5>
                                     <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-outline-primary active" data-standard-mode="words">단어 연습</button>
-                                        <button type="button" class="btn btn-outline-primary" data-standard-mode="sentences">문장 연습</button>
-                                        <button type="button" class="btn btn-outline-primary" data-standard-mode="paragraph">문단 연습</button>
+                                        <button type="button" class="btn btn-outline-primary active" data-standard-mode="words" data-i18n="typing.std_words">단어 연습</button>
+                                        <button type="button" class="btn btn-outline-primary" data-standard-mode="sentences" data-i18n="typing.std_sentences">문장 연습</button>
+                                        <button type="button" class="btn btn-outline-primary" data-standard-mode="paragraph" data-i18n="typing.std_paragraph">문단 연습</button>
                                     </div>
                                 </div>
                             </div>
@@ -221,11 +221,11 @@
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-body">
-                                    <h5 class="card-title">난이도</h5>
+                                    <h5 class="card-title" data-i18n="typing.difficulty">난이도</h5>
                                     <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-outline-success active" data-standard-level="easy">쉬움</button>
-                                        <button type="button" class="btn btn-outline-warning" data-standard-level="medium">보통</button>
-                                        <button type="button" class="btn btn-outline-danger" data-standard-level="hard">어려움</button>
+                                        <button type="button" class="btn btn-outline-success active" data-standard-level="easy" data-i18n="typing.level_easy">쉬움</button>
+                                        <button type="button" class="btn btn-outline-warning" data-standard-level="medium" data-i18n="typing.level_medium">보통</button>
+                                        <button type="button" class="btn btn-outline-danger" data-standard-level="hard" data-i18n="typing.level_hard">어려움</button>
                                     </div>
                                 </div>
                             </div>
@@ -240,13 +240,13 @@
                             </div>
                             
                             <div class="mb-3">
-                                <input type="text" id="standard-typing-input" class="form-control form-control-lg" placeholder="위 텍스트를 입력하세요..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
+                                <input type="text" id="standard-typing-input" class="form-control form-control-lg" placeholder="위 텍스트를 입력하세요..." data-i18n-placeholder="typing.input_ph" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text">
                             </div>
                             
                             <div class="d-flex justify-content-between">
-                                <button id="standard-start-btn" class="btn btn-success">시작</button>
-                                <button id="standard-reset-btn" class="btn btn-secondary">다시하기</button>
-                                <button id="standard-next-btn" class="btn btn-primary" style="display: none;">다음 문제</button>
+                                <button id="standard-start-btn" class="btn btn-success" data-i18n="typing.start">시작</button>
+                                <button id="standard-reset-btn" class="btn btn-secondary" data-i18n="typing.retry">다시하기</button>
+                                <button id="standard-next-btn" class="btn btn-primary" style="display: none;" data-i18n="typing.next_question">다음 문제</button>
                             </div>
                         </div>
                     </div>
@@ -256,19 +256,19 @@
                 <div id="custom-practice" class="practice-content" style="display: none;">
                     <div class="card mb-4">
                         <div class="card-body">
-                            <h4 class="card-title mb-3">사용자 정의 타자 연습</h4>
-                            <p class="text-muted mb-3">TXT 파일을 업로드하면 문장 또는 문단 단위로 자동 분리하여 연습할 수 있습니다.</p>
+                            <h4 class="card-title mb-3" data-i18n="typing.custom_title">사용자 정의 타자 연습</h4>
+                            <p class="text-muted mb-3" data-i18n="typing.custom_desc">TXT 파일을 업로드하면 문장 또는 문단 단위로 자동 분리하여 연습할 수 있습니다.</p>
 
                             <div class="row g-3 align-items-end mb-3">
                                 <div class="col-12 col-lg-7">
-                                    <label for="custom-file-input" class="form-label">텍스트 파일 업로드</label>
+                                    <label for="custom-file-input" class="form-label" data-i18n="typing.custom_file">텍스트 파일 업로드</label>
                                     <input type="file" id="custom-file-input" class="form-control" accept=".txt,text/plain">
                                 </div>
                                 <div class="col-12 col-sm-6 col-lg-3">
-                                    <label for="custom-segment-type" class="form-label">분할 방식</label>
+                                    <label for="custom-segment-type" class="form-label" data-i18n="typing.custom_split">분할 방식</label>
                                     <select id="custom-segment-type" class="form-select">
-                                        <option value="sentences">문장 단위</option>
-                                        <option value="paragraphs">문단 단위</option>
+                                        <option value="sentences" data-i18n="typing.split_sentences">문장 단위</option>
+                                        <option value="paragraphs" data-i18n="typing.split_paragraphs">문단 단위</option>
                                     </select>
                                 </div>
                                 <div class="col-12 col-sm-6 col-lg-2 d-grid">
@@ -287,13 +287,13 @@
                             </div>
 
                             <div class="mb-3">
-                                <input type="text" id="custom-typing-input" class="form-control form-control-lg" placeholder="업로드한 텍스트를 입력하세요..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text" disabled>
+                                <input type="text" id="custom-typing-input" class="form-control form-control-lg" placeholder="업로드한 텍스트를 입력하세요..." data-i18n-placeholder="typing.input_ph_custom" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text" disabled>
                             </div>
 
                             <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
                                 <small id="custom-segment-meta" class="text-muted">업로드 후 연습 구간 수가 표시됩니다.</small>
                                 <div class="d-flex flex-wrap gap-2">
-                                    <button id="reset-custom-practice" class="btn btn-secondary">다시하기</button>
+                                    <button id="reset-custom-practice" class="btn btn-secondary" data-i18n="typing.retry">다시하기</button>
                                 </div>
                             </div>
                         </div>
@@ -307,7 +307,7 @@
                             <div class="stats-icon primary mx-auto mb-2">
                                 <i class="fas fa-tachometer-alt"></i>
                             </div>
-                            <h6 class="text-muted small mb-1">타수</h6>
+                            <h6 class="text-muted small mb-1" data-i18n="typing.stat_speed">타수</h6>
                             <h2 id="wpm" class="text-primary fw-bold mb-0 animate-number">0</h2>
                             <small id="wpm-unit" class="text-muted">타/분</small>
                         </div>
@@ -317,9 +317,9 @@
                             <div class="stats-icon success mx-auto mb-2">
                                 <i class="fas fa-bullseye"></i>
                             </div>
-                            <h6 class="text-muted small mb-1">정확도</h6>
+                            <h6 class="text-muted small mb-1" data-i18n="typing.accuracy">정확도</h6>
                             <h2 id="accuracy" class="text-success fw-bold mb-0 animate-number">100%</h2>
-                            <small class="text-muted">정확도</small>
+                            <small class="text-muted" data-i18n="typing.accuracy">정확도</small>
                         </div>
                     </div>
                     <div class="col-6 col-md-3">
@@ -327,9 +327,9 @@
                             <div class="stats-icon info mx-auto mb-2">
                                 <i class="fas fa-clock"></i>
                             </div>
-                            <h6 class="text-muted small mb-1">시간</h6>
+                            <h6 class="text-muted small mb-1" data-i18n="typing.stat_time">시간</h6>
                             <h2 id="time" class="text-info fw-bold mb-0">0:00</h2>
-                            <small class="text-muted">경과 시간</small>
+                            <small class="text-muted" data-i18n="typing.elapsed">경과 시간</small>
                         </div>
                     </div>
                     <div class="col-6 col-md-3">
@@ -337,9 +337,9 @@
                             <div class="stats-icon warning mx-auto mb-2">
                                 <i class="fas fa-tasks"></i>
                             </div>
-                            <h6 class="text-muted small mb-1">진행률</h6>
+                            <h6 class="text-muted small mb-1" data-i18n="typing.stat_progress">진행률</h6>
                             <h2 id="progress" class="text-warning fw-bold mb-0 animate-number">0%</h2>
-                            <small class="text-muted">완료</small>
+                            <small class="text-muted" data-i18n="typing.completed">완료</small>
                         </div>
                     </div>
                 </div>
@@ -354,7 +354,7 @@
                                         <i class="fas fa-hourglass-half text-danger me-2"></i>
                                         <span id="remaining-time" class="text-danger fw-bold">남은 시간: 5:00</span>
                                     </h6>
-                                    <small class="text-muted">5분 챌린지</small>
+                                    <small class="text-muted" data-i18n="typing.challenge_5min">5분 챌린지</small>
                                 </div>
                                 <div class="progress" style="height: 10px;">
                                     <div id="time-progress-bar" class="progress-bar" role="progressbar" 
@@ -371,16 +371,16 @@
                         <div class="card">
                             <div class="card-body">
                                 <h6 class="card-subtitle mb-2 text-muted">
-                                    <i class="fas fa-trophy"></i> 개인 기록
+                                    <i class="fas fa-trophy"></i> <span data-i18n="typing.personal_records">개인 기록</span>
                                 </h6>
                                 <div class="row">
                                     <div class="col-6">
-                                        <small class="text-muted">최고 타수:</small>
-                                        <strong id="best-wpm">0</strong> 타/분
+                                        <small class="text-muted" data-i18n="typing.best_wpm">최고 타수:</small>
+                                        <strong id="best-wpm">0</strong> <span data-i18n="typing.unit_kpm">타/분</span>
                                     </div>
                                     <div class="col-6">
-                                        <small class="text-muted">평균 타수:</small>
-                                        <strong id="avg-wpm">0</strong> 타/분
+                                        <small class="text-muted" data-i18n="typing.avg_wpm">평균 타수:</small>
+                                        <strong id="avg-wpm">0</strong> <span data-i18n="typing.unit_kpm">타/분</span>
                                     </div>
                                 </div>
                             </div>
@@ -394,18 +394,18 @@
                         <div class="card">
                             <div class="card-body">
                                 <h6 class="card-subtitle mb-3 text-muted">
-                                    <i class="fas fa-chart-line"></i> WPM 성장 추이
+                                    <i class="fas fa-chart-line"></i> <span data-i18n="typing.growth_chart">WPM 성장 추이</span>
                                 </h6>
-                                <div class="btn-group btn-group-sm mb-3" role="group" aria-label="모드 필터">
-                                    <button type="button" class="btn btn-outline-primary active" data-chart-mode="all">전체</button>
-                                    <button type="button" class="btn btn-outline-primary" data-chart-mode="free">자유</button>
-                                    <button type="button" class="btn btn-outline-primary" data-chart-mode="beginner">초보자</button>
-                                    <button type="button" class="btn btn-outline-primary" data-chart-mode="special">특수</button>
-                                    <button type="button" class="btn btn-outline-primary" data-chart-mode="standard">표준</button>
+                                <div class="btn-group btn-group-sm mb-3" role="group" aria-label="모드 필터" data-i18n-aria="typing.filter_mode">
+                                    <button type="button" class="btn btn-outline-primary active" data-chart-mode="all" data-i18n="typing.chart_all">전체</button>
+                                    <button type="button" class="btn btn-outline-primary" data-chart-mode="free" data-i18n="typing.chart_free">자유</button>
+                                    <button type="button" class="btn btn-outline-primary" data-chart-mode="beginner" data-i18n="typing.chart_beginner">초보자</button>
+                                    <button type="button" class="btn btn-outline-primary" data-chart-mode="special" data-i18n="typing.chart_special">특수</button>
+                                    <button type="button" class="btn btn-outline-primary" data-chart-mode="standard" data-i18n="typing.chart_standard">표준</button>
                                 </div>
                                 <div id="chart-no-data" class="text-center text-muted py-4" style="display: none;">
                                     <i class="fas fa-chart-line fa-2x mb-2 d-block"></i>
-                                    아직 기록이 없습니다. 연습을 시작해보세요!
+                                    <span data-i18n="typing.no_records">아직 기록이 없습니다. 연습을 시작해보세요!</span>
                                 </div>
                                 <div id="chart-container" style="position: relative; height: 200px;">
                                     <canvas id="wpm-growth-chart"></canvas>
@@ -421,19 +421,19 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">타자 연습 결과</h5>
+                            <h5 class="modal-title" data-i18n="typing.result_title">타자 연습 결과</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
                             <div class="text-center">
-                                <h3 class="mb-4">수고하셨습니다!</h3>
+                                <h3 class="mb-4" data-i18n="typing.congrats">수고하셨습니다!</h3>
                                 <div class="row">
                                     <div class="col-6">
-                                        <h5>최종 타수</h5>
+                                        <h5 data-i18n="typing.final_wpm">최종 타수</h5>
                                         <h2 id="final-wpm" class="text-primary">0</h2>
                                     </div>
                                     <div class="col-6">
-                                        <h5>최종 정확도</h5>
+                                        <h5 data-i18n="typing.final_accuracy">최종 정확도</h5>
                                         <h2 id="final-accuracy" class="text-success">0%</h2>
                                     </div>
                                 </div>
@@ -442,8 +442,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                            <button type="button" class="btn btn-primary" id="continue-btn" data-bs-dismiss="modal">계속 연습</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="buttons.close">닫기</button>
+                            <button type="button" class="btn btn-primary" id="continue-btn" data-bs-dismiss="modal" data-i18n="typing.continue_practice">계속 연습</button>
                         </div>
                     </div>
                 </div>

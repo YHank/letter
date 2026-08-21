@@ -21,7 +21,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
             integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
             crossorigin="anonymous" referrerpolicy="no-referrer">
-        <link rel="stylesheet" href="/css/index.css?3">
+        <link rel="stylesheet" href="/css/index.css?5">
         <link rel="dns-prefetch" href="//translate.google.com">
 
         <!-- PWA Manifest -->
@@ -160,7 +160,7 @@
         </script>
         <nav class="navbar navbar-expand-lg navbar-light bg-light" aria-label="메인 네비게이션">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/">글자수 세기</a>
+                <a class="navbar-brand" href="/" data-i18n="app.brand">글자수 세기</a>
 
                 <!-- 항상 표시: 다크모드 토글 + 모바일 햄버거 (데스크탑에서 오른쪽 정렬) -->
                 <div class="d-flex align-items-center gap-2 order-lg-last">
@@ -184,31 +184,31 @@
                 <!-- 오프캔버스 네비게이션 (모바일: 슬라이드 패널, 데스크탑: 인라인) -->
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel" data-bs-backdrop="false">
                     <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">메뉴</h5>
+                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel" data-i18n="navigation.menu">메뉴</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="닫기"></button>
                     </div>
                     <div class="offcanvas-body">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="/">글자수 / 단어수</a>
+                                <a class="nav-link active" aria-current="page" href="/" data-i18n="navigation.counter">글자수 / 단어수</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-move="spellcheck_simple" href="#">맞춤법 검사</a>
+                                <a class="nav-link" data-move="spellcheck_simple" href="#" data-i18n="navigation.spellcheck">맞춤법 검사</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-move="salary" href="#">연봉실수령</a>
+                                <a class="nav-link" data-move="salary" href="#" data-i18n="navigation.salary">연봉실수령</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-move="typing_practice" href="#">타자연습</a>
+                                <a class="nav-link" data-move="typing_practice" href="#" data-i18n="navigation.typing_practice">타자연습</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">계산기 모음</a>
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false" data-i18n="navigation.calculators">계산기 모음</a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" data-move="insurance_calculator" href="#">4대보험료 계산기</a></li>
-                                    <li><a class="dropdown-item" data-move="severancepay" href="#">퇴직금 계산기</a></li>
-                                    <li><a class="dropdown-item" data-move="scientific_calculator" href="#">공학용 계산기</a></li>
+                                    <li><a class="dropdown-item" data-move="insurance_calculator" href="#" data-i18n="navigation.insurance">4대보험료 계산기</a></li>
+                                    <li><a class="dropdown-item" data-move="severancepay" href="#" data-i18n="navigation.severance">퇴직금 계산기</a></li>
+                                    <li><a class="dropdown-item" data-move="scientific_calculator" href="#" data-i18n="navigation.scientific">공학용 계산기</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item disabled" href="#">더 많은 계산기 준비중...</a></li>
+                                    <li><a class="dropdown-item disabled" href="#" data-i18n="navigation.more_soon">더 많은 계산기 준비중...</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -236,9 +236,9 @@
                                 <div class="stats-icon primary" aria-hidden="true">
                                     <i class="fas fa-font"></i>
                                 </div>
-                                <h6 class="text-muted small mb-1">공백 제외</h6>
+                                <h6 class="text-muted small mb-1" data-i18n="stats.characters_without_spaces">공백 제외</h6>
                                 <h3 data-result="1" class="text-primary fw-bold mb-0" aria-live="polite" aria-atomic="true">0</h3>
-                                <small class="text-muted">글자</small>
+                                <small class="text-muted" data-i18n="stats.characters">글자</small>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
@@ -246,9 +246,9 @@
                                 <div class="stats-icon info" aria-hidden="true">
                                     <i class="fas fa-text-width"></i>
                                 </div>
-                                <h6 class="text-muted small mb-1">공백 포함</h6>
+                                <h6 class="text-muted small mb-1" data-i18n="stats.characters_with_spaces">공백 포함</h6>
                                 <h3 data-result="2" class="fw-bold mb-0" aria-live="polite" aria-atomic="true">0</h3>
-                                <small class="text-muted">글자</small>
+                                <small class="text-muted" data-i18n="stats.characters">글자</small>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
@@ -256,9 +256,9 @@
                                 <div class="stats-icon success" aria-hidden="true">
                                     <i class="fas fa-spell-check"></i>
                                 </div>
-                                <h6 class="text-muted small mb-1">단어 수</h6>
+                                <h6 class="text-muted small mb-1" data-i18n="stats.words">단어 수</h6>
                                 <h3 data-result="3" class="text-success fw-bold mb-0" aria-live="polite" aria-atomic="true">0</h3>
-                                <small class="text-muted">단어</small>
+                                <small class="text-muted" data-i18n="stats.words_unit">단어</small>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
@@ -266,9 +266,9 @@
                                 <div class="stats-icon warning" aria-hidden="true">
                                     <i class="fas fa-clock"></i>
                                 </div>
-                                <h6 class="text-muted small mb-1">읽기 시간</h6>
+                                <h6 class="text-muted small mb-1" data-i18n="stats.reading_time">읽기 시간</h6>
                                 <h3 data-result="reading-time" class="text-warning fw-bold mb-0" aria-live="polite" aria-atomic="true">0</h3>
-                                <small class="text-muted">예상</small>
+                                <small class="text-muted" data-i18n="stats.estimated">예상</small>
                             </div>
                         </div>
                     </div>
@@ -280,7 +280,7 @@
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-align-left text-muted me-2" aria-hidden="true"></i>
                                     <div>
-                                        <small class="text-muted d-block">라인 수</small>
+                                        <small class="text-muted d-block" data-i18n="stats.lines">라인 수</small>
                                         <strong data-result="4" aria-live="polite">0</strong>
                                     </div>
                                 </div>
@@ -291,7 +291,7 @@
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-paragraph text-muted me-2" aria-hidden="true"></i>
                                     <div>
-                                        <small class="text-muted d-block">문장 수</small>
+                                        <small class="text-muted d-block" data-i18n="stats.sentences">문장 수</small>
                                         <strong data-result="sentences" aria-live="polite">0</strong>
                                     </div>
                                 </div>
@@ -302,8 +302,8 @@
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-ruler-horizontal text-muted me-2" aria-hidden="true"></i>
                                     <div>
-                                        <small class="text-muted d-block">평균 길이</small>
-                                        <strong aria-live="polite"><span data-result="avg-word-length">0</span>자</strong>
+                                        <small class="text-muted d-block" data-i18n="stats.avg_length_short">평균 길이</small>
+                                        <strong aria-live="polite" data-i18n="stats.char_unit"><span data-result="avg-word-length">0</span>자</strong>
                                     </div>
                                 </div>
                             </div>
@@ -313,7 +313,7 @@
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-indent text-muted me-2" aria-hidden="true"></i>
                                     <div>
-                                        <small class="text-muted d-block">단락 수</small>
+                                        <small class="text-muted d-block" data-i18n="stats.paragraphs">단락 수</small>
                                         <strong data-result="paragraphs" aria-live="polite">0</strong>
                                     </div>
                                 </div>
@@ -329,45 +329,45 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                                 <div>
-                                    <h3 class="h6 mb-2">텍스트 변환 도구</h3>
+                                    <h3 class="h6 mb-2" data-i18n="help.text_transform">텍스트 변환 도구</h3>
                                     <div class="btn-group flex-wrap" role="group" aria-label="텍스트 변환 도구">
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="uppercase" data-bs-toggle="tooltip" title="모든 글자를 대문자로" aria-describedby="uppercase-help">
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="uppercase" data-i18n="buttons.uppercase" data-i18n-title="help.transform_upper" data-bs-toggle="tooltip" title="모든 글자를 대문자로" aria-describedby="uppercase-help">
                                             <i class="fas fa-font me-1" aria-hidden="true"></i>대문자
                                         </button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="lowercase" data-bs-toggle="tooltip" title="모든 글자를 소문자로" aria-describedby="lowercase-help">
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="lowercase" data-i18n="buttons.lowercase" data-i18n-title="help.transform_lower" data-bs-toggle="tooltip" title="모든 글자를 소문자로" aria-describedby="lowercase-help">
                                             <i class="fas fa-font me-1" style="font-size: 0.8em" aria-hidden="true"></i>소문자
                                         </button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="capitalize" data-bs-toggle="tooltip" title="각 단어의 첫 글자를 대문자로" aria-describedby="capitalize-help">
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="capitalize" data-i18n="buttons.capitalize" data-i18n-title="help.transform_capitalize" data-bs-toggle="tooltip" title="각 단어의 첫 글자를 대문자로" aria-describedby="capitalize-help">
                                             <i class="fas fa-text-height me-1" aria-hidden="true"></i>첫글자
                                         </button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-special" data-bs-toggle="tooltip" title="특수문자를 제거합니다" aria-describedby="remove-special-help">
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-special" data-i18n="buttons.remove_special" data-i18n-title="help.transform_special" data-bs-toggle="tooltip" title="특수문자를 제거합니다" aria-describedby="remove-special-help">
                                             <i class="fas fa-filter me-1" aria-hidden="true"></i>특수문자제거
                                         </button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-spaces" data-bs-toggle="tooltip" title="모든 공백을 제거합니다" aria-describedby="remove-spaces-help">
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="remove-spaces" data-i18n="buttons.remove_spaces" data-i18n-title="help.transform_spaces" data-bs-toggle="tooltip" title="모든 공백을 제거합니다" aria-describedby="remove-spaces-help">
                                             <i class="fas fa-compress me-1" aria-hidden="true"></i>공백제거
                                         </button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="trim-lines" data-bs-toggle="tooltip" title="각 줄의 앞뒤 공백을 정리합니다" aria-describedby="trim-lines-help">
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-transform="trim-lines" data-i18n="buttons.trim_lines" data-i18n-title="help.transform_trim" data-bs-toggle="tooltip" title="각 줄의 앞뒤 공백을 정리합니다" aria-describedby="trim-lines-help">
                                             <i class="fas fa-align-left me-1" aria-hidden="true"></i>공백정리
                                         </button>
-                                        <button type="button" class="btn btn-outline-danger btn-sm" data-transform="clear" data-bs-toggle="tooltip" title="모든 텍스트를 지웁니다" aria-describedby="clear-help">
+                                        <button type="button" class="btn btn-outline-danger btn-sm" data-transform="clear" data-i18n="buttons.clear" data-bs-toggle="tooltip" title="모든 텍스트를 지웁니다" aria-describedby="clear-help">
                                             <i class="fas fa-trash me-1" aria-hidden="true"></i>지우기
                                         </button>
                                     </div>
                                     <div class="btn-group mt-2" role="group" aria-label="실행 취소 및 다시 실행">
-                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-action="undo" data-bs-toggle="tooltip" title="실행 취소 (Ctrl+Z)" aria-keyshortcuts="Ctrl+Z">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-action="undo" data-i18n="buttons.undo" data-bs-toggle="tooltip" title="실행 취소 (Ctrl+Z)" aria-keyshortcuts="Ctrl+Z">
                                             <i class="fas fa-undo me-1" aria-hidden="true"></i>실행 취소
                                         </button>
-                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-action="redo" data-bs-toggle="tooltip" title="다시 실행 (Ctrl+Y)" aria-keyshortcuts="Ctrl+Y">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-action="redo" data-i18n="buttons.redo" data-bs-toggle="tooltip" title="다시 실행 (Ctrl+Y)" aria-keyshortcuts="Ctrl+Y">
                                             <i class="fas fa-redo me-1" aria-hidden="true"></i>다시 실행
                                         </button>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center gap-2">
-                                    <button type="button" class="btn btn-outline-success btn-sm" id="export-stats" data-bs-toggle="tooltip" title="통계를 CSV 파일로 내보내기">
+                                    <button type="button" class="btn btn-outline-success btn-sm" id="export-stats" data-i18n="buttons.export_stats" data-bs-toggle="tooltip" title="통계를 CSV 파일로 내보내기">
                                         <i class="fas fa-download me-1"></i>통계 내보내기
                                     </button>
                                     <span class="text-muted small">
-                                        <i class="fas fa-language me-1"></i>번역
+                                        <i class="fas fa-language me-1"></i><span data-i18n="buttons.translate">번역</span>
                                     </span>
                                     <div id="google_translate_element"></div>
                                 </div>
@@ -377,18 +377,18 @@
                 <!-- 텍스트 입력 영역 -->
                 <div class="col-12 col-lg-7 position-relative">
                     <div class="mobile-drag-indicator" title="위아래로 드래그하여 크기 조절"></div>
-                    <div id="letter_count" contenteditable="true" class="editable border border-dark fs-6 p-4 overflow-auto" style="height:500px; resize: vertical; min-height: 300px; max-height: 800px;" role="textbox" aria-label="텍스트 입력 영역" aria-describedby="input-help" tabindex="0"></div>
+                    <div id="letter_count" contenteditable="true" class="editable border border-dark fs-6 p-4 overflow-auto" style="height:500px; resize: vertical; min-height: 300px; max-height: 800px;" role="textbox" aria-label="텍스트 입력 영역" aria-describedby="input-help" tabindex="0" data-placeholder="글자를 입력해주세요." data-i18n-placeholder="placeholders.text_input"></div>
                     <div id="save-indicator" class="position-absolute top-0 end-0 m-3 badge bg-success d-none" role="status" aria-live="polite">
-                        <i class="fas fa-check me-1" aria-hidden="true"></i>저장됨
+                        <i class="fas fa-check me-1" aria-hidden="true"></i><span data-i18n="buttons.saved">저장됨</span>
                     </div>
                     <div class="resize-handle position-absolute bottom-0 end-0 m-2 text-muted" style="cursor: ns-resize;">
                         <i class="fas fa-grip-lines" title="드래그하여 크기 조절"></i>
                     </div>
                 </div>
                 <small id="input-help" class="form-text text-muted col-12 col-lg-7 mt-2">
-                    <i class="fas fa-info-circle me-1"></i>텍스트를 입력하거나 붙여넣기하세요. 자동으로 저장됩니다.
+                    <i class="fas fa-info-circle me-1"></i><span data-i18n="help.input_hint">텍스트를 입력하거나 붙여넣기하세요. 자동으로 저장됩니다.</span>
                     <a href="#" class="ms-2" id="show-help" data-bs-toggle="modal" data-bs-target="#helpModal">
-                        <i class="fas fa-question-circle"></i> 도움말
+                        <i class="fas fa-question-circle"></i> <span data-i18n="buttons.help">도움말</span>
                     </a>
                 </small>
                 <div class="mt-5 col-12 col-lg-7 mb-4 text-secondary">
@@ -524,17 +524,17 @@
             <div class="container">
                 <div class="row mb-3">
                     <div class="col-12">
-                        <p class="text-muted small mb-2"><strong>관련 도구</strong></p>
+                        <p class="text-muted small mb-2"><strong data-i18n="footer.related_tools">관련 도구</strong></p>
                         <div class="d-flex flex-wrap gap-2">
-                            <a href="/?page=salary" class="text-muted small text-decoration-none" data-move="salary">연봉 계산기</a>
+                            <a href="/?page=salary" class="text-muted small text-decoration-none" data-move="salary" data-i18n="navigation.salary">연봉 계산기</a>
                             <span class="text-muted">·</span>
-                            <a href="/?page=insurance_calculator" class="text-muted small text-decoration-none" data-move="insurance_calculator">4대보험 계산기</a>
+                            <a href="/?page=insurance_calculator" class="text-muted small text-decoration-none" data-move="insurance_calculator" data-i18n="navigation.insurance">4대보험 계산기</a>
                             <span class="text-muted">·</span>
-                            <a href="/?page=spellcheck_simple" class="text-muted small text-decoration-none" data-move="spellcheck_simple">맞춤법 검사기</a>
+                            <a href="/?page=spellcheck_simple" class="text-muted small text-decoration-none" data-move="spellcheck_simple" data-i18n="navigation.spellcheck">맞춤법 검사기</a>
                             <span class="text-muted">·</span>
-                            <a href="/?page=typing_practice" class="text-muted small text-decoration-none" data-move="typing_practice">타자 연습</a>
+                            <a href="/?page=typing_practice" class="text-muted small text-decoration-none" data-move="typing_practice" data-i18n="navigation.typing_practice">타자 연습</a>
                             <span class="text-muted">·</span>
-                            <a href="/?page=severancepay" class="text-muted small text-decoration-none" data-move="severancepay">퇴직금 계산기</a>
+                            <a href="/?page=severancepay" class="text-muted small text-decoration-none" data-move="severancepay" data-i18n="navigation.severance">퇴직금 계산기</a>
                         </div>
                     </div>
                 </div>
@@ -543,7 +543,7 @@
                         <p class="text-muted small">
                             © 2024 글자수 세기 |
                             <a href="https://letter.ymyhome.loan" class="text-muted">letter.ymyhome.loan</a> |
-                            모든 데이터는 브라우저에만 저장됩니다
+                            <span data-i18n="footer.privacy">모든 데이터는 브라우저에만 저장됩니다</span>
                         </p>
                     </div>
                 </div>
@@ -564,7 +564,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="helpModalLabel">
-                            <i class="fas fa-question-circle me-2"></i>글자수 세기 사용법
+                            <i class="fas fa-question-circle me-2"></i><span data-i18n="help.modal_title">글자수 세기 사용법</span>
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -574,16 +574,16 @@
                             <div class="accordion-item">
                                 <h2 class="accordion-header">
                                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#basicUsage">
-                                        <i class="fas fa-book me-2"></i>기본 사용법
+                                        <i class="fas fa-book me-2"></i><span data-i18n="help.basic_usage">기본 사용법</span>
                                     </button>
                                 </h2>
                                 <div id="basicUsage" class="accordion-collapse collapse show" data-bs-parent="#helpAccordion">
                                     <div class="accordion-body">
                                         <ul>
-                                            <li>텍스트 입력 영역에 글을 입력하거나 붙여넣기하세요</li>
-                                            <li>실시간으로 글자수, 단어수, 문장수가 자동 계산됩니다</li>
-                                            <li>모든 내용은 자동으로 저장되어 새로고침해도 유지됩니다</li>
-                                            <li>텍스트 영역은 아래쪽을 드래그하여 크기를 조절할 수 있습니다</li>
+                                            <li data-i18n="help.usage_1">텍스트 입력 영역에 글을 입력하거나 붙여넣기하세요</li>
+                                            <li data-i18n="help.usage_2">실시간으로 글자수, 단어수, 문장수가 자동 계산됩니다</li>
+                                            <li data-i18n="help.usage_3">모든 내용은 자동으로 저장되어 새로고침해도 유지됩니다</li>
+                                            <li data-i18n="help.usage_4">텍스트 영역은 아래쪽을 드래그하여 크기를 조절할 수 있습니다</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -593,7 +593,7 @@
                             <div class="accordion-item">
                                 <h2 class="accordion-header">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#shortcuts">
-                                        <i class="fas fa-keyboard me-2"></i>단축키
+                                        <i class="fas fa-keyboard me-2"></i><span data-i18n="help.shortcuts">단축키</span>
                                     </button>
                                 </h2>
                                 <div id="shortcuts" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
@@ -601,22 +601,22 @@
                                         <table class="table table-sm">
                                             <tr>
                                                 <td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td>
-                                                <td>실행 취소</td>
+                                                <td data-i18n="help.shortcut_undo">실행 취소</td>
                                             </tr>
                                             <tr>
                                                 <td><kbd>Ctrl</kbd> + <kbd>Y</kbd></td>
-                                                <td>다시 실행</td>
+                                                <td data-i18n="help.shortcut_redo">다시 실행</td>
                                             </tr>
                                             <tr>
                                                 <td><kbd>Ctrl</kbd> + <kbd>S</kbd></td>
-                                                <td>저장 (자동 저장되지만 명시적 저장)</td>
+                                                <td data-i18n="help.shortcut_save">저장 (자동 저장되지만 명시적 저장)</td>
                                             </tr>
                                             <tr>
                                                 <td><kbd>Ctrl</kbd> + <kbd>A</kbd></td>
-                                                <td>전체 선택</td>
+                                                <td data-i18n="help.shortcut_select_all">전체 선택</td>
                                             </tr>
                                         </table>
-                                        <small class="text-muted">Mac 사용자는 Ctrl 대신 Cmd 키를 사용하세요</small>
+                                        <small class="text-muted" data-i18n="help.shortcut_mac_note">Mac 사용자는 Ctrl 대신 Cmd 키를 사용하세요</small>
                                     </div>
                                 </div>
                             </div>
@@ -625,18 +625,18 @@
                             <div class="accordion-item">
                                 <h2 class="accordion-header">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#textTools">
-                                        <i class="fas fa-tools me-2"></i>텍스트 변환 도구
+                                        <i class="fas fa-tools me-2"></i><span data-i18n="help.text_transform">텍스트 변환 도구</span>
                                     </button>
                                 </h2>
                                 <div id="textTools" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
                                     <div class="accordion-body">
                                         <ul>
-                                            <li><strong>대문자:</strong> 모든 영문을 대문자로 변환</li>
-                                            <li><strong>소문자:</strong> 모든 영문을 소문자로 변환</li>
-                                            <li><strong>첫글자:</strong> 각 단어의 첫 글자를 대문자로</li>
-                                            <li><strong>특수문자제거:</strong> 한글, 영어, 숫자만 남기고 제거</li>
-                                            <li><strong>공백제거:</strong> 모든 공백 제거</li>
-                                            <li><strong>공백정리:</strong> 각 줄의 앞뒤 공백 정리</li>
+                                            <li><strong data-i18n="buttons.uppercase">대문자</strong>: <span data-i18n="help.transform_upper">모든 영문을 대문자로 변환</span></li>
+                                            <li><strong data-i18n="buttons.lowercase">소문자</strong>: <span data-i18n="help.transform_lower">모든 영문을 소문자로 변환</span></li>
+                                            <li><strong data-i18n="buttons.capitalize">첫글자</strong>: <span data-i18n="help.transform_capitalize">각 단어의 첫 글자를 대문자로</span></li>
+                                            <li><strong data-i18n="buttons.remove_special">특수문자제거</strong>: <span data-i18n="help.transform_special">한글, 영어, 숫자만 남기고 제거</span></li>
+                                            <li><strong data-i18n="buttons.remove_spaces">공백제거</strong>: <span data-i18n="help.transform_spaces">모든 공백 제거</span></li>
+                                            <li><strong data-i18n="buttons.trim_lines">공백정리</strong>: <span data-i18n="help.transform_trim">각 줄의 앞뒤 공백 정리</span></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -646,26 +646,26 @@
                             <div class="accordion-item">
                                 <h2 class="accordion-header">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#statistics">
-                                        <i class="fas fa-chart-bar me-2"></i>통계 설명
+                                        <i class="fas fa-chart-bar me-2"></i><span data-i18n="help.statistics">통계 설명</span>
                                     </button>
                                 </h2>
                                 <div id="statistics" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
                                     <div class="accordion-body">
                                         <dl>
-                                            <dt>공백 제외 글자수</dt>
-                                            <dd>띄어쓰기와 줄바꿈을 제외한 순수 글자 개수</dd>
+                                            <dt data-i18n="help.stat_excl_spaces">공백 제외 글자수</dt>
+                                            <dd data-i18n="help.stat_excl_spaces_desc">띄어쓰기와 줄바꿈을 제외한 순수 글자 개수</dd>
                                             
-                                            <dt>공백 포함 글자수</dt>
-                                            <dd>띄어쓰기를 포함한 전체 글자 개수</dd>
+                                            <dt data-i18n="help.stat_incl_spaces">공백 포함 글자수</dt>
+                                            <dd data-i18n="help.stat_incl_spaces_desc">띄어쓰기를 포함한 전체 글자 개수</dd>
                                             
-                                            <dt>단어수</dt>
-                                            <dd>공백으로 구분된 단어의 개수</dd>
+                                            <dt data-i18n="help.stat_words">단어수</dt>
+                                            <dd data-i18n="help.stat_words_desc">공백으로 구분된 단어의 개수</dd>
                                             
-                                            <dt>읽기 시간</dt>
-                                            <dd>평균 읽기 속도(분당 400자)로 계산한 예상 시간</dd>
+                                            <dt data-i18n="help.stat_reading_time">읽기 시간</dt>
+                                            <dd data-i18n="help.stat_reading_time_desc">평균 읽기 속도(분당 400자)로 계산한 예상 시간</dd>
                                             
-                                            <dt>문장수</dt>
-                                            <dd>마침표, 느낌표, 물음표로 끝나는 문장의 개수</dd>
+                                            <dt data-i18n="help.stat_sentences">문장수</dt>
+                                            <dd data-i18n="help.stat_sentences_desc">마침표, 느낌표, 물음표로 끝나는 문장의 개수</dd>
                                         </dl>
                                     </div>
                                 </div>
@@ -675,16 +675,16 @@
                             <div class="accordion-item">
                                 <h2 class="accordion-header">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#tips">
-                                        <i class="fas fa-lightbulb me-2"></i>팁과 활용법
+                                        <i class="fas fa-lightbulb me-2"></i><span data-i18n="help.tips">팁과 활용법</span>
                                     </button>
                                 </h2>
                                 <div id="tips" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
                                     <div class="accordion-body">
                                         <ul>
-                                            <li>통계 내보내기 버튼으로 현재 통계를 CSV 파일로 저장할 수 있습니다</li>
-                                            <li>구글 번역 기능으로 작성한 텍스트를 다른 언어로 번역할 수 있습니다</li>
-                                            <li>다크모드를 사용하면 야간에도 편안하게 작업할 수 있습니다</li>
-                                            <li>맞춤법 검사, 타자 연습 등 다양한 부가 기능을 활용해보세요</li>
+                                            <li data-i18n="help.tip_1">통계 내보내기 버튼으로 현재 통계를 CSV 파일로 저장할 수 있습니다</li>
+                                            <li data-i18n="help.tip_2">구글 번역 기능으로 작성한 텍스트를 다른 언어로 번역할 수 있습니다</li>
+                                            <li data-i18n="help.tip_3">다크모드를 사용하면 야간에도 편안하게 작업할 수 있습니다</li>
+                                            <li data-i18n="help.tip_4">맞춤법 검사, 타자 연습 등 다양한 부가 기능을 활용해보세요</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -692,7 +692,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="buttons.close">닫기</button>
                     </div>
                 </div>
             </div>
@@ -701,14 +701,14 @@
         <script src="/js/utils.js?3" defer></script>
         <script src="/js/darkmode.js" defer></script>
         <script src="/js/text-analyzer.js" defer></script>
-        <script src="/js/navigation-manager.js?16" defer></script>
+        <script src="/js/navigation-manager.js?19" defer></script>
         <script src="/js/storage-manager.js" defer></script>
         <script src="/js/toast.js?1" defer></script>
         <script src="/js/error-handler.js?1" defer></script>
         <script src="/js/undo-redo.js?1" defer></script>
-        <script src="/js/i18n.js?1" defer></script>
-        <script src="/js/advanced-analyzer.js?1" defer></script>
-        <script src="/js/analysis-ui.js?1" defer></script>
+        <script src="/js/i18n.js?3" defer></script>
+        <script src="/js/advanced-analyzer.js?3" defer></script>
+        <script src="/js/analysis-ui.js?2" defer></script>
         <script src="/js/mobile-handler.js?1" defer></script>
         <script src="/js/keyboard-handler.js?1" defer></script>
         <script src="/js/pwa.js" defer></script>

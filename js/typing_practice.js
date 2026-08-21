@@ -1,3 +1,16 @@
+/**
+ * 화면에 표시할 문구를 현재 언어로 가져온다.
+ * i18n이 아직 준비되지 않았으면 한국어 원문을 그대로 사용한다.
+ * @param {string} key - 번역 키
+ * @param {string} fallback - 한국어 원문
+ * @param {Object} [params] - {name} 자리에 채울 값
+ */
+function typingText(key, fallback, params) {
+    const manager = window.i18nManager;
+    if (!manager || !manager.ready) return fallback;
+    return params ? manager.format(key, params, fallback) : manager.t(key, fallback);
+}
+
 // 전역 변수를 함수 외부로 이동하여 중복 초기화 방지
 var typingPracticeState = typingPracticeState || null;
 var wpmGrowthChart = wpmGrowthChart || null;
@@ -696,11 +709,17 @@ function initializeTypingPracticeNew() {
 
         const totalSegments = typingPracticeState.customSegments.length;
         if (!totalSegments) {
-            metaEl.textContent = '업로드 후 연습 구간 수가 표시됩니다.';
+            metaEl.textContent = typingText('typing.custom_meta', '업로드 후 연습 구간 수가 표시됩니다.');
             return;
         }
 
-        metaEl.textContent = `${typingPracticeState.customSegmentIndex + 1} / ${totalSegments} 구간 · ${typingPracticeState.customFileName || '사용자 업로드 텍스트'}`;
+        const segmentName = typingPracticeState.customFileName
+            || typingText('typing.custom_default_name', '사용자 업로드 텍스트');
+        metaEl.textContent = typingText(
+            'typing.custom_segment',
+            `${typingPracticeState.customSegmentIndex + 1} / ${totalSegments} 구간 · ${segmentName}`,
+            { current: typingPracticeState.customSegmentIndex + 1, total: totalSegments, name: segmentName }
+        );
     }
 
     function applyCustomSegment(index) {
@@ -759,8 +778,8 @@ function initializeTypingPracticeNew() {
                 startBtn.disabled = true;
                 typingInput.disabled = true;
                 clearAllDisplayTexts();
-                document.getElementById('custom-remaining-text').textContent = '연습 가능한 문장이나 문단을 찾지 못했습니다.';
-                setCustomFeedback('빈 파일이거나 분리할 수 있는 텍스트가 없습니다. 다른 TXT 파일을 선택해주세요.', 'warning');
+                document.getElementById('custom-remaining-text').textContent = typingText('typing.custom_none', '연습 가능한 문장이나 문단을 찾지 못했습니다.');
+                setCustomFeedback(typingText('typing.fb_empty_file', '빈 파일이거나 분리할 수 있는 텍스트가 없습니다. 다른 TXT 파일을 선택해주세요.'), 'warning');
                 updateCustomSegmentMeta();
                 return;
             }
@@ -769,7 +788,7 @@ function initializeTypingPracticeNew() {
             updateDisplay('custom');
             startBtn.disabled = false;
             typingInput.disabled = true;
-            setCustomFeedback(`${segments.length}개의 연습 구간을 준비했습니다. 시작 버튼을 눌러 연습을 시작하세요.`, 'success');
+            setCustomFeedback(typingText('typing.fb_ready', `${segments.length}개의 연습 구간을 준비했습니다. 시작 버튼을 눌러 연습을 시작하세요.`, { count: segments.length }), 'success');
         };
 
         const fileChangeHandler = function() {
@@ -782,7 +801,7 @@ function initializeTypingPracticeNew() {
             if (!isTextFile) {
                 this.value = '';
                 prepareSegments('', '');
-                setCustomFeedback('TXT 파일만 업로드할 수 있습니다.', 'danger');
+                setCustomFeedback(typingText('typing.fb_txt_only', 'TXT 파일만 업로드할 수 있습니다.'), 'danger');
                 return;
             }
 
@@ -796,7 +815,7 @@ function initializeTypingPracticeNew() {
             };
             reader.onerror = function() {
                 prepareSegments('', '');
-                setCustomFeedback('파일을 읽는 중 오류가 발생했습니다. 다시 시도해주세요.', 'danger');
+                setCustomFeedback(typingText('typing.fb_read_error', '파일을 읽는 중 오류가 발생했습니다. 다시 시도해주세요.'), 'danger');
             };
             reader.readAsText(file, 'utf-8');
         };
@@ -810,7 +829,7 @@ function initializeTypingPracticeNew() {
 
         const customStartHandler = function() {
             if (!typingPracticeState.customSegments.length) {
-                setCustomFeedback('먼저 TXT 파일을 업로드해주세요.', 'warning');
+                setCustomFeedback(typingText('typing.fb_upload_first', '먼저 TXT 파일을 업로드해주세요.'), 'warning');
                 return;
             }
 
@@ -846,11 +865,11 @@ function initializeTypingPracticeNew() {
             if (typingPracticeState.customSegments.length) {
                 applyCustomSegment(0);
                 updateDisplay('custom');
-                setCustomFeedback('업로드한 텍스트를 다시 시작할 준비가 되었습니다.', 'secondary');
+                setCustomFeedback(typingText('typing.fb_reset_ready', '업로드한 텍스트를 다시 시작할 준비가 되었습니다.'), 'secondary');
             } else {
                 clearAllDisplayTexts();
-                document.getElementById('custom-remaining-text').textContent = '파일을 업로드하면 연습 문장이 여기에 표시됩니다.';
-                setCustomFeedback('업로드할 TXT 파일을 선택해주세요.', 'secondary');
+                document.getElementById('custom-remaining-text').textContent = typingText('typing.custom_waiting', '파일을 업로드하면 연습 문장이 여기에 표시됩니다.');
+                setCustomFeedback(typingText('typing.fb_select_file', '업로드할 TXT 파일을 선택해주세요.'), 'secondary');
             }
         };
 
@@ -867,8 +886,8 @@ function initializeTypingPracticeNew() {
         typingInput.disabled = true;
         startBtn.disabled = typingPracticeState.customSegments.length === 0;
         if (!typingPracticeState.customSegments.length) {
-            setCustomFeedback('업로드할 TXT 파일을 선택해주세요.', 'secondary');
-            document.getElementById('custom-remaining-text').textContent = '파일을 업로드하면 연습 문장이 여기에 표시됩니다.';
+            setCustomFeedback(typingText('typing.fb_select_file', '업로드할 TXT 파일을 선택해주세요.'), 'secondary');
+            document.getElementById('custom-remaining-text').textContent = typingText('typing.custom_waiting', '파일을 업로드하면 연습 문장이 여기에 표시됩니다.');
         } else {
             applyCustomSegment(typingPracticeState.customSegmentIndex || 0);
             updateDisplay('custom');
@@ -985,7 +1004,7 @@ function initializeTypingPracticeNew() {
             resetPractice('standard');
             document.getElementById('standard-start-btn').style.display = 'inline-block';
             document.getElementById('standard-next-btn').style.display = 'none';
-            document.getElementById('standard-remaining-text').textContent = '시작 버튼을 눌러주세요';
+            document.getElementById('standard-remaining-text').textContent = typingText('typing.press_start', '시작 버튼을 눌러주세요');
         }
         
         // 초기화
@@ -1043,7 +1062,7 @@ function initializeTypingPracticeNew() {
                             if (typingPracticeState.customSegments.length) {
                                 typingPracticeState.customSegmentIndex = (typingPracticeState.customSegmentIndex + 1) % typingPracticeState.customSegments.length;
                                 nextText = typingPracticeState.customSegments[typingPracticeState.customSegmentIndex];
-                                setCustomFeedback('다음 연습 구간으로 자동 이동했습니다.', 'secondary');
+                                setCustomFeedback(typingText('typing.fb_auto_next', '다음 연습 구간으로 자동 이동했습니다.'), 'secondary');
                             }
                             break;
                     }
@@ -1141,7 +1160,9 @@ function initializeTypingPracticeNew() {
             
             // 언어별 단위 표시
             if (wpmUnitEl) {
-                wpmUnitEl.textContent = typingPracticeState.currentLang === 'korean' ? '타/분' : 'WPM';
+                wpmUnitEl.textContent = typingPracticeState.currentLang === 'korean'
+                    ? typingText('typing.unit_kpm', '타/분')
+                    : 'WPM';
             }
         } catch (error) {
             console.error('통계 업데이트 중 오류:', error);
@@ -1167,7 +1188,8 @@ function initializeTypingPracticeNew() {
         const progressBar = document.getElementById('time-progress-bar');
         
         if (remainingEl) {
-            remainingEl.textContent = `남은 시간: ${remainingMinutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            const remainingLabel = `${remainingMinutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            remainingEl.textContent = typingText('typing.remaining_time', `남은 시간: ${remainingLabel}`, { time: remainingLabel });
             // 1분 미만일 때 빨간색으로 표시
             if (remaining < 60000) {
                 remainingEl.classList.add('text-danger');
@@ -1220,44 +1242,44 @@ function initializeTypingPracticeNew() {
         if (typingPracticeState.currentLang === 'korean') {
             // 한글 타수 기준 (일반적으로 더 높음)
             if (finalWpm >= 500) {
-                message = '놀라운 속도입니다! 최상위 전문가 수준이시네요!';
+                message = typingText('typing.msg_amazing', '놀라운 속도입니다! 최상위 전문가 수준이시네요!');
             } else if (finalWpm >= 400) {
-                message = '매우 훌륭합니다! 전문가 수준의 타자 실력입니다!';
+                message = typingText('typing.msg_excellent', '매우 훌륭합니다! 전문가 수준의 타자 실력입니다!');
             } else if (finalWpm >= 300) {
-                message = '우수합니다! 상위 수준의 실력을 보유하고 계십니다!';
+                message = typingText('typing.msg_great', '우수합니다! 상위 수준의 실력을 보유하고 계십니다!');
             } else if (finalWpm >= 200) {
-                message = '좋습니다! 평균 이상의 실력입니다!';
+                message = typingText('typing.msg_good', '좋습니다! 평균 이상의 실력입니다!');
             } else if (finalWpm >= 150) {
-                message = '잘하고 있습니다! 조금만 더 연습하면 더 빨라질 거예요!';
+                message = typingText('typing.msg_nice', '잘하고 있습니다! 조금만 더 연습하면 더 빨라질 거예요!');
             } else {
-                message = '꾸준히 연습하면 실력이 향상될 거예요! 화이팅!';
+                message = typingText('typing.msg_keep', '꾸준히 연습하면 실력이 향상될 거예요! 화이팅!');
             }
         } else {
             // 영어 타수 기준
             if (finalWpm >= 100) {
-                message = 'Amazing speed! You are at expert level!';
+                message = typingText('typing.msg_amazing', 'Amazing speed! You are at expert level!');
             } else if (finalWpm >= 80) {
-                message = 'Excellent! Professional typing skills!';
+                message = typingText('typing.msg_excellent', 'Excellent! Professional typing skills!');
             } else if (finalWpm >= 60) {
-                message = 'Great job! Above average performance!';
+                message = typingText('typing.msg_great', 'Great job! Above average performance!');
             } else if (finalWpm >= 40) {
-                message = 'Good work! Keep practicing to improve!';
+                message = typingText('typing.msg_good', 'Good work! Keep practicing to improve!');
             } else if (finalWpm >= 20) {
-                message = 'Nice start! Your skills will improve with practice!';
+                message = typingText('typing.msg_nice', 'Nice start! Your skills will improve with practice!');
             } else {
-                message = 'Keep practicing! You will get better!';
+                message = typingText('typing.msg_keep', 'Keep practicing! You will get better!');
             }
         }
         
         // 5분 완주 메시지 추가
         const totalElapsedMinutes = (Date.now() - typingPracticeState.startTime) / 60000;
         if (totalElapsedMinutes >= 4.9) { // 약 5분
-            message += '\n\n🎯 5분 동안 집중해서 연습하셨네요! 수고하셨습니다!';
+            message += '\n\n' + typingText('typing.msg_5min', '🎯 5분 동안 집중해서 연습하셨네요! 수고하셨습니다!');
         }
         
         // 신기록 달성 시 추가 메시지
         if (previousBest > 0 && finalWpm > previousBest) {
-            message += '\n🎉 개인 신기록을 달성하셨습니다!';
+            message += '\n' + typingText('typing.msg_record', '🎉 개인 신기록을 달성하셨습니다!');
         }
         
         if (resultMessageEl) resultMessageEl.textContent = message;
@@ -1280,7 +1302,7 @@ function initializeTypingPracticeNew() {
             }
         } catch (error) {
             console.error('모달 표시 중 오류:', error);
-            alert(`연습 완료! 타수: ${finalWpm} 타/분, 정확도: ${finalAccuracy}%`);
+            alert(typingText('typing.alert_complete', `연습 완료! 타수: ${finalWpm} 타/분, 정확도: ${finalAccuracy}%`, { wpm: finalWpm, accuracy: finalAccuracy }));
         }
     }
     
@@ -1364,7 +1386,7 @@ function initializeTypingPracticeNew() {
         document.getElementById('time').textContent = '0:00';
         document.getElementById('progress').textContent = '0%';
         const remainingEl = document.getElementById('remaining-time');
-        if (remainingEl) remainingEl.textContent = '남은 시간: 5:00';
+        if (remainingEl) remainingEl.textContent = typingText('typing.remaining_time', '남은 시간: 5:00', { time: '5:00' });
     }
     
     // 일자별 평균 WPM 집계
@@ -1424,7 +1446,7 @@ function initializeTypingPracticeNew() {
             data: {
                 labels: result.labels,
                 datasets: [{
-                    label: '평균 WPM',
+                    label: typingText('typing.chart_avg_wpm', '평균 WPM'),
                     data: result.data,
                     borderColor: colors.line,
                     backgroundColor: colors.fill,
@@ -1441,7 +1463,7 @@ function initializeTypingPracticeNew() {
                     legend: { display: false },
                     tooltip: {
                         callbacks: {
-                            label: function(ctx) { return ctx.parsed.y + ' 타/분'; }
+                            label: function(ctx) { return typingText('typing.chart_tooltip', ctx.parsed.y + ' 타/분', { value: ctx.parsed.y }); }
                         }
                     }
                 },
@@ -1748,7 +1770,20 @@ function initializeTypingPracticeNew() {
 }
 
 // 기존 함수와 호환성을 위해
-function initializeTypingPractice() {
+// 연습 텍스트는 /data/typing/*.json 에서 비동기로 로드되므로 로드 완료 후 초기화한다.
+async function initializeTypingPractice() {
+    if (window.PracticeData && typeof window.PracticeData.ready === 'function') {
+        try {
+            await window.PracticeData.ready();
+        } catch (error) {
+            console.error('타자 연습 데이터 로드 실패:', error);
+            if (window.Toast) {
+                window.Toast.show(typingText('typing.data_load_error', '연습 데이터를 불러오지 못했습니다. 새로고침해 주세요.'), 'danger', 5000);
+            }
+            return;
+        }
+    }
+
     // 기존 초기화 함수 호출
     initializeTypingPracticeNew();
 }

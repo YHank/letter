@@ -13,11 +13,11 @@ class NavigationManager {
         // 페이지별 스크립트 매핑
         this.scriptMap = {
             'spellcheck_simple': ['/js/spellcheck_client.js?2', '/js/spellcheck_simple.js?4'],
-            'typing_practice': ['/js/practice_data.js?2', '/js/typing_practice.js?17'],
-            'salary': ['/js/salary_calculator.js?7'],
+            'typing_practice': ['/js/practice_data.js?3', '/js/typing_practice.js?19'],
+            'salary': ['/js/salary_calculator.js?9'],
             'insurance_calculator': ['/js/insurance_calculator.js?6'],
             'scientific_calculator': ['/js/scientific_calculator.js?3'],
-            'severancepay': ['/js/severancepay.js?1']
+            'severancepay': ['/js/severancepay.js?2']
         };
         
         // 페이지별 메뉴 매핑
@@ -38,7 +38,7 @@ class NavigationManager {
             'salary': '연봉실수령 계산기 - 세금 공제 실수령 금액',
             'typing_practice': '타자연습 - 한글/영어 타자 속도 연습',
             'insurance_calculator': '4대보험료 계산기 - 국민연금, 건강보험, 고용보험',
-            'severancepay': '퇴직금 계산기 - 통상임금 기준 퇴직금',
+            'severancepay': '퇴직금 계산기 - 평균임금 기준 퇴직금',
             'scientific_calculator': '공학용 계산기 - 고급 수학 계산기'
         };
 
@@ -49,7 +49,7 @@ class NavigationManager {
             'salary': '2026년 기준 연봉 실수령액 계산기. 세금, 4대보험 공제 후 실수령액을 정확하게 계산합니다.',
             'typing_practice': '한글/영어 타자 연습. WPM 속도 측정, 정확도 분석, 레벨 시스템으로 타자 실력을 향상하세요.',
             'insurance_calculator': '2025년 기준 4대보험료 계산기. 국민연금, 건강보험, 고용보험, 장기요양보험을 계산합니다.',
-            'severancepay': '근로기준법 기준 퇴직금 계산기. 근무기간과 월 평균임금으로 예상 퇴직금을 계산하세요.',
+            'severancepay': '2026년 기준 퇴직금 계산기. 근무기간, 월 평균임금, 연간 상여금으로 예상 퇴직금을 계산합니다.',
             'scientific_calculator': '공학용 계산기. 삼각함수, 로그, 지수 등 고급 수학 계산을 지원합니다.'
         };
 
@@ -316,6 +316,18 @@ class NavigationManager {
         const container = document.querySelector('main.container');
         if (container) {
             container.innerHTML = html;
+            // 새로 삽입된 마크업에 현재 언어 번역을 다시 적용
+            this.applyTranslations();
+        }
+    }
+
+    /**
+     * 현재 언어의 번역을 문서에 다시 적용
+     * (innerHTML 교체로 사라진 번역을 복구)
+     */
+    applyTranslations() {
+        if (window.i18nManager && typeof window.i18nManager.applyTranslations === 'function') {
+            window.i18nManager.applyTranslations();
         }
     }
 
@@ -442,6 +454,8 @@ class NavigationManager {
         const container = document.querySelector('main.container');
         if (container && this.homeContent) {
             container.innerHTML = this.homeContent;
+            // 홈 원본 마크업은 한국어이므로 현재 언어로 다시 번역
+            this.applyTranslations();
         }
     }
 
