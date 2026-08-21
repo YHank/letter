@@ -17,63 +17,56 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const ORIGIN = 'https://letter.ymyhome.loan';
 
-/** 페이지 정의: 조각 이름 → 클린 경로 + 메타 + 전용 스크립트 */
+/**
+ * 페이지 정의: 조각 이름 → 클린 경로 + JSON-LD용 앱 이름.
+ *
+ * title / description / 전용 스크립트는 여기에 적지 않는다.
+ * js/navigation-manager.js의 pageTitleMap·pageDescriptionMap·scriptMap을
+ * 단일 원본(SSOT)으로 삼아 파싱해 온다. 하드코딩하면 그쪽에서 스크립트 버전이
+ * 올라갔을 때 조용히 어긋난다 (실제로 spellcheck_rules.js 누락 사고가 있었다).
+ */
 const PAGES = [
-    {
-        fragment: 'spellcheck_simple',
-        route: 'spellcheck',
-        title: '맞춤법 검사 - 한글 맞춤법 검사기',
-        description: '무료 한글 맞춤법 검사기. 다음 맞춤법 검사기로 정확한 맞춤법을 확인하세요.',
-        scripts: ['/js/spellcheck_client.js?2', '/js/spellcheck_simple.js?4'],
-        init: 'initializeSimpleSpellchecker',
-        appName: '한글 맞춤법 검사기'
-    },
-    {
-        fragment: 'salary',
-        route: 'salary',
-        title: '연봉실수령 계산기 - 세금 공제 실수령 금액',
-        description: '2026년 기준 연봉 실수령액 계산기. 세금, 4대보험 공제 후 실수령액을 정확하게 계산합니다.',
-        scripts: ['/js/salary_calculator.js?8'],
-        init: 'initializeSalaryPage',
-        appName: '연봉 실수령액 계산기'
-    },
-    {
-        fragment: 'typing_practice',
-        route: 'typing-practice',
-        title: '타자연습 - 한글/영어 타자 속도 연습',
-        description: '한글/영어 타자 연습. WPM 속도 측정, 정확도 분석, 레벨 시스템으로 타자 실력을 향상하세요.',
-        scripts: ['/js/practice_data.js?3', '/js/typing_practice.js?18'],
-        init: 'initializeTypingPractice',
-        appName: '타자 연습'
-    },
-    {
-        fragment: 'insurance_calculator',
-        route: 'insurance-calculator',
-        title: '4대보험료 계산기 - 국민연금, 건강보험, 고용보험',
-        description: '2025년 기준 4대보험료 계산기. 국민연금, 건강보험, 고용보험, 장기요양보험을 계산합니다.',
-        scripts: ['/js/insurance_calculator.js?6'],
-        init: 'initializeInsuranceCalculator',
-        appName: '4대보험료 계산기'
-    },
-    {
-        fragment: 'severancepay',
-        route: 'severance-pay',
-        title: '퇴직금 계산기 - 평균임금 기준 퇴직금',
-        description: '근로기준법 기준 퇴직금 계산기. 근무기간과 월 평균임금으로 예상 퇴직금을 계산하세요.',
-        scripts: ['/js/severancepay.js?2'],
-        init: 'initializeSeverancePay',
-        appName: '퇴직금 계산기'
-    },
-    {
-        fragment: 'scientific_calculator',
-        route: 'scientific-calculator',
-        title: '공학용 계산기 - 고급 수학 계산기',
-        description: '공학용 계산기. 삼각함수, 로그, 지수 등 고급 수학 계산을 지원합니다.',
-        scripts: ['/js/scientific_calculator.js?3'],
-        init: 'initializeScientificCalculator',
-        appName: '공학용 계산기'
-    }
+    { fragment: 'spellcheck_simple', route: 'spellcheck', init: 'initializeSimpleSpellchecker', appName: '한글 맞춤법 검사기' },
+    { fragment: 'salary', route: 'salary', init: 'initializeSalaryPage', appName: '연봉 실수령액 계산기' },
+    { fragment: 'typing_practice', route: 'typing-practice', init: 'initializeTypingPractice', appName: '타자 연습' },
+    { fragment: 'insurance_calculator', route: 'insurance-calculator', init: 'initializeInsuranceCalculator', appName: '4대보험료 계산기' },
+    { fragment: 'severancepay', route: 'severance-pay', init: 'initializeSeverancePay', appName: '퇴직금 계산기' },
+    { fragment: 'scientific_calculator', route: 'scientific-calculator', init: 'initializeScientificCalculator', appName: '공학용 계산기' }
 ];
+
+/** navigation-manager.js에서 맵 리터럴을 파싱한다 (브라우저용 클래스라 require 불가) */
+function parseMaps() {
+    const src = fs.readFileSync(path.join(ROOT, 'js', 'navigation-manager.js'), 'utf8');
+
+    function block(name) {
+        const m = src.match(new RegExp('this\\.' + name + '\\s*=\\s*\\{([\\s\\S]*?)\\n\\s*\\};'));
+        if (!m) throw new Error(`navigation-manager.js에서 ${name}을 찾지 못했습니다`);
+        return m[1];
+    }
+
+    const scriptMap = {};
+    const scriptRe = /'([^']+)'\s*:\s*\[([^\]]*)\]/g;
+    let m;
+    const scriptBlock = block('scriptMap');
+    while ((m = scriptRe.exec(scriptBlock)) !== null) {
+        scriptMap[m[1]] = (m[2].match(/'[^']+'/g) || []).map((x) => x.slice(1, -1));
+    }
+
+    function stringMap(name) {
+        const out = {};
+        const re = /'([^']+)'\s*:\s*'((?:[^'\\]|\\.)*)'/g;
+        const blk = block(name);
+        let e;
+        while ((e = re.exec(blk)) !== null) out[e[1]] = e[2].replace(/\\'/g, "'");
+        return out;
+    }
+
+    return {
+        scriptMap,
+        titleMap: stringMap('pageTitleMap'),
+        descriptionMap: stringMap('pageDescriptionMap')
+    };
+}
 
 /**
  * 서브페이지 공통 스크립트 — 홈 전용(index.js, navigation-manager 등)은 제외.
@@ -285,6 +278,21 @@ ${buildInitScript(page)}
 }
 
 function main() {
+    // navigation-manager.js의 맵을 원본으로 삼아 각 페이지에 주입한다
+    const maps = parseMaps();
+    PAGES.forEach((page) => {
+        page.title = maps.titleMap[page.fragment];
+        page.description = maps.descriptionMap[page.fragment];
+        page.scripts = maps.scriptMap[page.fragment] || [];
+
+        if (!page.title || !page.description) {
+            throw new Error(`navigation-manager.js에 ${page.fragment}의 title/description이 없습니다`);
+        }
+        if (page.scripts.length === 0) {
+            throw new Error(`navigation-manager.js의 scriptMap에 ${page.fragment} 항목이 없습니다`);
+        }
+    });
+
     const shell = readShell();
     const parts = {
         commonHead: extractCommonHead(shell),
@@ -299,6 +307,7 @@ function main() {
         const html = buildPage(page, parts);
         fs.writeFileSync(path.join(dir, 'index.html'), html, 'utf8');
         console.log(`생성: /${page.route}/index.html  (${html.length.toLocaleString()} bytes)`);
+        console.log(`      전용 스크립트: ${page.scripts.join(', ')}`);
     });
 
     console.log(`\n총 ${PAGES.length}개 페이지 생성 완료`);
