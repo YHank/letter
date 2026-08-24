@@ -327,40 +327,32 @@ html, body,
 .text-transform-toolbar {
     display: flex;
     flex-wrap: wrap;
-    align-items: stretch;
+    align-items: flex-start;
     gap: 0.5rem;
 }
 
+/*
+ * 그림자는 래퍼(.btn-group/.dropdown)가 아니라 실제 버튼에 준다.
+ * 래퍼에 주면 래퍼가 flex 자식으로 늘어난 높이만큼 그림자가 그려져,
+ * 안의 버튼보다 큰 상자가 보인다("더보기"만 커 보이던 원인).
+ */
 .text-transform-toolbar > .btn,
-.text-transform-toolbar > .btn-group,
-.text-transform-toolbar > .dropdown {
+.text-transform-toolbar > .btn-group > .btn,
+.text-transform-toolbar > .dropdown > .btn {
     box-shadow: var(--shadow-sm);
 }
 
 /*
- * 버튼 높이 통일.
- * 툴바에는 단독 .btn, .btn-group, .dropdown이 섞여 있다. 래퍼(.dropdown)는
- * flex 자식으로 늘어나도 그 안의 버튼은 제 높이를 유지해서 줄이 어긋난다.
- * 래퍼를 flex로 만들고 내부 버튼이 래퍼 높이를 채우게 해 한 줄로 맞춘다.
- */
-.text-transform-toolbar > .btn-group,
-.text-transform-toolbar > .dropdown {
-    display: flex;
-}
-
-.text-transform-toolbar > .btn-group > .btn,
-.text-transform-toolbar > .dropdown > .btn {
-    height: 100%;
-}
-
-/*
- * 아이콘이 있는 버튼과 없는 버튼의 줄 높이가 달라지지 않게 inline-flex로
- * 세로 중앙 정렬한다. 아이콘 글리프의 세로 크기에 버튼 높이가 끌려가지 않는다.
+ * 높이 통일은 래퍼 구조에 기대지 않고 버튼 자체에 고정한다.
+ * 단독 .btn / .btn-group 안의 버튼 / .dropdown 안의 버튼이 섞여 있어
+ * stretch로 맞추려 하면 래퍼마다 결과가 달라진다.
+ * 아이콘 유무로 줄 높이가 흔들리지 않게 inline-flex 세로 중앙 정렬도 함께.
  */
 .text-transform-toolbar .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    min-height: 2rem;
     line-height: 1.5;
 }
 

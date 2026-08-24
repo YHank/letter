@@ -3,9 +3,9 @@
  * 글자수 세기 웹앱의 핵심 기능을 오프라인에서도 사용할 수 있도록 함
  */
 
-const CACHE_NAME = 'letter-counter-v14';
-const STATIC_CACHE_NAME = 'letter-counter-static-v14';
-const DYNAMIC_CACHE_NAME = 'letter-counter-dynamic-v14';
+const CACHE_NAME = 'letter-counter-v15';
+const STATIC_CACHE_NAME = 'letter-counter-static-v15';
+const DYNAMIC_CACHE_NAME = 'letter-counter-dynamic-v15';
 
 // 캐시할 정적 자원들
 const STATIC_ASSETS = [
@@ -146,10 +146,12 @@ self.addEventListener('fetch', (event) => {
     // 정적 자원에 대한 캐시 우선 전략
     if (STATIC_ASSETS.includes(url.pathname) || url.pathname.match(/\.(css|js|png|jpg|jpeg|gif|webp|svg|ico|woff|woff2)$/)) {
         event.respondWith(
-            // STATIC_ASSETS는 버전 쿼리 없이 등록되는데 실제 요청에는 ?N 캐시 버스터가
-            // 붙는다. ignoreSearch 없이는 프리캐시가 통째로 미스 나므로 무시하고 매칭한다.
-            // 버전을 올릴 때 CACHE 이름도 함께 올리면 activate 단계에서 구버전이 삭제된다.
-            caches.match(request, { ignoreSearch: true })
+            // 쿼리까지 포함해 매칭한다. ignoreSearch를 쓰면 STATIC_ASSETS에 버전 없이
+            // 등록된 파일이 ?N 요청에 그대로 응답해, 이 프로젝트의 캐시 버스팅 규칙이
+            // 통째로 무력화된다(구버전 CSS가 계속 나오는 사고가 실제로 있었다).
+            // 그 대가로 무버전 프리캐시는 첫 요청에 미스 나지만, 곧바로 정확한 URL로
+            // 다시 캐시되므로 손해는 첫 요청 한 번뿐이다.
+            caches.match(request)
                 .then((response) => {
                     if (response) {
                         console.log('캐시에서 반환:', request.url);

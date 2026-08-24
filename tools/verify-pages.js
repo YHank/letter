@@ -61,7 +61,8 @@ for (const [file, byVer] of versions) {
 
 if (swUnversioned.length) {
     note('캐시버스터', `sw.js STATIC_ASSETS ${swUnversioned.length}개가 버전 쿼리 없이 등록됨 — `
-        + `fetch 핸들러의 ignoreSearch로 매칭되므로 정상. 배포 시 CACHE 버전을 함께 올릴 것`);
+        + `첫 요청에 프리캐시 미스가 나지만 곧 정확한 URL로 다시 캐시되므로 무해. `
+        + `ignoreSearch로 맞추려 하면 캐시 버스팅이 무력화되니 쓰지 말 것`);
 }
 
 // ── 2. 참조 파일 실재 여부 ────────────────────────────────────────────────

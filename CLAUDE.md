@@ -182,9 +182,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### 필수 규칙
 - **항상 한글로 대답한다**
 - **js파일을 변경하면 자동으로 버전(?뒤 숫자)를 1증가시킨다**
-- **캐시 버스터를 올렸으면 `sw.js`의 CACHE 버전(`-vN`)도 함께 올린다**
-  서비스워커가 `ignoreSearch: true`로 매칭하므로, CACHE 이름을 올리지 않으면
-  구버전이 계속 캐시에서 나온다 (activate 단계에서 이름이 다른 캐시만 삭제됨)
+- **`sw.js`의 캐시 매칭에 `ignoreSearch`를 쓰지 말 것**
+  STATIC_ASSETS는 버전 쿼리 없이 등록되므로, `ignoreSearch: true`를 주면
+  구버전 파일이 `?N` 요청에 그대로 응답해 캐시 버스팅이 통째로 무력화된다
+  (실제로 구버전 CSS가 계속 나와 수정이 반영되지 않는 사고가 있었다)
+- `sw.js` 자체를 고쳤을 때만 CACHE 버전(`-vN`)을 올린다
 - **`index.html` 셸이나 `html/*.html` 조각을 고쳤으면 `node tools/build-pages.js` 재실행**
 - **작업 후 `node tools/verify-pages.js`로 검증** — 생성 페이지와 원본의 어긋남,
   캐시 버스터 불일치, 끊어진 참조, sitemap·sw.js 정합성을 한 번에 검사한다
