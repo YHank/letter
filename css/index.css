@@ -355,6 +355,19 @@ html, body,
 }
 
 /*
+ * 전역 .btn-group 규칙(아래쪽 "텍스트 변환 버튼 그룹 개선")이 padding 0.5rem과
+ * 배경·그림자를 준다. 툴바 안에서는 이 padding 때문에 그룹 높이가 48px이 되어
+ * 안의 버튼(32px)이 8px 내려앉고, 배경·그림자가 버튼보다 큰 상자로 보였다.
+ * 툴바에서는 그룹을 순수한 래퍼로 되돌린다 — 그림자는 이미 버튼에 있다.
+ */
+.text-transform-toolbar > .btn-group {
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/*
  * 높이 통일은 래퍼 구조에 기대지 않고 버튼 자체에 고정한다.
  * vertical-align: top은 인라인 컨텍스트에 남는 baseline 정렬을 무력화한다.
  */
@@ -417,6 +430,24 @@ html, body,
 /* 번역 섹션 스타일 */
 .text-muted {
     font-weight: 500;
+}
+
+/*
+ * Font Awesome은 font-weight로 스타일을 고른다 (Solid 900, Regular 400, Brands 400).
+ * 위 .text-muted의 font-weight: 500이 아이콘 요소에 걸리면 어느 쪽에도 맞지 않아
+ * 글리프를 못 찾고 두부(⊠)가 그려진다 — 통계 카드 아이콘이 안 보이던 원인이다.
+ * 아이콘에는 제 weight를 되돌려준다.
+ */
+.fas.text-muted,
+.fa-solid.text-muted {
+    font-weight: 900;
+}
+
+.far.text-muted,
+.fa-regular.text-muted,
+.fab.text-muted,
+.fa-brands.text-muted {
+    font-weight: 400;
 }
 
 /* Google Translate 툴팁 제거 */
