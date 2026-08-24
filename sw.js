@@ -3,9 +3,9 @@
  * 글자수 세기 웹앱의 핵심 기능을 오프라인에서도 사용할 수 있도록 함
  */
 
-const CACHE_NAME = 'letter-counter-v13';
-const STATIC_CACHE_NAME = 'letter-counter-static-v13';
-const DYNAMIC_CACHE_NAME = 'letter-counter-dynamic-v13';
+const CACHE_NAME = 'letter-counter-v14';
+const STATIC_CACHE_NAME = 'letter-counter-static-v14';
+const DYNAMIC_CACHE_NAME = 'letter-counter-dynamic-v14';
 
 // 캐시할 정적 자원들
 const STATIC_ASSETS = [
@@ -126,8 +126,17 @@ self.addEventListener('fetch', (event) => {
     // 외부 API는 항상 네트워크 사용 (Google Ads, 번역 등)
     if (EXTERNAL_RESOURCES.some(domain => url.href.includes(domain))) {
         event.respondWith(
-            fetch(request).catch(() => {
-                // 외부 리소스 실패 시 빈 응답 반환
+            fetch(request).catch((error) => {
+                // 스타일·폰트에 빈 200을 돌려주면 브라우저는 "성공했는데 내용이 없다"로
+                // 받아들여 파싱에 실패한다. Font Awesome이 이렇게 되면 아이콘이 전부
+                // 두부(tofu, ⊠)로 깨진다. 이런 필수 리소스는 실패를 그대로 전파해
+                // 브라우저가 정상적인 폴백(기본 폰트)을 하게 둔다.
+                const essential = request.destination === 'style'
+                    || request.destination === 'font'
+                    || /\.(css|woff2?|ttf|otf|eot)$/i.test(url.pathname);
+                if (essential) throw error;
+
+                // 광고·분석처럼 없어도 화면이 깨지지 않는 것만 조용히 흘려보낸다
                 return new Response('', { status: 200 });
             })
         );
