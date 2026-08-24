@@ -343,10 +343,20 @@ html, body,
 }
 
 /*
+ * 래퍼마다 세로 기준선이 달라지는 것을 없앤다.
+ * .btn-group은 flex(내부 버튼이 flex item), .dropdown은 block(내부 버튼이
+ * 인라인 박스라 baseline에 맞춰짐)이어서, 같은 버튼도 래퍼에 따라 y 위치가
+ * 어긋났다. 두 래퍼를 모두 flex + flex-start로 통일해 기준을 하나로 만든다.
+ */
+.text-transform-toolbar > .btn-group,
+.text-transform-toolbar > .dropdown {
+    display: flex;
+    align-items: flex-start;
+}
+
+/*
  * 높이 통일은 래퍼 구조에 기대지 않고 버튼 자체에 고정한다.
- * 단독 .btn / .btn-group 안의 버튼 / .dropdown 안의 버튼이 섞여 있어
- * stretch로 맞추려 하면 래퍼마다 결과가 달라진다.
- * 아이콘 유무로 줄 높이가 흔들리지 않게 inline-flex 세로 중앙 정렬도 함께.
+ * vertical-align: top은 인라인 컨텍스트에 남는 baseline 정렬을 무력화한다.
  */
 .text-transform-toolbar .btn {
     display: inline-flex;
@@ -354,6 +364,8 @@ html, body,
     justify-content: center;
     min-height: 2rem;
     line-height: 1.5;
+    vertical-align: top;
+    margin: 0;
 }
 
 .text-transform-toolbar .dropdown-menu .dropdown-item {
